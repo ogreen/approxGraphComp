@@ -15,8 +15,8 @@ ifeq ($(AMD_FAMILY15_COUNTERS),1)
 	DEFINES += -DHAVE_AMD_FAMILY15_COUNTERS
 endif
 
-sv: main.c timer.c Makefile
-	$(CC) -g -O3 -std=gnu99 $(CFLAGS) $(DEFINES) -Wno-unused-result -DBENCHMARK_SV -o $@ main.c timer.c  $(LDFLAGS) -lrt
+sv: main.c timer.c sv.c Makefile
+	$(CC) -g -O3 -std=gnu99 $(CFLAGS) $(DEFINES) -Wno-unused-result -DBENCHMARK_SV -o $@ main.c timer.c sv.c  $(LDFLAGS) -lrt
 
  
 clean:
