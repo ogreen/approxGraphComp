@@ -184,6 +184,12 @@ int main (const int argc, char *argv[]) {
     uint32_t nv, ne, naction;
     uint32_t* off;
     uint32_t* ind;
+    if (argc<2)
+    {
+        printf("usage: %s GraphFile\n", argv[0]);
+        exit(1);
+
+    }
 	readGraphDIMACS(argv[1], &off, &ind, &nv, &ne);
 	
     struct PerformanceCounter perfCounters[] = {
