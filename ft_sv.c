@@ -55,12 +55,21 @@ bool FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint3
 
     for (size_t v = 0; v < nv; v++)
     {
+        if(v==2){
+            m_curr[2]=3;
+            cc_curr[2]=0;
+            continue;
+        }
         const uint32_t *restrict vind = &ind[off[v]];
         const size_t vdeg = off[v + 1] - off[v];
 
         for (size_t edge = 0; edge < vdeg; edge++)
         {
             const uint32_t u = vind[edge];
+            
+
+//            if(faultEdges[off[v]+edge] )
+//                  FAULTY EDGE
             if (cc_prev[u] < cc_curr[v])
             {
                 m_curr[v]=u;
@@ -69,9 +78,6 @@ bool FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint3
             }
         }
     }
-
-
-    ftBadAdjacency(nv,  m_curr, off, ind);
 
 
     /*shortcutting goes here*/
@@ -84,12 +90,17 @@ bool FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint3
 uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind)
 {
 
-
     uint32_t* components_Final = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
     uint32_t* components_First = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
     uint32_t* modifiers_First = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
     uint32_t** cc_all_iterations = (uint32_t**)malloc(sizeof(uint32_t*)*numVertices);
     uint32_t** m_all_iterations = (uint32_t**)malloc(sizeof(uint32_t*)*numVertices);
+
+    uint32_t* faultOff =  (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    uint32_t* faultInd =  (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
+    uint32_t* faultEdges = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
+
+
 
     /* Initialize level array */
     for (size_t i = 0; i < numVertices; i++)
@@ -107,6 +118,9 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
     size_t iteration = 1;
     do
     {
+        memcpy((void *)faultOff, (void *)off, sizeof(uint32_t)*numVertices );
+        memcpy((void *)faultInd, (void *)ind, sizeof(uint32_t)*numEdges);
+
         uint32_t* cc_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
         uint32_t* m_curr =  (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
 
@@ -118,13 +132,17 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
         memcpy((void *)cc_curr, (void *)cc_prev, sizeof(uint32_t)*numVertices );
         memcpy((void *)m_curr, (void *)m_prev, sizeof(uint32_t)*numVertices );
 
+        // Error injection
+        // Mark the faulty in array faultEdge[e]
+
+
         changed = FaultTolerantSVSweep(numVertices, cc_prev, cc_curr, m_curr,off, ind);
 
+        // Detection and correction
+        ftBadAdjacency(nv,  m_curr, off, ind);
         ftBadParent(numVertices,  m_curr,m_prev, off, ind);
 
         iteration += 1;
-
-
     }
     while (changed);
 
@@ -138,10 +156,25 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
         free(m_all_iterations[i]);
     }
 
+    free(faultEdges);
+    free(faultInd);
+    free(faultOff);    
     free(cc_all_iterations);
     free(m_all_iterations);
 
     return components_Final;
 }   
 
+bool bitset(void const * data, int bitindex) {
+  int byte = bitindex / 8;
+  int bit = bitindex % 8;
+  unsigned char const * u = (unsigned char const *) data;
+  return (u[byte] & (1<<bit)) != 0;
+}
+
+
+void FaultInjection(void* arr, size_t sz)
+{
+
+}
 
