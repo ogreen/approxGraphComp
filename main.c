@@ -115,7 +115,7 @@ int main (const int argc, char *argv[])
 
 
 
-// void Benchmark_ConnectedComponents_SV( 
+// void Benchmark_ConnectedComponents_S1V( 
 //      ConnectedComponents_SV_Function sv_function, 
 //     size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind)
 // {

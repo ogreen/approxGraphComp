@@ -8,7 +8,48 @@
 
 #include "sv.h"
 
-bool FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* off, uint32_t* ind)
+/*checks for BadAdjacency type faults*/
+void ftBadAdjacency(size_t nv,  uint32_t* m_curr, uint32_t* off, uint32_t* ind){
+
+    for (size_t v = 0; v < nv; v++)
+    {
+        const uint32_t *restrict vind = &ind[off[v]];
+        const size_t vdeg = off[v + 1] - off[v];
+
+        int32_t found=0;
+        
+        if(m_curr[v]==v){
+            found=1;
+        }
+        else{
+            for (size_t edge = 0; edge < vdeg; edge++)
+            {
+                const uint32_t u = vind[edge];
+
+                if (m_curr[v]==u)
+                {
+                    found=1;
+                    break;
+                }
+            }
+        }       
+        if (found==0)
+            printf("Error detected - BadAdjacency %d\n",v);
+    }
+}
+
+void ftBadParent(size_t nv,  uint32_t* m_curr,uint32_t* m_prev, uint32_t* off, uint32_t* ind){
+    for (size_t v = 0; v < nv; v++)
+    {
+        if (m_curr[v]== v )
+            continue;
+        if (m_curr[m_prev[v]]== v )
+            printf("Error detected\n");
+    }
+}
+
+
+bool FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr, uint32_t* off, uint32_t* ind)
 {
     bool changed = false;
 
@@ -20,13 +61,18 @@ bool FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint3
         for (size_t edge = 0; edge < vdeg; edge++)
         {
             const uint32_t u = vind[edge];
-            if (cc_curr[u] < cc_prev[v])
+            if (cc_prev[u] < cc_curr[v])
             {
+                m_curr[v]=u;
                 cc_curr[v] = cc_prev[u];
                 changed = true;
             }
         }
     }
+
+
+    ftBadAdjacency(nv,  m_curr, off, ind);
+
 
     /*shortcutting goes here*/
     return changed;
@@ -72,7 +118,10 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
         memcpy((void *)cc_curr, (void *)cc_prev, sizeof(uint32_t)*numVertices );
         memcpy((void *)m_curr, (void *)m_prev, sizeof(uint32_t)*numVertices );
 
-        changed = FaultTolerantSVSweep(numVertices, cc_prev, cc_curr,off, ind);
+        changed = FaultTolerantSVSweep(numVertices, cc_prev, cc_curr, m_curr,off, ind);
+
+        ftBadParent(numVertices,  m_curr,m_prev, off, ind);
+
         iteration += 1;
 
 
@@ -83,7 +132,6 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
 
     memcpy(components_Final,cc_all_iterations[iteration], sizeof(uint32_t)*numVertices );
 
-    
     for(int i=0; i<iteration; i++){
 
         free(cc_all_iterations[i]);
