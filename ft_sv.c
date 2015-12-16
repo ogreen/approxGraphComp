@@ -1,0 +1,99 @@
+
+#include <stdio.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <inttypes.h>
+#include <malloc.h>
+
+#include "sv.h"
+
+bool FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* off, uint32_t* ind)
+{
+    bool changed = false;
+
+    for (size_t v = 0; v < nv; v++)
+    {
+        const uint32_t *restrict vind = &ind[off[v]];
+        const size_t vdeg = off[v + 1] - off[v];
+
+        for (size_t edge = 0; edge < vdeg; edge++)
+        {
+            const uint32_t u = vind[edge];
+            if (cc_curr[u] < cc_prev[v])
+            {
+                cc_curr[v] = cc_prev[u];
+                changed = true;
+            }
+        }
+    }
+
+    /*shortcutting goes here*/
+    return changed;
+
+}
+
+
+
+uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind)
+{
+
+
+    uint32_t* components_Final = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    uint32_t* components_First = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    uint32_t* modifiers_First = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    uint32_t** cc_all_iterations = (uint32_t**)malloc(sizeof(uint32_t*)*numVertices);
+    uint32_t** m_all_iterations = (uint32_t**)malloc(sizeof(uint32_t*)*numVertices);
+
+    /* Initialize level array */
+    for (size_t i = 0; i < numVertices; i++)
+    {
+        components_First[i] = i;
+        modifiers_First[i] = i;
+
+    }
+
+    cc_all_iterations[0]=components_First;
+    m_all_iterations[0]=modifiers_First;
+
+
+    bool changed;
+    size_t iteration = 1;
+    do
+    {
+        uint32_t* cc_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+        uint32_t* m_curr =  (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+
+        uint32_t* cc_prev = cc_all_iterations[iteration-1];
+        uint32_t* m_prev  = m_all_iterations[iteration-1];
+        cc_all_iterations[iteration]=cc_curr;
+        m_all_iterations[iteration]=m_curr;
+
+        memcpy((void *)cc_curr, (void *)cc_prev, sizeof(uint32_t)*numVertices );
+        memcpy((void *)m_curr, (void *)m_prev, sizeof(uint32_t)*numVertices );
+
+        changed = FaultTolerantSVSweep(numVertices, cc_prev, cc_curr,off, ind);
+        iteration += 1;
+
+
+    }
+    while (changed);
+
+    iteration--;
+
+    memcpy(components_Final,cc_all_iterations[iteration], sizeof(uint32_t)*numVertices );
+
+    
+    for(int i=0; i<iteration; i++){
+
+        free(cc_all_iterations[i]);
+        free(m_all_iterations[i]);
+    }
+
+    free(cc_all_iterations);
+    free(m_all_iterations);
+
+    return components_Final;
+}   
+
+

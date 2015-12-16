@@ -13,7 +13,7 @@
 #include <sys/ioctl.h>
 #include <linux/perf_event.h>
 #include <asm/unistd.h>
-
+#include "sv.h"
 
 
 #define COUNTOF(array) (sizeof(array) / sizeof(array[0]))
@@ -92,6 +92,20 @@ int main (const int argc, char *argv[])
 
     }
     readGraphDIMACS(argv[1], &off, &ind, &nv, &ne);
+
+    uint32_t* cc_baseline = BaselineSVMain( nv, ne, off, ind);
+    uint32_t* cc_ft = FaultTolerantSVMain( nv, ne, off, ind);
+
+    for (int i = 0; i < nv; ++i)
+    {
+        /* code */
+          assert(cc_ft[i]==cc_baseline[i]);
+
+    }
+    printf("Output correct!\n");
+
+    free(cc_ft);
+    free(cc_baseline);
 
 
     free(off);
