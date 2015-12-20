@@ -9,8 +9,11 @@
 #include "sv.h"
 #include "faultInjection.h"
 
-/*checks for BadAdjacency type faults*/
-void ftBadAdjacency(size_t nv,  uint32_t* m_curr, uint32_t* off, uint32_t* ind)
+/*checks for BadAdjacency type faults and if possible corrects it*/
+void ftBadAdjacency(size_t nv,
+ uint32_t* cc_curr, uint32_t* cc_prev,
+ uint32_t* m_curr, uint32_t* m_prev, 
+ uint32_t* off, uint32_t* ind)
 {
 
     for (size_t v = 0; v < nv; v++)
@@ -38,7 +41,11 @@ void ftBadAdjacency(size_t nv,  uint32_t* m_curr, uint32_t* off, uint32_t* ind)
             }
         }
         if (found == 0)
-            printf("Error detected - BadAdjacency %d\n", v);
+        {
+            printf("Error detected - BadAdjacency %d.... correcting\n", v);
+            cc_curr[v] = cc_prev[v];
+            m_curr[v] = m_prev[v];
+        }
     }
 }
 
@@ -96,9 +103,9 @@ bool FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
 /*fault tolerant SV sweep */
 bool FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
-                          uint32_t* m_curr, uint32_t* off, uint32_t* ind,
-                           double fProb         /*probability of bit flip*/
-                           )
+                   uint32_t* m_curr, uint32_t* off, uint32_t* ind,
+                   double fProb         /*probability of bit flip*/
+                  )
 {
     bool changed = false;
 
@@ -118,19 +125,22 @@ bool FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             // const uint32_t u = vind[edge];
             // injecting the fault  in reading adjacency list
             uint32_t u = vind[edge];
-            
+
             u = FaultInjectByte(u, fProb);
 
             /*sanity check for u*/
-            if (u>=nv)      /*a better check can be used*/
+            while (u >= nv)    /*a better check can be used*/
             {
-                u = v; 
+                u = vind[edge];
+
+                u = FaultInjectByte(u, fProb);
             }
 
 
 
             uint32_t cc_prev_u = cc_prev[u];
-            cc_prev_u = FaultInjectByte(cc_prev_u, fProb);
+            // cc_prev_u = FaultInjectByte(cc_prev_u, fProb);
+            cc_prev_u = FaultInjectByte(cc_prev_u, 0);
 
             if (cc_prev_u < cc_curr[v])
             {
@@ -208,7 +218,7 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
         changed = FaultySVSweep(numVertices, cc_prev, cc_curr, m_curr, off, ind, 1e-5);
 
         // Detection and correction
-        ftBadAdjacency(numVertices,  m_curr, off, ind);
+        ftBadAdjacency(numVertices, cc_curr, cc_prev, m_curr, m_prev, off, ind);
         ftBadParent(numVertices,  m_curr, m_prev, off, ind);
 
         iteration += 1;
