@@ -11,9 +11,9 @@
 
 /*checks for BadAdjacency type faults and if possible corrects it*/
 void ftBadAdjacency(size_t nv,
- uint32_t* cc_curr, uint32_t* cc_prev,
- uint32_t* m_curr, uint32_t* m_prev, 
- uint32_t* off, uint32_t* ind)
+                    uint32_t* cc_curr, uint32_t* cc_prev,
+                    uint32_t* m_curr, uint32_t* m_prev,
+                    uint32_t* off, uint32_t* ind)
 {
 
     for (size_t v = 0; v < nv; v++)
@@ -50,16 +50,89 @@ void ftBadAdjacency(size_t nv,
 }
 
 /*detect for Bad parent type faults*/
-void ftBadParent(size_t nv,  uint32_t* m_curr, uint32_t* m_prev, uint32_t* off, uint32_t* ind)
+void ftBadParent_old(size_t nv,
+                 uint32_t* cc_curr, uint32_t* cc_prev,
+                 uint32_t* m_curr, uint32_t* m_prev,
+                 uint32_t* off, uint32_t* ind)
 {
     for (size_t v = 0; v < nv; v++)
     {
         if (m_curr[v] == v )
             continue;
         if (m_curr[m_prev[v]] == v )
-            printf("Error detected: Bad Parent\n");
+        {
+            printf("Error detected at %d: Bad Parent... correcting by resetting\n", v);
+            // uint32_t vp = m_curr[v];     /*error occured here*/
+            const uint32_t *restrict vind = &ind[off[v]];
+            const size_t vdeg = off[v + 1] - off[v];
+
+            for (size_t edge = 0; edge < vdeg; edge++)
+            {
+
+                const uint32_t u = vind[edge];
+                printf("%d  ",u );
+                cc_curr[u] = u;
+                m_curr[u] = u;
+
+            }
+            printf("\n");
+
+            cc_curr[v] = v;
+            m_curr[v] = v;
+
+
+        }
     }
 }
+
+/*detect for Bad parent type faults*/
+void ftBadParent(size_t nv,
+                 uint32_t* cc_curr, uint32_t* cc_prev,
+                 uint32_t* m_curr, uint32_t* m_prev,
+                 uint32_t* off, uint32_t* ind)
+{
+    for (size_t v = 0; v < nv; v++)
+    {
+        const uint32_t *restrict vind = &ind[off[v]];
+        const size_t vdeg = off[v + 1] - off[v];
+
+        int32_t found = 0;
+
+        if (m_curr[v] == v)
+        {
+            found = 1;
+        }
+        else
+        {
+            for (size_t edge = 0; edge < vdeg; edge++)
+            {
+                const uint32_t u = vind[edge];
+
+                if (m_curr[v] == u)
+                {
+                    found = 1;
+                    /*now check for the second fault*/
+                    if (cc_curr[v]!= cc_prev[m_curr[v]])
+                    {
+                        /* code */
+                        printf("Error detected at %d: Bad Parent... correcting by resetting\n", v);
+                        cc_curr[v]= cc_prev[m_curr[v]];
+
+                    }
+
+                    break;
+                }
+            }
+        }
+        if (found == 0)
+        {
+            printf("Error detected - BadAdjacency %d.... correcting\n", v);
+            cc_curr[v] = cc_prev[v];
+            m_curr[v] = m_prev[v];
+        }
+    }
+}
+
 
 
 /*fault tolerant SV sweep */
@@ -126,7 +199,8 @@ bool FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             // injecting the fault  in reading adjacency list
             uint32_t u = vind[edge];
 
-            u = FaultInjectByte(u, fProb);
+            // u = FaultInjectByte(u, fProb);
+            u = FaultInjectByte(u, 0);
 
             /*sanity check for u*/
             while (u >= nv)    /*a better check can be used*/
@@ -139,14 +213,27 @@ bool FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
 
             uint32_t cc_prev_u = cc_prev[u];
-            // cc_prev_u = FaultInjectByte(cc_prev_u, fProb);
-            cc_prev_u = FaultInjectByte(cc_prev_u, 0);
+            cc_prev_u = FaultInjectByte(cc_prev_u, fProb);
+
+            // cc_prev_u = FaultInjectByte(cc_prev_u, 0);
 
             if (cc_prev_u < cc_curr[v])
             {
                 m_curr[v] = u;
-                cc_curr[v] = cc_prev[u];
+                cc_curr[v] = cc_prev_u;
                 changed = true;
+                if (cc_prev_u != cc_prev[u])
+                {
+                    printf("Error injected for (%d, %d) \n", v, u );
+                    for (int edge = 0; edge < vdeg; ++edge)
+                    {
+                        /* code */
+                        uint32_t u = vind[edge];
+                        printf("%d  ", u);
+                    }
+                    printf("\n");
+                }
+
             }
         }
     }
@@ -212,14 +299,17 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
 
         // Error injection
         // Mark the faulty in array faultEdge[e]
+        printf("Executing Iteration     %d\n", iteration );
 
+        if (iteration == 5)
+            changed = FaultySVSweep(numVertices, cc_prev, cc_curr, m_curr, off, ind, 1e-5);
+        else
+            changed = FaultTolerantSVSweep(numVertices, cc_prev, cc_curr, m_curr, off, ind);
 
-        // changed = FaultTolerantSVSweep(numVertices, cc_prev, cc_curr, m_curr, off, ind);
-        changed = FaultySVSweep(numVertices, cc_prev, cc_curr, m_curr, off, ind, 1e-5);
 
         // Detection and correction
         ftBadAdjacency(numVertices, cc_curr, cc_prev, m_curr, m_prev, off, ind);
-        ftBadParent(numVertices,  m_curr, m_prev, off, ind);
+        ftBadParent(numVertices, cc_curr, cc_prev, m_curr, m_prev, off, ind);
 
         iteration += 1;
     }
