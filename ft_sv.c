@@ -51,9 +51,9 @@ void ftBadAdjacency(size_t nv,
 
 /*detect for Bad parent type faults*/
 void ftBadParent_old(size_t nv,
-                 uint32_t* cc_curr, uint32_t* cc_prev,
-                 uint32_t* m_curr, uint32_t* m_prev,
-                 uint32_t* off, uint32_t* ind)
+                     uint32_t* cc_curr, uint32_t* cc_prev,
+                     uint32_t* m_curr, uint32_t* m_prev,
+                     uint32_t* off, uint32_t* ind)
 {
     for (size_t v = 0; v < nv; v++)
     {
@@ -70,7 +70,7 @@ void ftBadParent_old(size_t nv,
             {
 
                 const uint32_t u = vind[edge];
-                printf("%d  ",u );
+                printf("%d  ", u );
                 cc_curr[u] = u;
                 m_curr[u] = u;
 
@@ -100,36 +100,21 @@ void ftBadParent(size_t nv,
 
         if (m_curr[v] == v)
         {
-            found = 1;
+            continue;
         }
         else
         {
-            for (size_t edge = 0; edge < vdeg; edge++)
+            /*now check for the second fault*/
+            if (cc_curr[v] != cc_prev[m_curr[v]])
             {
-                const uint32_t u = vind[edge];
+                /* code */
+                printf("Error detected at %d: Bad Parent... correcting by resetting\n", v);
+                cc_curr[v] = cc_prev[m_curr[v]];
 
-                if (m_curr[v] == u)
-                {
-                    found = 1;
-                    /*now check for the second fault*/
-                    if (cc_curr[v]!= cc_prev[m_curr[v]])
-                    {
-                        /* code */
-                        printf("Error detected at %d: Bad Parent... correcting by resetting\n", v);
-                        cc_curr[v]= cc_prev[m_curr[v]];
-
-                    }
-
-                    break;
-                }
             }
+
         }
-        if (found == 0)
-        {
-            printf("Error detected - BadAdjacency %d.... correcting\n", v);
-            cc_curr[v] = cc_prev[v];
-            m_curr[v] = m_prev[v];
-        }
+
     }
 }
 
