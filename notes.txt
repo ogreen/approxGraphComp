@@ -1,64 +1,25 @@
-Executing Iteration     1
-Executing Iteration     2
-Executing Iteration     3
-Executing Iteration     4
-Executing Iteration     5
+Running program:
+
+./sv GRAPH_FILE_NAME
+
+For instance:
+
+./sv ~/dimacs_graphs/astro-ph.graph
 
 
-Error injected for (2563, 1704)
-1704  2044  2045  2046  2047  2048  2564  3348  4891  5089  5511  5641  5715  5716  5717  8372  11271  14386
-Error injected for (3654, 7383)
-172  456  485  1474  2513  3125  3128  3233  3234  3650  3651  3652  3653  3692  4579  5337  5347  6034  6035  6036  6037  6038  6039  6040  6041  6042  6043  6044  7350  7351  7352  7353  7383
-Error injected for (8816, 8817)
-8815  8817
-Error injected for (9515, 2955)
-45  466  1607  1989  1992  2670  2955  3402  3884  4243  4260  4269  5049  6395  6877  7343  7715  7975  8528  9278  12095  12517  16387  16639  16640  16641  16642  16643  16644
+Environment Variables:
+
+FAULT_PROB1:
+Fault probability for Bad Adjacency Type Faults. Set it to zero 
+to emulate no fault injection in reading Adjacency list
+
+FAULT_PROB2:
+Fault probability for Bad Parent type fault. Set it to zero 
+to emulate no fault injection in reading cc values. 
 
 
+Example:
 
-Executing Iteration     6
-Error detected at 2563: Bad Parent... correcting by resetting
-1704  2044  2045  2046  2047  2048  2564  3348  4891  5089  5511  5641  5715  5716  5717  8372  11271  14386
-Error detected at 3654: Bad Parent... correcting by resetting
-172  456  485  1474  2513  3125  3128  3233  3234  3650  3651  3652  3653  3692  4579  5337  5347  6034  6035  6036  6037  6038  6039  6040  6041  6042  6043  6044  7350  7351  7352  7353  7383
-Error detected at 8816: Bad Parent... correcting by resetting
-8815  8817
-Error detected at 9515: Bad Parent... correcting by resetting
-45  466  1607  1989  1992  2670  2955  3402  3884  4243  4260  4269  5049  6395  6877  7343  7715  7975  8528  9278  12095  12517  16387  16639  16640  16641  16642  16643  16644
-
-
-
-Executing Iteration     7
-Error detected at 47: Bad Parent... correcting by resetting
-48  49  466  3201  4826  5959  5960  5961  5962  7347  7975  8371  11549  13990
-Error detected at 2565: Bad Parent... correcting by resetting
-2044  2045  2047
-Error detected at 4446: Bad Parent... correcting by resetting
-4445  4447  7350  11325
-
-==================================== Error fixed by checking and correction 
-[piyush@condesa approxGraphComp]$ ./sv ~/dimacs_graphs/astro-ph.graph
-checking masking ....
-Executing Iteration     1
-Executing Iteration     2
-Executing Iteration     3
-Executing Iteration     4
-Executing Iteration     5
-Error injected for (2563, 1704)
-1704  2044  2045  2046  2047  2048  2564  3348  4891  5089  5511  5641  5715  5716  5717  8372  11271  14386
-Error injected for (3654, 7383)
-172  456  485  1474  2513  3125  3128  3233  3234  3650  3651  3652  3653  3692  4579  5337  5347  6034  6035  6036  6037  6038  6039  6040  6041  6042  6043  6044  7350  7351  7352  7353  7383
-Error injected for (8816, 8817)
-8815  8817
-Error injected for (9515, 2955)
-45  466  1607  1989  1992  2670  2955  3402  3884  4243  4260  4269  5049  6395  6877  7343  7715  7975  8528  9278  12095  12517  16387  16639  16640  16641  16642  16643  16644
-Error detected at 2563: Bad Parent... correcting by resetting
-Error detected at 3654: Bad Parent... correcting by resetting
-Error detected at 8816: Bad Parent... correcting by resetting
-Error detected at 9515: Bad Parent... correcting by resetting
-Error detected at 10595: Bad Parent... correcting by resetting
-Executing Iteration     6
-Executing Iteration     7
-Executing Iteration     8
-Executing Iteration     9
-Executing Iteration
+export FAULT_PROB1=1e-6
+export FAULT_PROB2=0
+./sv ~/dimacs_graphs/astro-ph.graph
