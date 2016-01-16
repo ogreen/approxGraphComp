@@ -223,7 +223,7 @@ int FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                    double fProb2         /*probability of bit flip for type-2 faults*/
                   )
 {
-    int changed = false;
+    int changed = 0;
 
     for (size_t v = 0; v < nv; v++)
     {
@@ -258,7 +258,7 @@ int FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             {
                 m_curr[v] = u;
                 cc_curr[v] = cc_prev_u;
-                changed = true;
+                changed++;
                 if (cc_prev_u != cc_prev[u])
                 {
                     printf("Error injected for (%d, %d) \n", v, u );
@@ -266,9 +266,9 @@ int FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                     {
 
                         uint32_t u = vind[edge];
-                        // printf("%d  ", u);
+                        
                     }
-                    // printf("\n");
+                    
                 }
 
             }
