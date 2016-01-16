@@ -15,7 +15,7 @@
 static long long MemAccessCount;
 
 /*checks for BadAdjacency type faults and if possible corrects it*/
-void ftBadAdjacency(size_t nv,
+int ftBadAdjacency(size_t nv,
                     uint32_t* cc_curr, uint32_t* cc_prev,
                     uint32_t* m_curr, uint32_t* m_prev,
                     uint32_t* off, uint32_t* ind)
@@ -52,10 +52,12 @@ void ftBadAdjacency(size_t nv,
             m_curr[v] = m_prev[v];
         }
     }
+
+    return 0;
 }
 
 /*detect for Bad parent type faults*/
-void ftBadParent_old(size_t nv,
+int ftBadParent_old(size_t nv,
                      uint32_t* cc_curr, uint32_t* cc_prev,
                      uint32_t* m_curr, uint32_t* m_prev,
                      uint32_t* off, uint32_t* ind)
@@ -88,10 +90,11 @@ void ftBadParent_old(size_t nv,
 
         }
     }
+    return 0;
 }
 
 /*detect for Bad parent type faults*/
-void ftBadParent(size_t nv,
+int ftBadParent(size_t nv,
                  uint32_t* cc_curr, uint32_t* cc_prev,
                  uint32_t* m_curr, uint32_t* m_prev,
                  uint32_t* off, uint32_t* ind)
@@ -122,11 +125,12 @@ void ftBadParent(size_t nv,
         }
 
     }
+    return 0;
 }
 
 
 /*detect for Bad parent type faults: it corrects the detected fault by sweeping for exact*/
-void ftBadParentExact(size_t nv,
+int ftBadParentExact(size_t nv,
                       uint32_t* cc_curr, uint32_t* cc_prev,
                       uint32_t* m_curr, uint32_t* m_prev,
                       uint32_t* off, uint32_t* ind)
@@ -171,15 +175,16 @@ void ftBadParentExact(size_t nv,
         }
 
     }
+    return 0;
 }
 
 
 
 /*fault tolerant SV sweep */
-bool FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
+int FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                           uint32_t* m_curr, uint32_t* off, uint32_t* ind)
 {
-    bool changed = false;
+    int changed = false;
 
     for (size_t v = 0; v < nv; v++)
     {
@@ -212,13 +217,13 @@ bool FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 }
 
 /*fault tolerant SV sweep */
-bool FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
+int FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                    uint32_t* m_curr, uint32_t* off, uint32_t* ind,
                    double fProb1,         /*probability of bit flip*/
                    double fProb2         /*probability of bit flip for type-2 faults*/
                   )
 {
-    bool changed = false;
+    int changed = false;
 
     for (size_t v = 0; v < nv; v++)
     {
@@ -336,6 +341,8 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
 
 
     bool changed;
+    int num_changes;
+    int num_corrections;
     size_t iteration = 1;
     do
     {
@@ -355,25 +362,31 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
 
         // Error injection
         // Mark the faulty in array faultEdge[e]
-        printf("Executing Iteration     %d\n", iteration );
-
-        // if (iteration == 5)
-        changed = FaultySVSweep(numVertices,
-                                cc_prev, cc_curr, m_curr,
-                                off, ind,
-                                fProb1, fProb2);
-        // else
-        //     changed = FaultTolerantSVSweep(numVertices, cc_prev, cc_curr, m_curr, off, ind);
 
 
-        // Detection and correction
-        ftBadAdjacency(numVertices, cc_curr, cc_prev, m_curr, m_prev, off, ind);
-        // ftBadParent(numVertices, cc_curr, cc_prev, m_curr, m_prev, off, ind);
-        ftBadParentExact(numVertices, cc_curr, cc_prev, m_curr, m_prev, off, ind);
+        // if (iteration <10)
+        if (1)
+            num_changes = FaultySVSweep(numVertices,
+                                        cc_prev, cc_curr, m_curr,
+                                        off, ind,
+                                        fProb1, fProb2);
+        else
+            num_changes = FaultTolerantSVSweep(numVertices, cc_prev, cc_curr,
+                                               m_curr, off, ind);
+
+
+
+        num_corrections = ftBadAdjacency(numVertices, cc_curr, cc_prev,
+                                         m_curr, m_prev, off, ind);
+
+        num_corrections += ftBadParentExact(numVertices, cc_curr, cc_prev,
+                                            m_curr, m_prev, off, ind);
+        printf("Executing Iteration     %d: Changes =%d, Corrections=%d\n",
+               iteration, num_changes, num_corrections );
 
         iteration += 1;
     }
-    while (changed);
+    while (num_changes);
 
     iteration--;
 
