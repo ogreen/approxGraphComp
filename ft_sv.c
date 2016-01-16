@@ -99,6 +99,7 @@ int ftBadParent(size_t nv,
                  uint32_t* m_curr, uint32_t* m_prev,
                  uint32_t* off, uint32_t* ind)
 {
+    int corrections=0;
     for (size_t v = 0; v < nv; v++)
     {
         const uint32_t *restrict vind = &ind[off[v]];
@@ -117,6 +118,7 @@ int ftBadParent(size_t nv,
                 // if (cc_curr[v] < cc_prev[m_curr[v]])
             {
                 /* code */
+                corrections++;
                 printf("Error detected at %d: Bad Parent... correcting by resetting\n", v);
                 cc_curr[v] = cc_prev[m_curr[v]];
 
@@ -125,7 +127,7 @@ int ftBadParent(size_t nv,
         }
 
     }
-    return 0;
+     return corrections;
 }
 
 
@@ -135,6 +137,7 @@ int ftBadParentExact(size_t nv,
                       uint32_t* m_curr, uint32_t* m_prev,
                       uint32_t* off, uint32_t* ind)
 {
+    int corrections=0;
     for (size_t v = 0; v < nv; v++)
     {
         const uint32_t *restrict vind = &ind[off[v]];
@@ -152,6 +155,7 @@ int ftBadParentExact(size_t nv,
             // if (cc_curr[v] != cc_prev[m_curr[v]])
             if (cc_curr[v] < cc_prev[m_curr[v]])
             {
+                corrections++;
                 cc_curr[v] = cc_prev[m_curr[v]];
                 /* code */
                 printf("Error detected at %d: Bad Parent... correcting by finding correct neighbour\n", v);
@@ -175,7 +179,7 @@ int ftBadParentExact(size_t nv,
         }
 
     }
-    return 0;
+    return corrections;
 }
 
 
@@ -188,12 +192,7 @@ int FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
     for (size_t v = 0; v < nv; v++)
     {
-        // if (v == 2)
-        // {
-        //     m_curr[2] = 3;
-        //     cc_curr[2] = 0;
-        //     continue;
-        // }
+        
         const uint32_t *restrict vind = &ind[off[v]];
         const size_t vdeg = off[v + 1] - off[v];
 
