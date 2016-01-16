@@ -20,7 +20,7 @@ int ftBadAdjacency(size_t nv,
                     uint32_t* m_curr, uint32_t* m_prev,
                     uint32_t* off, uint32_t* ind)
 {
-
+    int corrections=0;
     for (size_t v = 0; v < nv; v++)
     {
         const uint32_t *restrict vind = &ind[off[v]];
@@ -47,13 +47,14 @@ int ftBadAdjacency(size_t nv,
         }
         if (found == 0)
         {
+            corrections++;
             printf("Error detected - BadAdjacency %d.... correcting\n", v);
             cc_curr[v] = cc_prev[v];
             m_curr[v] = m_prev[v];
         }
     }
 
-    return 0;
+    return corrections;
 }
 
 /*detect for Bad parent type faults*/
@@ -385,7 +386,7 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
 
         iteration += 1;
     }
-    while (num_changes);
+    while (num_changes>num_corrections);
 
     iteration--;
 
