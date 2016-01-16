@@ -16,11 +16,11 @@ static long long MemAccessCount;
 
 /*checks for BadAdjacency type faults and if possible corrects it*/
 int ftBadAdjacency(size_t nv,
-                    uint32_t* cc_curr, uint32_t* cc_prev,
-                    uint32_t* m_curr, uint32_t* m_prev,
-                    uint32_t* off, uint32_t* ind)
+                   uint32_t* cc_curr, uint32_t* cc_prev,
+                   uint32_t* m_curr, uint32_t* m_prev,
+                   uint32_t* off, uint32_t* ind)
 {
-    int corrections=0;
+    int corrections = 0;
     for (size_t v = 0; v < nv; v++)
     {
         const uint32_t *restrict vind = &ind[off[v]];
@@ -48,7 +48,9 @@ int ftBadAdjacency(size_t nv,
         if (found == 0)
         {
             corrections++;
+#ifdef DEBUG
             printf("Error detected - BadAdjacency %d.... correcting\n", v);
+#endif
             cc_curr[v] = cc_prev[v];
             m_curr[v] = m_prev[v];
         }
@@ -59,9 +61,9 @@ int ftBadAdjacency(size_t nv,
 
 /*detect for Bad parent type faults*/
 int ftBadParent_old(size_t nv,
-                     uint32_t* cc_curr, uint32_t* cc_prev,
-                     uint32_t* m_curr, uint32_t* m_prev,
-                     uint32_t* off, uint32_t* ind)
+                    uint32_t* cc_curr, uint32_t* cc_prev,
+                    uint32_t* m_curr, uint32_t* m_prev,
+                    uint32_t* off, uint32_t* ind)
 {
     for (size_t v = 0; v < nv; v++)
     {
@@ -69,7 +71,9 @@ int ftBadParent_old(size_t nv,
             continue;
         if (m_curr[m_prev[v]] == v )
         {
+#ifdef DEBUG
             printf("Error detected at %d: Bad Parent... correcting by resetting\n", v);
+#endif
             // uint32_t vp = m_curr[v];     /*error occured here*/
             const uint32_t *restrict vind = &ind[off[v]];
             const size_t vdeg = off[v + 1] - off[v];
@@ -96,11 +100,11 @@ int ftBadParent_old(size_t nv,
 
 /*detect for Bad parent type faults*/
 int ftBadParent(size_t nv,
-                 uint32_t* cc_curr, uint32_t* cc_prev,
-                 uint32_t* m_curr, uint32_t* m_prev,
-                 uint32_t* off, uint32_t* ind)
+                uint32_t* cc_curr, uint32_t* cc_prev,
+                uint32_t* m_curr, uint32_t* m_prev,
+                uint32_t* off, uint32_t* ind)
 {
-    int corrections=0;
+    int corrections = 0;
     for (size_t v = 0; v < nv; v++)
     {
         const uint32_t *restrict vind = &ind[off[v]];
@@ -120,7 +124,9 @@ int ftBadParent(size_t nv,
             {
                 /* code */
                 corrections++;
+#ifdef DEBUG
                 printf("Error detected at %d: Bad Parent... correcting by resetting\n", v);
+#endif
                 cc_curr[v] = cc_prev[m_curr[v]];
 
             }
@@ -128,17 +134,17 @@ int ftBadParent(size_t nv,
         }
 
     }
-     return corrections;
+    return corrections;
 }
 
 
 /*detect for Bad parent type faults: it corrects the detected fault by sweeping for exact*/
 int ftBadParentExact(size_t nv,
-                      uint32_t* cc_curr, uint32_t* cc_prev,
-                      uint32_t* m_curr, uint32_t* m_prev,
-                      uint32_t* off, uint32_t* ind)
+                     uint32_t* cc_curr, uint32_t* cc_prev,
+                     uint32_t* m_curr, uint32_t* m_prev,
+                     uint32_t* off, uint32_t* ind)
 {
-    int corrections=0;
+    int corrections = 0;
     for (size_t v = 0; v < nv; v++)
     {
         const uint32_t *restrict vind = &ind[off[v]];
@@ -159,7 +165,9 @@ int ftBadParentExact(size_t nv,
                 corrections++;
                 cc_curr[v] = cc_prev[m_curr[v]];
                 /* code */
+#ifdef DEBUG
                 printf("Error detected at %d: Bad Parent... correcting by finding correct neighbour\n", v);
+#endif
                 const uint32_t *restrict vind = &ind[off[v]];
                 const size_t vdeg = off[v + 1] - off[v];
 
@@ -187,13 +195,13 @@ int ftBadParentExact(size_t nv,
 
 /*fault tolerant SV sweep */
 int FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
-                          uint32_t* m_curr, uint32_t* off, uint32_t* ind)
+                         uint32_t* m_curr, uint32_t* off, uint32_t* ind)
 {
     int changed = false;
 
     for (size_t v = 0; v < nv; v++)
     {
-        
+
         const uint32_t *restrict vind = &ind[off[v]];
         const size_t vdeg = off[v + 1] - off[v];
 
@@ -218,10 +226,10 @@ int FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
 /*fault tolerant SV sweep */
 int FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
-                   uint32_t* m_curr, uint32_t* off, uint32_t* ind,
-                   double fProb1,         /*probability of bit flip*/
-                   double fProb2         /*probability of bit flip for type-2 faults*/
-                  )
+                  uint32_t* m_curr, uint32_t* off, uint32_t* ind,
+                  double fProb1,         /*probability of bit flip*/
+                  double fProb2         /*probability of bit flip for type-2 faults*/
+                 )
 {
     int changed = 0;
 
@@ -261,14 +269,16 @@ int FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                 changed++;
                 if (cc_prev_u != cc_prev[u])
                 {
+#ifdef DEBUG
                     printf("Error injected for (%d, %d) \n", v, u );
+#endif
                     for (int edge = 0; edge < vdeg; ++edge)
                     {
 
                         uint32_t u = vind[edge];
-                        
+
                     }
-                    
+
                 }
 
             }
@@ -386,7 +396,7 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
 
         iteration += 1;
     }
-    while (num_changes>num_corrections);
+    while (num_changes > num_corrections);
 
     iteration--;
 
