@@ -11,7 +11,13 @@ HEADERS := timer.h sv.h ft_sv.h faultInjection.h
 
 OBJS  := $(SRCS:.c=.o)
 
-.PHONY:	all clean 
+# for testing the matrix
+GRAPH_DIR := graphs
+MAT_SM :=  as-22july06.graph astro-ph.graph caidaRouterLevel.graph \
+		celegans_metabolic.graph celegansneural.graph chesapeake.graph \
+		 citationCiteseer.graph
+
+.PHONY:	all clean test_small 
 all: sv 
 
 OBJS: $(SRCS) $(HEADERS)
@@ -21,6 +27,8 @@ OBJS: $(SRCS) $(HEADERS)
 sv: main.c  $(OBJS) $(HEADERS) Makefile 
 	$(CC)  $(CFLAGS) -o $@ main.c $(OBJS) $(LOAD_FLAGS)
 
+test_small: sv
+	$(foreach testcase,$(MAT_SM),./sv $(GRAPH_DIR)/$(testcase);)
  
 clean:
 	-rm -f sv $(OBJS)
