@@ -59,6 +59,123 @@ int ftBadAdjacency(size_t nv,
     return corrections;
 }
 
+#define DEBUG
+/*checks for BadAdjacency type faults and if possible
+corrects it*/
+int ftBadAdjacencyBadParent_RelParent(size_t nv,
+                                      uint32_t* cc_curr, uint32_t* cc_prev,
+                                      uint32_t* m_curr, uint32_t* m_prev,
+                                      uint32_t* off, uint32_t* ind)
+{
+    int corrections = 0;
+//     for (size_t v = 0; v < nv; v++)
+//     {
+//         const uint32_t *restrict vind = &ind[off[v]];
+//         const size_t vdeg = off[v + 1] - off[v];
+
+//         /*if I am the modifier then my cc_curr is myself*/
+//         if (m_curr[v] == -1 && cc_curr[v] == v)
+//         {
+//             /* code */
+//             continue;
+//         }
+
+
+
+//         // check if the modifier is correct
+//         if (m_curr[v] > vdeg - 1 || (int) m_curr[v] < -1 )
+//         {
+//             /* code */
+// #ifdef DEBUG
+//             printf("Error detected - BadAdjacency %d.... correcting\n", v);
+// #endif
+//             /*do the correction*/
+//             corrections++;
+//             for (size_t edge = 0; edge < vdeg; edge++)
+//             {
+//                 const uint32_t u = vind[edge];
+
+//                 if (cc_prev[u] < cc_curr[v])
+//                 {
+//                     m_curr[v] = edge;
+//                     cc_curr[v] = cc_prev[u];
+//                     // changed = true;
+//                 }
+//             }
+
+//         }
+
+//     }
+
+    /*now correcting bad parent*/
+
+    for (size_t v = 0; v < nv; v++)
+    {
+        const uint32_t *restrict vind = &ind[off[v]];
+        const size_t vdeg = off[v + 1] - off[v];
+
+        // if (v == 8195)
+        // {
+        //     /* code */
+        //     printf("cc_curr[v] %d != cc_prev[vind[m_curr[v]]] %d, m_curr[v]%d, vind[m_curr[v]] %d\n", cc_curr[v], cc_prev[vind[m_curr[v]]],
+        //            m_curr[v], vind[m_curr[v]] );
+        // }
+
+        // check if the modifier is correct
+        if (m_curr[v] == -1)
+        {
+            /* code */
+            if (cc_curr[v] != v)
+            {
+                /* code */
+#ifdef DEBUG
+                printf("1.Error detected - BadParent %d.... correcting\n", v);
+#endif
+                /*do the correction*/
+                corrections++;
+                for (size_t edge = 0; edge < vdeg; edge++)
+                {
+                    const uint32_t u = vind[edge];
+
+                    if (cc_prev[u] < cc_curr[v])
+                    {
+                        m_curr[v] = edge;
+                        cc_curr[v] = cc_prev[u];
+                        // changed = true;
+                    }
+                }
+
+            }
+        }
+        // else if (cc_curr[v] != cc_prev[vind[m_curr[v]]] )
+             else if (cc_curr[v] != cc_prev[vind[m_curr[v]]] )
+        {
+            /* code */
+            cc_curr[v] = cc_prev[vind[m_curr[v]]];
+#ifdef DEBUG
+            // printf("2.Error detected - BadParent %d.... correcting\n", v);
+#endif
+            /*do the correction*/
+            corrections++;
+            for (size_t edge = 0; edge < vdeg; edge++)
+            {
+                const uint32_t u = vind[edge];
+
+                if (cc_prev[u] < cc_curr[v])
+                {
+                    m_curr[v] = edge;
+                    cc_curr[v] = cc_prev[u];
+                    // changed = true;
+                }
+            }
+
+        }
+
+    }
+
+    return corrections;
+}
+
 /*detect for Bad parent type faults*/
 int ftBadParent_old(size_t nv,
                     uint32_t* cc_curr, uint32_t* cc_prev,
@@ -225,6 +342,38 @@ int FaultTolerantSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 }
 
 /*fault tolerant SV sweep */
+int FaultTolerantSVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
+                                   uint32_t* m_curr, uint32_t* off, uint32_t* ind)
+{
+    int changed = false;
+
+    for (size_t v = 0; v < nv; v++)
+    {
+
+        const uint32_t *restrict vind = &ind[off[v]];
+        const size_t vdeg = off[v + 1] - off[v];
+
+        for (size_t edge = 0; edge < vdeg; edge++)
+        {
+            const uint32_t u = vind[edge];
+
+            if (cc_prev[u] < cc_curr[v])
+            {
+                m_curr[v] = edge;
+                cc_curr[v] = cc_prev[u];
+                changed = true;
+            }
+        }
+    }
+
+
+    /*shortcutting goes here*/
+    return changed;
+
+}
+
+
+/*fault tolerant SV sweep */
 int FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                   uint32_t* m_curr, uint32_t* off, uint32_t* ind,
                   double fProb1,         /*probability of bit flip*/
@@ -292,7 +441,77 @@ int FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 }
 
 
+/*fault tolerant SV sweep
+Stores the parent in "relative" manner
 
+ */
+int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
+                            uint32_t* m_curr, uint32_t* off, uint32_t* ind,
+                            double fProb1,         /*probability of bit flip*/
+                            double fProb2         /*probability of bit flip for type-2 faults*/
+                           )
+{
+    int changed = 0;
+
+    for (size_t v = 0; v < nv; v++)
+    {
+
+        const uint32_t *restrict vind = &ind[off[v]];
+        const size_t vdeg = off[v + 1] - off[v];
+
+        for (size_t edge = 0; edge < vdeg; edge++)
+        {
+            uint32_t u = vind[edge];
+
+
+            // u = FaultInjectByte(u, 0);
+            u = FaultInjectByte(u, fProb1);
+
+            /*sanity check for u*/
+            while (u >= nv)    /*a better check can be used*/
+            {
+                u = vind[edge];
+
+                u = FaultInjectByte(u, fProb1);
+            }
+
+
+
+            uint32_t cc_prev_u = cc_prev[u];
+            cc_prev_u = FaultInjectByte(cc_prev_u, fProb2);
+
+            // cc_prev_u = FaultInjectByte(cc_prev_u, 0);
+
+            if (cc_prev_u < cc_curr[v])
+            {
+                m_curr[v] = edge;
+                cc_curr[v] = cc_prev_u;
+                changed++;
+                if (cc_prev_u != cc_prev[u])
+                {
+#ifdef DEBUG
+                    printf("Error injected for (%d, %d) \n", v, u );
+#endif
+                    for (int edge = 0; edge < vdeg; ++edge)
+                    {
+
+                        uint32_t u = vind[edge];
+
+                    }
+
+                }
+
+            }
+        }
+    }
+
+
+    /*shortcutting goes here*/
+    return changed;
+
+}
+
+#define REL_PARENT
 
 uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind)
 {
@@ -342,7 +561,11 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
     for (size_t i = 0; i < numVertices; i++)
     {
         components_First[i] = i;
+#ifdef REL_PARENT
+        modifiers_First[i] = -1;
+#else
         modifiers_First[i] = i;
+#endif
 
     }
 
@@ -374,6 +597,27 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
         // Mark the faulty in array faultEdge[e]
 
 
+
+#ifdef REL_PARENT
+
+        if (!iteration)
+            num_corrections = ftBadAdjacencyBadParent_RelParent(numVertices, cc_curr, cc_prev,
+                              m_curr, m_prev, off, ind);
+        // if (iteration <2)
+        if (1)
+        // if (0)
+            num_changes = FaultySVSweep_RelParent(numVertices,
+                                                  cc_prev, cc_curr, m_curr,
+                                                  off, ind,
+                                                  fProb1, fProb2);
+        else
+            num_changes = FaultTolerantSVSweep_RelParent(numVertices, cc_prev, cc_curr,
+                          m_curr, off, ind);
+
+        num_corrections = ftBadAdjacencyBadParent_RelParent(numVertices, cc_curr, cc_prev,
+                          m_curr, m_prev, off, ind);
+
+#else
         // if (iteration <10)
         if (1)
             num_changes = FaultySVSweep(numVertices,
@@ -384,13 +628,15 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
             num_changes = FaultTolerantSVSweep(numVertices, cc_prev, cc_curr,
                                                m_curr, off, ind);
 
-
-
         num_corrections = ftBadAdjacency(numVertices, cc_curr, cc_prev,
                                          m_curr, m_prev, off, ind);
 
         num_corrections += ftBadParentExact(numVertices, cc_curr, cc_prev,
                                             m_curr, m_prev, off, ind);
+
+#endif
+
+
         printf("Executing Iteration     %d: Changes =%d, Corrections=%d\n",
                iteration, num_changes, num_corrections );
 
