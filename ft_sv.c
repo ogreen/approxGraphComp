@@ -11,6 +11,9 @@
 #include "faultInjection.h"
 
 
+// uncomment following for debug statements
+// #define DEBUG
+
 // the variable to keep count of number of memory accesses
 static long long MemAccessCount;
 
@@ -59,7 +62,7 @@ int ftBadAdjacency(size_t nv,
     return corrections;
 }
 
-#define DEBUG
+
 /*checks for BadAdjacency type faults and if possible
 corrects it*/
 int ftBadAdjacencyBadParent_RelParent(size_t nv,
@@ -68,44 +71,6 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
                                       uint32_t* off, uint32_t* ind)
 {
     int corrections = 0;
-//     for (size_t v = 0; v < nv; v++)
-//     {
-//         const uint32_t *restrict vind = &ind[off[v]];
-//         const size_t vdeg = off[v + 1] - off[v];
-
-//         /*if I am the modifier then my cc_curr is myself*/
-//         if (m_curr[v] == -1 && cc_curr[v] == v)
-//         {
-//             /* code */
-//             continue;
-//         }
-
-
-
-//         // check if the modifier is correct
-//         if (m_curr[v] > vdeg - 1 || (int) m_curr[v] < -1 )
-//         {
-//             /* code */
-// #ifdef DEBUG
-//             printf("Error detected - BadAdjacency %d.... correcting\n", v);
-// #endif
-//             /*do the correction*/
-//             corrections++;
-//             for (size_t edge = 0; edge < vdeg; edge++)
-//             {
-//                 const uint32_t u = vind[edge];
-
-//                 if (cc_prev[u] < cc_curr[v])
-//                 {
-//                     m_curr[v] = edge;
-//                     cc_curr[v] = cc_prev[u];
-//                     // changed = true;
-//                 }
-//             }
-
-//         }
-
-//     }
 
     /*now correcting bad parent*/
 
@@ -114,12 +79,6 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
         const uint32_t *restrict vind = &ind[off[v]];
         const size_t vdeg = off[v + 1] - off[v];
 
-        // if (v == 8195)
-        // {
-        //     /* code */
-        //     printf("cc_curr[v] %d != cc_prev[vind[m_curr[v]]] %d, m_curr[v]%d, vind[m_curr[v]] %d\n", cc_curr[v], cc_prev[vind[m_curr[v]]],
-        //            m_curr[v], vind[m_curr[v]] );
-        // }
 
         // check if the modifier is correct
         if (m_curr[v] == -1)
@@ -153,7 +112,7 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
             /* code */
             cc_curr[v] = cc_prev[vind[m_curr[v]]];
 #ifdef DEBUG
-            // printf("2.Error detected - BadParent %d.... correcting\n", v);
+            printf("2.Error detected - BadParent %d.... correcting\n", v);
 #endif
             /*do the correction*/
             corrections++;
