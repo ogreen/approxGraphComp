@@ -14,7 +14,7 @@
 #include <linux/perf_event.h>
 #include <asm/unistd.h>
 #include "sv.h"
-
+#include "stat.h"
 
 #define COUNTOF(array) (sizeof(array) / sizeof(array[0]))
 
@@ -93,16 +93,32 @@ int main (const int argc, char *argv[])
     }
     readGraphDIMACS(argv[1], &off, &ind, &nv, &ne);
 
-    uint32_t* cc_baseline = BaselineSVMain( nv, ne, off, ind);
+    /*starting the stat*/
+
+    stat_t statBL, statFF;
+    InitStat(&statBL);
+    uint32_t* cc_baseline = BaselineSVMain( nv, ne, off, ind, &statBL);
+    uint32_t* cc_ff = FaultFreeSVMain( nv, ne, off, ind, &statFF);
+    for (int i = 0; i < nv; ++i)
+    {
+        /* code */
+        assert(cc_ff[i] == cc_baseline[i]);
+
+    }
+    printf("Output correct!\n");
+
+
+
     uint32_t* cc_ft = FaultTolerantSVMain( nv, ne, off, ind);
 
     for (int i = 0; i < nv; ++i)
     {
         /* code */
-          assert(cc_ft[i]==cc_baseline[i]);
+        assert(cc_ft[i] == cc_baseline[i]);
 
     }
     printf("Output correct!\n");
+    PrintStat(&statBL);
 
     free(cc_ft);
     free(cc_baseline);
@@ -113,38 +129,6 @@ int main (const int argc, char *argv[])
     return 0;
 }
 
-
-
-// void Benchmark_ConnectedComponents_S1V( 
-//      ConnectedComponents_SV_Function sv_function, 
-//     size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind)
-// {
-    
-
-//     uint32_t* components_map = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-
-
-
-//     /* Initialize level array */
-//     for (size_t i = 0; i < numVertices; i++)
-//     {
-//         components_map[i] = i;
-//     }
-
-//     bool changed;
-//     size_t iteration = 0;
-//     do
-//     {
-
-//         //printf("@@ %d @@ ",algPerIteration[iteration]);
-//         changed = (sv_function)(numVertices, components_map, off, ind);
-
-//         iteration += 1;
-//     }
-//     while (changed);
-
-//     free(components_map);
-// }
 
 
 

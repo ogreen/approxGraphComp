@@ -1,13 +1,13 @@
 
 CC := gcc 
 
-CFLAGS := -g -O3 -std=gnu99
+CFLAGS := -g -O0 -std=gnu99
 
 LOAD_FLAGS := -lrt 
 
-SRCS := timer.c sv.c ft_sv.c faultInjection.c 
+SRCS := timer.c sv.c ft_sv.c faultInjection.c  stat.c 
 
-HEADERS := timer.h sv.h ft_sv.h faultInjection.h 
+HEADERS := timer.h sv.h ft_sv.h faultInjection.h stat.h
 
 OBJS  := $(SRCS:.c=.o)
 
