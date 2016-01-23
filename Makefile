@@ -1,7 +1,7 @@
 
-CC := gcc 
+CC := icc  
 
-CFLAGS := -g -O0 -std=gnu99
+CFLAGS := -g -O3 -std=gnu99
 
 LOAD_FLAGS := -lrt 
 
