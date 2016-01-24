@@ -81,7 +81,7 @@ int FaultFreeSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
         const uint32_t *restrict vind = &ind[off[v]];
         const size_t vdeg = off[v + 1] - off[v];
 
-        MemAccessCount += 4;
+        MemAccessCount += 5;
         for (size_t edge = 0; edge < vdeg; edge++)
         {
             const uint32_t u = vind[edge];
