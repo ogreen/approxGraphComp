@@ -22,7 +22,7 @@ int PrintStat(stat_t* stat)
 {
 	for (int i = 0; i < stat->numIteration; ++i)
 	{
-		printf("%lld\t %lld\t %lld\t %lld\t\n",
+		printf("%g\t %g\t %lld\t %lld\t\n",
 			stat->SvTime[i],stat->FtTime[i],stat->SvMemCount[i], stat->FtMemCount[i]);
 	}
 
