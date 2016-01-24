@@ -97,6 +97,7 @@ int main (const int argc, char *argv[])
 
     stat_t statBL, statFF;
     InitStat(&statBL);
+    InitStat(&statFF);
     uint32_t* cc_baseline = BaselineSVMain( nv, ne, off, ind, &statBL);
     uint32_t* cc_ff = FaultFreeSVMain( nv, ne, off, ind, &statFF);
     for (int i = 0; i < nv; ++i)
@@ -119,6 +120,7 @@ int main (const int argc, char *argv[])
     }
     printf("Output correct!\n");
     PrintStat(&statBL);
+    PrintStat(&statFF);
 
     free(cc_ft);
     free(cc_baseline);
