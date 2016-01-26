@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <malloc.h>
-
+#include <math.h>
 #include "sv.h"
 #include "timer.h"
 #include "faultInjection.h"
@@ -80,8 +80,8 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
         const uint32_t *restrict vind = &ind[off[v]];
         const size_t vdeg = off[v + 1] - off[v];
 
-         MemAccessCount += 6;              
-         MemAccessCount += 3; 
+        MemAccessCount += 6;
+        MemAccessCount += 3;
         // check if the modifier is correct
         if (m_curr[v] == -1)
         {
@@ -97,7 +97,7 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
                 for (size_t edge = 0; edge < vdeg; edge++)
                 {
                     const uint32_t u = vind[edge];
-                      MemAccessCount += 2;
+                    MemAccessCount += 2;
                     if (cc_prev[u] < cc_curr[v])
                     {
                         m_curr[v] = edge;
@@ -113,9 +113,9 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
         {
             /* code */
             cc_curr[v] = cc_prev[vind[m_curr[v]]];
-#ifdef DEBUG
+// #ifdef DEBUG
             printf("2.Error detected - BadParent %d.... correcting\n", v);
-#endif
+// #endif
             /*do the correction*/
             corrections++;
             for (size_t edge = 0; edge < vdeg; edge++)
@@ -377,6 +377,9 @@ int FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                 m_curr[v] = u;
                 cc_curr[v] = cc_prev_u;
                 changed++;
+#ifdef DEBUG
+                printf("changed for %d\n", v );
+#endif
                 if (cc_prev_u != cc_prev[u])
                 {
 #ifdef DEBUG
@@ -450,6 +453,9 @@ int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                 m_curr[v] = edge;
                 cc_curr[v] = cc_prev_u;
                 changed++;
+#ifdef DEBUG
+                printf("changed for %d\n", v );
+#endif
                 MemAccessCount++;
 #ifdef DEBUG
                 if (cc_prev_u != cc_prev[u])
@@ -488,29 +494,42 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
 
     /*get fault probability*/
     double fProb1, fProb2;
-    if (getenv("FAULT_PROB1") != NULL)
+    // if (getenv("NORM_PROB") != NULL)
+    if (0)
     {
-        fProb1 = (double) atof(getenv("FAULT_PROB1"));
+        double ind = (double) atof(getenv("NORM_PROB"));
+        // int num_edge = off[numVertices];
+        fProb1 = pow(2.0, -ind) / ( 32) ;
+        fProb2 = fProb1;
         printf("Using fProb1=%g \n", fProb1);
-
-    }
-    else
-    {
-        printf("Environment variable FAULT_PROB1 not set: using default 0\n");
-        fProb1 = 0;
-    }
-
-
-    if (getenv("FAULT_PROB2") != NULL)
-    {
-        fProb2 = (double) atof(getenv("FAULT_PROB2"));
         printf("Using fProb2=%g \n", fProb2);
-
     }
     else
     {
-        printf("Environment variable FAULT_PROB2 not set: using default 0\n");
-        fProb2 = 0;
+        if (getenv("FAULT_PROB1") != NULL)
+        {
+            fProb1 = (double) atof(getenv("FAULT_PROB1"));
+            printf("Using fProb1=%g \n", fProb1);
+
+        }
+        else
+        {
+            printf("Environment variable FAULT_PROB1 not set: using default 0\n");
+            fProb1 = 0;
+        }
+
+
+        if (getenv("FAULT_PROB2") != NULL)
+        {
+            fProb2 = (double) atof(getenv("FAULT_PROB2"));
+            printf("Using fProb2=%g \n", fProb2);
+
+        }
+        else
+        {
+            printf("Environment variable FAULT_PROB2 not set: using default 0\n");
+            fProb2 = 0;
+        }
     }
 
     uint32_t* components_Final = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
@@ -544,7 +563,7 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
     bool changed;
     int num_changes;
     int num_corrections;
-    size_t iteration = 1;
+    size_t iteration = 0;
     do
     {
         memcpy((void *)faultOff, (void *)off, sizeof(uint32_t)*numVertices );
@@ -553,10 +572,10 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
         uint32_t* cc_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
         uint32_t* m_curr =  (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
 
-        uint32_t* cc_prev = cc_all_iterations[iteration - 1];
-        uint32_t* m_prev  = m_all_iterations[iteration - 1];
-        cc_all_iterations[iteration] = cc_curr;
-        m_all_iterations[iteration] = m_curr;
+        uint32_t* cc_prev = cc_all_iterations[iteration];
+        uint32_t* m_prev  = m_all_iterations[iteration];
+        cc_all_iterations[iteration+1] = cc_curr;
+        m_all_iterations[iteration+1] = m_curr;
 
         memcpy((void *)cc_curr, (void *)cc_prev, sizeof(uint32_t)*numVertices );
         memcpy((void *)m_curr, (void *)m_prev, sizeof(uint32_t)*numVertices );
@@ -564,20 +583,26 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
 
         long long prMemAccessCount = MemAccessCount;
         tic();
+        if(iteration==9)
+            num_changes = FaultTolerantSVSweep_RelParent(numVertices,
+                                              cc_prev, cc_curr, m_curr,
+                                              off, ind);
+
+        else
         num_changes = FaultySVSweep_RelParent(numVertices,
                                               cc_prev, cc_curr, m_curr,
                                               off, ind,
                                               fProb1, fProb2);
 
-        stat->SvTime[iteration - 1] = toc();
-        stat->SvMemCount[iteration-1] = MemAccessCount - prMemAccessCount;
+        stat->SvTime[iteration] = toc();
+        stat->SvMemCount[iteration] = MemAccessCount - prMemAccessCount;
 
         prMemAccessCount = MemAccessCount;
         tic();
         num_corrections = ftBadAdjacencyBadParent_RelParent(numVertices, cc_curr, cc_prev,
                           m_curr, m_prev, off, ind);
-        stat->FtTime[iteration - 1] = toc();
-        stat->FtMemCount[iteration-1] = MemAccessCount - prMemAccessCount;
+        stat->FtTime[iteration] = toc();
+        stat->FtMemCount[iteration] = MemAccessCount - prMemAccessCount;
 
 
         printf("Executing Iteration     %d: Changes =%d, Corrections=%d\n",
@@ -587,10 +612,10 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
     }
     while (num_changes > num_corrections);
 
-    iteration--;
+    
 
     stat->numIteration = iteration;
-
+    iteration--;
     memcpy(components_Final, cc_all_iterations[iteration], sizeof(uint32_t)*numVertices );
 
     for (int i = 0; i < iteration; i++)
