@@ -147,3 +147,88 @@ uint32_t* FaultFreeSVMain( size_t numVertices, size_t numEdges, uint32_t* off, u
 
     return cc_curr;
 }
+
+
+
+/*fault tolerant SV sweep */
+int FTSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
+                     uint32_t* off, uint32_t* ind)
+{
+    int changed = 0;
+
+    for (size_t v = 0; v < nv; v++)
+    {
+
+        const uint32_t *restrict vind = &ind[off[v]];
+        const size_t vdeg = off[v + 1] - off[v];
+
+        MemAccessCount += 6;
+        for (size_t edge = 0; edge < vdeg; edge++)
+        {
+            const uint32_t u = vind[edge];
+            MemAccessCount += 2;
+            if (cc_prev[u] < cc_curr[v])
+            {
+                m_curr[v] = edge;
+                cc_curr[v] = cc_prev[u];
+                // changed = true;
+                changed++;
+            }
+        }
+    }
+
+
+    /*shortcutting goes here*/
+    return changed;
+
+}
+
+
+
+
+uint32_t* FTSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
+                           stat_t* stat       /*for counting stats of each iteration*/
+                         )
+{
+    /*initialize */
+    MemAccessCount = 0;
+
+    uint32_t* cc_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    uint32_t* cc_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    uint32_t* m_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    uint32_t* m_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+
+    /* Initialize level array */
+    for (size_t i = 0; i < numVertices; i++)
+    {
+        cc_curr[i] = i;
+        cc_prev[i] = i;
+        m_curr[i] = -1;    /*relative parent*/
+    }
+
+
+    bool changed;
+    int num_changes;
+    int num_corrections;
+    size_t iteration = 0;
+    do
+    {
+        long long prMemAccessCount = MemAccessCount;
+        memcpy(cc_prev, cc_curr, numVertices * sizeof(uint32_t));
+        memcpy(m_prev, m_curr, numVertices * sizeof(uint32_t));
+        tic();
+        num_changes = FTSVSweep(numVertices, cc_prev, cc_curr, m_curr, off, ind);
+        // printf("Executing Iteration     %d: Changes =%d, Corrections=%d\n",
+        //        iteration, num_changes, num_corrections );
+        stat->SvTime[iteration] = toc();
+        stat->SvMemCount[iteration] = MemAccessCount - prMemAccessCount;
+        iteration += 1;
+    }
+    while (num_changes);
+    stat->numIteration = iteration;
+    printf("NUmber of iteration for fault free=%d\n", iteration );
+
+    free(cc_prev);
+
+    return cc_curr;
+}

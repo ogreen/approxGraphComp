@@ -99,33 +99,39 @@ int main (const int argc, char *argv[])
     InitStat(&statBL);
     InitStat(&statFF);
     InitStat(&statFT);
-    uint32_t* cc_baseline = BaselineSVMain( nv, ne, off, ind, &statBL);
-    uint32_t* cc_ff = FaultFreeSVMain( nv, ne, off, ind, &statFF);
-    for (int i = 0; i < nv; ++i)
-    {
-        /* code */
-        assert(cc_ff[i] == cc_baseline[i]);
-
-    }
-    printf("Output correct!\n");
-
-
-
+    
+    uint32_t* cc_bl = FaultFreeSVMain( nv, ne, off, ind, &statBL);
+    
     uint32_t* cc_ft = FaultTolerantSVMain( nv, ne, off, ind,&statFT);
 
+    uint32_t*  cc_ff = FTSVMain( nv, ne, off, ind,&statFF);
     for (int i = 0; i < nv; ++i)
     {
         /* code */
-        assert(cc_ft[i] == cc_baseline[i]);
+        assert(cc_ft[i] == cc_bl[i]);
 
     }
-    printf("Output correct!\n");
-    PrintStat(&statBL);
-    PrintStat(&statFF);
-    PrintStat(&statFT);
 
+    for (int i = 0; i < nv; ++i)
+    {
+        /* code */
+        assert(cc_ff[i] == cc_bl[i]);
+
+    }
+    
+    
+    // PrintStat(&statFF);
+    // PrintStat(&statFT);
+
+    // PrintCompStat(&statFF, &statFT);
+    // PrintCompStat(&statFF, &statFT);
+
+    PrintCompStat2(&statBL,&statFF, &statFT);
+
+    free(cc_bl);
     free(cc_ft);
-    free(cc_baseline);
+    free(cc_ff);
+    
 
 
     free(off);

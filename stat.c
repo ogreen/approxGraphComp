@@ -28,3 +28,32 @@ int PrintStat(stat_t* stat)
 
 	return 0;
 }
+
+/*prints the status of two stat baseline and fault tolerant: to compare them and export them*/
+int PrintCompStat(stat_t* stat_BL, stat_t* stat_FT)
+{
+	
+	for (int i = 0; i < stat_FT->numIteration; ++i)
+	{
+		printf("%g, %g, %g, %lld, %lld, %lld\n",
+			stat_BL->SvTime[i],stat_FT->SvTime[i],stat_FT->FtTime[i],
+			stat_BL->SvMemCount[i],stat_FT->SvMemCount[i], stat_BL->FtMemCount[i]);
+	}
+
+	return 0;
+}
+
+
+/*prints the status of two stat baseline and fault tolerant: to compare them and export them*/
+int PrintCompStat2(stat_t* stat_BL,stat_t* stat_FF, stat_t* stat_FT)
+{
+	
+	for (int i = 0; i < stat_FT->numIteration; ++i)
+	{
+		printf("%e, %e, %e, %e, %lld, %lld, %lld\n",
+			stat_BL->SvTime[i],stat_FF->SvTime[i],stat_FT->SvTime[i],stat_FT->FtTime[i],
+			stat_BL->SvMemCount[i],stat_FT->SvMemCount[i], stat_FT->FtMemCount[i]);
+	}
+
+	return 0;
+}

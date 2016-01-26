@@ -22,3 +22,10 @@ int InitStat(stat_t* stat);
 
 
 int PrintStat(stat_t* stat);
+
+
+/*prints the status of two stat baseline and fault tolerant: to compare them and export them*/
+int PrintCompStat(stat_t* stat_BL, stat_t* stat_FT);
+
+
+int PrintCompStat2(stat_t* stat_BL,stat_t* stat_FF, stat_t* stat_FT);
