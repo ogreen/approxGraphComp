@@ -114,18 +114,47 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
             /* code */
             cc_curr[v] = cc_prev[vind[m_curr[v]]];
 // #ifdef DEBUG
-            printf("2.Error detected - BadParent %d.... correcting\n", v);
+            // printf("2.Error detected - BadParent %d.... correcting\n", v);
 // #endif
+            if(v==6085 || v==6084)printf("correcting for v=%d, cc[v] =%d\n",v,cc_curr[v] );
             /*do the correction*/
             corrections++;
             for (size_t edge = 0; edge < vdeg; edge++)
             {
                 const uint32_t u = vind[edge];
                 MemAccessCount += 2;
+                if(v==6085) printf(" u=%d cc_prev[u]=%d\n",u,cc_prev[u]);
                 if (cc_prev[u] < cc_curr[v])
                 {
                     m_curr[v] = edge;
                     cc_curr[v] = cc_prev[u];
+
+                    // changed = true;
+                }
+            }
+
+        }
+        
+        if (cc_curr[v] >v )
+        {
+            /* code */
+            cc_curr[v] = v;
+// #ifdef DEBUG
+            printf("3.Error detected - BadParent %d.... correcting\n", v);
+// #endif
+            if(v==6085)printf("correcting for v=%d, cc[v] =%d\n",v,cc_curr[v] );
+            /*do the correction*/
+            corrections++;
+            for (size_t edge = 0; edge < vdeg; edge++)
+            {
+                const uint32_t u = vind[edge];
+                MemAccessCount += 2;
+                if(v==6085) printf(" u=%d cc_prev[u]=%d\n",u,cc_prev[u]);
+                if (cc_prev[u] < cc_curr[v])
+                {
+                    m_curr[v] = edge;
+                    cc_curr[v] = cc_prev[u];
+
                     // changed = true;
                 }
             }
@@ -440,7 +469,7 @@ int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
                 u = FaultInjectByte(u, fProb1);
             }
-            // if(v==270) printf("%d ->",u  );
+            if(v==6085) printf("%d ->",u  );
             if (u != vind[edge])
             {
                 // printf("Bad adjacency injected at (%d %d -> %d)\n",v,vind[edge],u );
@@ -456,7 +485,7 @@ int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             while (var > u);
             cc_prev_u = var;
 
-            // if(v==270) printf("%d \n",cc_prev_u );
+            if(v==6085) printf("%d \n",cc_prev_u );
             // cc_prev_u = FaultInjectByte(cc_prev_u, 0);
 
             if (cc_prev_u < cc_curr[v])
@@ -465,14 +494,14 @@ int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                 cc_curr[v] = cc_prev_u;
                 changed++;
 // #ifdef DEBUG
-                // if(v==270) printf("changed for %d, cc[%d]=%d\n, edge =%d", v,v,cc_curr[v],edge );
+                if(v==6085) printf("changed for %d, cc[%d]=%d\n, edge =%d", v,v,cc_curr[v],edge );
 // #endif
                 MemAccessCount++;
 // #ifdef DEBUG
                 if (cc_prev_u != cc_prev[u])
                 {
 
-                    // if(v==270)           printf("Error injected for (%d, %d) \n", v, u );
+                    if(v==6085)           printf("Error injected for (%d, %d) \n", v, u );
 
                     for (int edge = 0; edge < vdeg; ++edge)
                     {
