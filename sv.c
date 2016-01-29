@@ -167,12 +167,15 @@ int FTSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
         {
             const uint32_t u = vind[edge];
             MemAccessCount += 2;
+            // if(v==270) printf("%d \n",u  );
             if (cc_prev[u] < cc_curr[v])
             {
+
                 m_curr[v] = edge;
                 cc_curr[v] = cc_prev[u];
                 // changed = true;
                 changed++;
+                // if(v==270) printf("changed for %d, cc[%d]=%d edge=%d\n", v,v,cc_curr[v],edge );
             }
         }
     }
@@ -187,7 +190,8 @@ int FTSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
 
 
 uint32_t* FTSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
-                           stat_t* stat       /*for counting stats of each iteration*/
+                           stat_t* stat,       /*for counting stats of each iteration*/
+                            int max_iter        /*contgrolling maximum number of iteration*/
                          )
 {
     /*initialize */
@@ -224,7 +228,7 @@ uint32_t* FTSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t
         stat->SvMemCount[iteration] = MemAccessCount - prMemAccessCount;
         iteration += 1;
     }
-    while (num_changes);
+    while (num_changes && iteration <=max_iter);
     stat->numIteration = iteration;
     printf("NUmber of iteration for fault free=%d\n", iteration );
 

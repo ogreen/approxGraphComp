@@ -99,16 +99,22 @@ int main (const int argc, char *argv[])
     InitStat(&statBL);
     InitStat(&statFF);
     InitStat(&statFT);
+
+    int max_iter =100;
     
     uint32_t* cc_bl = FaultFreeSVMain( nv, ne, off, ind, &statBL);
     
-    uint32_t* cc_ft = FaultTolerantSVMain( nv, ne, off, ind,&statFT);
+    uint32_t* cc_ft = FaultTolerantSVMain( nv, ne, off, ind,&statFT, max_iter);
 
-    uint32_t*  cc_ff = FTSVMain( nv, ne, off, ind,&statFF);
+    uint32_t*  cc_ff = FTSVMain( nv, ne, off, ind,&statFF, max_iter);
     for (int i = 0; i < nv; ++i)
     {
         /* code */
-        assert(cc_ft[i] == cc_bl[i]);
+        if (cc_ft[i] != cc_ff[i])
+        {
+            printf("Error occured at %d: (%d, %d) \n",i,cc_ft[i],cc_ff[i] );
+        }
+        assert(cc_ft[i] == cc_ff[i]);
 
     }
 
