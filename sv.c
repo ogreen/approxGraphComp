@@ -141,8 +141,9 @@ uint32_t* FaultFreeSVMain( size_t numVertices, size_t numEdges, uint32_t* off, u
     }
     while (num_changes);
     stat->numIteration = iteration;
+#ifdef DEBUG
     printf("NUmber of iteration for fault free=%d\n", iteration );
-
+#endif
     free(cc_prev);
 
     return cc_curr;
@@ -152,7 +153,7 @@ uint32_t* FaultFreeSVMain( size_t numVertices, size_t numEdges, uint32_t* off, u
 
 /*fault tolerant SV sweep */
 int FTSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
-                     uint32_t* off, uint32_t* ind)
+              uint32_t* off, uint32_t* ind)
 {
     int changed = 0;
 
@@ -190,9 +191,9 @@ int FTSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
 
 
 uint32_t* FTSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
-                           stat_t* stat,       /*for counting stats of each iteration*/
-                            int max_iter        /*contgrolling maximum number of iteration*/
-                         )
+                    stat_t* stat,       /*for counting stats of each iteration*/
+                    int max_iter        /*contgrolling maximum number of iteration*/
+                  )
 {
     /*initialize */
     MemAccessCount = 0;
@@ -228,9 +229,11 @@ uint32_t* FTSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t
         stat->SvMemCount[iteration] = MemAccessCount - prMemAccessCount;
         iteration += 1;
     }
-    while (num_changes && iteration <=max_iter);
+    while (num_changes && iteration <= max_iter);
     stat->numIteration = iteration;
+#ifdef DEBUG
     printf("NUmber of iteration for fault free=%d\n", iteration );
+#endif
 
     free(cc_prev);
 
