@@ -113,17 +113,17 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
         {
             /* code */
             cc_curr[v] = cc_prev[vind[m_curr[v]]];
-// #ifdef DEBUG
-            // printf("2.Error detected - BadParent %d.... correcting\n", v);
-// #endif
-            if(v==6085 || v==6084)printf("correcting for v=%d, cc[v] =%d\n",v,cc_curr[v] );
+#ifdef DEBUG
+            printf("2.Error detected - BadParent %d.... correcting\n", v);
+#endif
+            // if(v==6085 || v==6084)printf("correcting for v=%d, cc[v] =%d\n",v,cc_curr[v] );
             /*do the correction*/
             corrections++;
             for (size_t edge = 0; edge < vdeg; edge++)
             {
                 const uint32_t u = vind[edge];
                 MemAccessCount += 2;
-                if(v==6085) printf(" u=%d cc_prev[u]=%d\n",u,cc_prev[u]);
+                // if(v==6085) printf(" u=%d cc_prev[u]=%d\n",u,cc_prev[u]);
                 if (cc_prev[u] < cc_curr[v])
                 {
                     m_curr[v] = edge;
@@ -134,22 +134,22 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
             }
 
         }
-        
-        if (cc_curr[v] >v )
+
+        if (cc_curr[v] > v )
         {
             /* code */
             cc_curr[v] = v;
-// #ifdef DEBUG
+#ifdef DEBUG
             printf("3.Error detected - BadParent %d.... correcting\n", v);
-// #endif
-            if(v==6085)printf("correcting for v=%d, cc[v] =%d\n",v,cc_curr[v] );
+#endif
+            // if(v==6085)printf("correcting for v=%d, cc[v] =%d\n",v,cc_curr[v] );
             /*do the correction*/
             corrections++;
             for (size_t edge = 0; edge < vdeg; edge++)
             {
                 const uint32_t u = vind[edge];
                 MemAccessCount += 2;
-                if(v==6085) printf(" u=%d cc_prev[u]=%d\n",u,cc_prev[u]);
+                // if(v==6085) printf(" u=%d cc_prev[u]=%d\n",u,cc_prev[u]);
                 if (cc_prev[u] < cc_curr[v])
                 {
                     m_curr[v] = edge;
@@ -469,7 +469,7 @@ int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
                 u = FaultInjectByte(u, fProb1);
             }
-            if(v==6085) printf("%d ->",u  );
+            // if(v==6085) printf("%d ->",u  );
             if (u != vind[edge])
             {
                 // printf("Bad adjacency injected at (%d %d -> %d)\n",v,vind[edge],u );
@@ -485,7 +485,7 @@ int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             while (var > u);
             cc_prev_u = var;
 
-            if(v==6085) printf("%d \n",cc_prev_u );
+            // if(v==6085) printf("%d \n",cc_prev_u );
             // cc_prev_u = FaultInjectByte(cc_prev_u, 0);
 
             if (cc_prev_u < cc_curr[v])
@@ -494,14 +494,14 @@ int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                 cc_curr[v] = cc_prev_u;
                 changed++;
 // #ifdef DEBUG
-                if(v==6085) printf("changed for %d, cc[%d]=%d\n, edge =%d", v,v,cc_curr[v],edge );
+                // if(v==6085) printf("changed for %d, cc[%d]=%d\n, edge =%d", v,v,cc_curr[v],edge );
 // #endif
                 MemAccessCount++;
 // #ifdef DEBUG
                 if (cc_prev_u != cc_prev[u])
                 {
 
-                    if(v==6085)           printf("Error injected for (%d, %d) \n", v, u );
+                    // if(v==6085)           printf("Error injected for (%d, %d) \n", v, u );
 
                     for (int edge = 0; edge < vdeg; ++edge)
                     {
@@ -688,23 +688,26 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
 
     /*get fault probability*/
     double fProb1, fProb2;
-    // if (getenv("NORM_PROB") != NULL)
-    if (0)
+    if (getenv("NORM_PROB") != NULL)
+        // if (0)
     {
         double ind = (double) atof(getenv("NORM_PROB"));
         // int num_edge = off[numVertices];
         fProb1 = pow(2.0, -ind) / ( 32) ;
         fProb2 = fProb1;
+#ifdef DEBUG
         printf("Using fProb1=%g \n", fProb1);
         printf("Using fProb2=%g \n", fProb2);
+#endif
     }
     else
     {
         if (getenv("FAULT_PROB1") != NULL)
         {
             fProb1 = (double) atof(getenv("FAULT_PROB1"));
+#ifdef DEBUG
             printf("Using fProb1=%g \n", fProb1);
-
+#endif
         }
         else
         {
@@ -716,7 +719,9 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
         if (getenv("FAULT_PROB2") != NULL)
         {
             fProb2 = (double) atof(getenv("FAULT_PROB2"));
+#ifdef DEBUG
             printf("Using fProb2=%g \n", fProb2);
+#endif
 
         }
         else
@@ -750,9 +755,9 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
         memcpy(cc_prev, cc_curr, numVertices * sizeof(uint32_t));
         memcpy(m_prev, m_curr, numVertices * sizeof(uint32_t));
 
-        // long long prMemAccessCount = MemAccessCount;
+
         tic();
-        // if (iteration == 9)
+
         if (0)
             num_changes = FaultTolerantSVSweep_RelParent(numVertices,
                           cc_prev, cc_curr, m_curr,
@@ -775,16 +780,17 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
         stat->FtTime[iteration] = toc();
         stat->FtMemCount[iteration] = MemAccessCount - prMemAccessCount;
 
-
+#ifdef DEBUG
         printf("Executing Iteration     %d: Changes =%d, Corrections=%d\n",
                iteration, num_changes, num_corrections );
-
+#endif
         iteration += 1;
     }
     while (num_changes > num_corrections && iteration <= max_iter);
     stat->numIteration = iteration;
+#ifdef DEBUG
     printf("NUmber of iteration for fault free=%d\n", iteration );
-
+#endif
     free(cc_prev);
 
     return cc_curr;
