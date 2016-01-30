@@ -28,4 +28,5 @@ int PrintStat(stat_t* stat);
 int PrintCompStat(stat_t* stat_BL, stat_t* stat_FT);
 
 
-int PrintCompStat2(stat_t* stat_BL,stat_t* stat_FF, stat_t* stat_FT);
+int PrintCompStat2(char* GraphName, int norm_prob, 
+	stat_t* stat_BL,stat_t* stat_FF, stat_t* stat_FT);
