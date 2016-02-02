@@ -23,3 +23,6 @@ Example:
 export FAULT_PROB1=1e-6
 export FAULT_PROB2=0
 ./sv ~/dimacs_graphs/astro-ph.graph
+
+
+FAULT_PROB1=1e-6 FAULT_PROB2=1e-6 ./sv ~/dimacs_graphs/astro-ph.graph
