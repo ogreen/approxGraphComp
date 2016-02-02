@@ -18,7 +18,7 @@ MAT_SM :=  as-22july06.graph astro-ph.graph caidaRouterLevel.graph \
 		 citationCiteseer.graph
 
 .PHONY:	all clean test_small 
-all: sv 
+all: sv FaultGenerator
 
 OBJS: $(SRCS) $(HEADERS)
 	@$(CC) $(CFLAGS)  -c $< -o $@ 
@@ -27,9 +27,12 @@ OBJS: $(SRCS) $(HEADERS)
 sv: main.c  $(OBJS) $(HEADERS) Makefile 
 	$(CC)  $(CFLAGS) -o $@ main.c $(OBJS) $(LOAD_FLAGS)
 
+FaultGenerator: FaultGen.c 
+	$(CC)  $(CFLAGS) -fopenmp -o $@ FaultGen.c $(LOAD_FLAGS)
+
 test_small: sv
 	$(foreach testcase,$(MAT_SM),./sv $(GRAPH_DIR)/$(testcase);)
  
 clean:
-	-rm -f sv $(OBJS)
+	-rm -f sv $(OBJS) FaultGenerator
 	
