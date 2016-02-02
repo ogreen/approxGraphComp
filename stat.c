@@ -51,10 +51,12 @@ int PrintCompStat2(char* GraphName, int norm_prob,
 	
 	for (int i = 0; i < stat_FT->numIteration; ++i)
 	{
-		printf("%d, %s, %d, %e, %e, %e, %e, %lld, %lld, %lld\n",
+		printf("%d, %s, %d, %e, %e, %e, %e, %lld, %lld, %lld, %lld, %lld\n",
 			i, GraphName, norm_prob,
 			stat_BL->SvTime[i],stat_FF->SvTime[i],stat_FT->SvTime[i],stat_FT->FtTime[i],
-			stat_BL->SvMemCount[i],stat_FT->SvMemCount[i], stat_FT->FtMemCount[i]);
+			stat_BL->SvMemCount[i],stat_FT->SvMemCount[i], stat_FT->FtMemCount[i],
+			stat_FT->NumChanges[i], stat_FT->NumCorrection[i]
+			);
 	}
 
 	return 0;

@@ -15,6 +15,8 @@ typedef struct
 	double FtTime[MAX_SV_SWEEP]; 		/*time for each fault detection and correction*/
 	lcount SvMemCount[MAX_SV_SWEEP]; 		/*#memory access for each SvItertation*/
 	lcount FtMemCount[MAX_SV_SWEEP]; 		/*#memory access for each fault detection and correction*/
+	lcount NumChanges[MAX_SV_SWEEP]; 		/*#memory access for each fault detection and correction*/
+	lcount NumCorrection[MAX_SV_SWEEP]; 		/*#memory access for each fault detection and correction*/
 
 } stat_t;
 

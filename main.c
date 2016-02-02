@@ -31,10 +31,12 @@ void readGraphDIMACS(char* filePath, uint32_t** prmoff, uint32_t** prmind, uint3
     getline (&line, &bytesRead, fp);
 
 
-    sscanf (line, "%d %d", &nv, &ne);
+    sscanf (line, "%d %d", &nv, &ne); 
 
 
     free(line);
+
+    // printf("nv =%u, ne=%u\n",nv,ne );
     int32_t * off = (int32_t *) malloc ((nv + 2) * sizeof (int32_t));
     int32_t * ind = (int32_t *) malloc ((ne * 2) * sizeof (int32_t));
     off[0] = 0;

@@ -779,6 +779,8 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
                           m_curr, m_prev, off, ind);
         stat->FtTime[iteration] = toc();
         stat->FtMemCount[iteration] = MemAccessCount - prMemAccessCount;
+        stat->NumChanges[iteration] = num_changes;
+        stat->NumCorrection[iteration] = num_corrections;
 
 #ifdef DEBUG
         printf("Executing Iteration     %d: Changes =%d, Corrections=%d\n",
