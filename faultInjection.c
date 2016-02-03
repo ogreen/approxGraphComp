@@ -7,11 +7,12 @@
 #include "faultInjection.h"
 
 
-bool bitset(void const * data, int bitindex) {
-  int byte = bitindex / 8;
-  int bit = bitindex % 8;
-  unsigned char const * u = (unsigned char const *) data;
-  return (u[byte] & (1<<bit)) != 0;
+bool bitset(void const * data, int bitindex)
+{
+    int byte = bitindex / 8;
+    int bit = bitindex % 8;
+    unsigned char const * u = (unsigned char const *) data;
+    return (u[byte] & (1 << bit)) != 0;
 }
 
 
@@ -36,24 +37,24 @@ const char *uint32_to_binary(uint32_t x)
     for (int i = 0; i < 32; ++i)
     {
         b[i] = '0';
-         
+
     }
     // printf("the string b %s\n",b );
 
-    int plc =1;
+    int plc = 1;
 
-    while(x>0)
+    while (x > 0)
     {
-        if (x%2==1)
+        if (x % 2 == 1)
         {
-            b[32-plc] = '1';
-            
+            b[32 - plc] = '1';
+
         }
-        
+
 
         plc++;
-        x =x>>1;
-        
+        x = x >> 1;
+
 
     }
 
@@ -62,15 +63,15 @@ const char *uint32_to_binary(uint32_t x)
 
 
 
-uint32_t FaultInjectByte(uint32_t value, double prob)
+static inline uint32_t FaultInjectBit(uint32_t value, double prob)
 {
-    uint32_t mask =0; 
+    uint32_t mask = 0;
 
-    for (int i = 0; i < 8*sizeof(uint32_t); ++i)
+    for (int i = 0; i < 8 * sizeof(uint32_t); ++i)
     {
         if (flip(prob))
         {
-            mask += (1<<i);
+            mask += (1 << i);
             // printf("filpped %d\n",i );
         }
     }
@@ -80,13 +81,41 @@ uint32_t FaultInjectByte(uint32_t value, double prob)
     // printf("The masked value    %s\n", uint32_to_binary(mask^(*value)) );
 
     /*uses xor to flip the positions where mask is set*/
-    return mask^(value); 
+    return mask ^ (value);
 }
+
+uint32_t FaultInjectWord(uint32_t value, double prob)
+{
+    double random_num = (double) rand() / ((double) RAND_MAX + 1.0);
+    if (random_num > 32 * prob)
+    {
+        return value;
+    }
+    else
+    {
+
+
+        uint32_t mask = 0;
+
+        // for (int i = 0; i < 8 * sizeof(uint32_t); ++i)
+        // {
+        //     if (flip(prob))
+        //     {
+        //         mask += (1 << i);
+        //         // printf("filpped %d\n",i );
+        //     }
+        // }
+
+        mask += (1 << rand()%32);
+        return mask ^ (value);
+    }
+}
+
 
 int flip(double prob)
 {
-    double random_num = (double) rand()/((double) RAND_MAX+1.0);
-    if (random_num<prob)
+    double random_num = (double) rand() / ((double) RAND_MAX + 1.0);
+    if (random_num < prob)
     {
         return 1;
     }
@@ -98,10 +127,8 @@ int flip(double prob)
 }
 
 
-void FaultInjection(void* arr, size_t sz)
-/*flips bits random*/
+uint32_t FaultInjectByte(uint32_t value, double prob)
 {
-
-
+    // return FaultInjectBit(value, prob);
+    return FaultInjectWord(value, prob);
 }
-

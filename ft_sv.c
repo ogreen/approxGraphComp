@@ -12,6 +12,39 @@
 #include "faultInjection.h"
 
 
+#include <sys/stat.h>
+#include <string.h>
+#include <errno.h>
+
+off_t fsize(const char *filename) {
+    struct stat st;
+
+    if (stat(filename, &st) == 0)
+        return st.st_size;
+
+    fprintf(stderr, "Cannot determine size of %s: %s\n",
+            filename, strerror(errno));
+
+    return -1;
+}
+
+
+
+
+uint32_t* FaultArr;
+uint32_t FaultArrPtr;
+uint32_t FaultArrSz;
+
+
+
+uint32_t FaultInjectByteFile(uint32_t val)
+{
+    return FaultArr[(FaultArrPtr++) % FaultArrSz]^val; 
+
+}
+
+// #define FAULT_INJECT_FILE
+
 // uncomment following for debug statements
 // #define DEBUG
 
@@ -383,7 +416,7 @@ int FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             uint32_t u = vind[edge];
 
 
-            // u = FaultInjectByte(u, 0);
+            
             u = FaultInjectByte(u, fProb1);
 
             /*sanity check for u*/
@@ -459,15 +492,22 @@ int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             // if(v==270) printf("%d ->",u  );
 
             // u = FaultInjectByte(u, 0);
+            #ifdef FAULT_INJECT_FILE
+            u = FaultInjectByteFile(u);
+            #else
             u = FaultInjectByte(u, fProb1);
-
+            #endif 
             /*sanity check for u*/
             while (u >= nv)    /*a better check can be used*/
             {
                 u = vind[edge];
                 MemAccessCount++;
 
-                u = FaultInjectByte(u, fProb1);
+                #ifdef FAULT_INJECT_FILE
+            u = FaultInjectByteFile(u);
+            #else
+            u = FaultInjectByte(u, fProb1);
+            #endif
             }
             // if(v==6085) printf("%d ->",u  );
             if (u != vind[edge])
@@ -480,7 +520,11 @@ int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             MemAccessCount++;
             do
             {
+                #ifdef FAULT_INJECT_FILE
+                var = FaultInjectByteFile(cc_prev_u);
+                #else 
                 var = FaultInjectByte(cc_prev_u, fProb2);
+                #endif
             }
             while (var > u);
             cc_prev_u = var;
@@ -688,6 +732,27 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
 
     /*get fault probability*/
     double fProb1, fProb2;
+
+    // printf("sizeof(int) is %d\n",sizeof(int));
+    // if (getenv("FAULT_FILE") != NULL)
+    // {
+    //     printf("FAULT_FILE is %s\n",getenv("FAULT_FILE") );
+    //     long long ff_size = (long long) fsize(getenv("FAULT_FILE"));
+    //     printf("Size of FAULT_FILE is %lld\n",ff_size );
+    //     FILE* fp = fopen(getenv("FAULT_FILE"),"r");
+    //     FaultArr = (uint32_t*) malloc (ff_size);
+    //     tic();
+    //     FaultArrSz = ff_size/(sizeof(uint32_t));
+    //     fread(FaultArr, sizeof(uint32_t), ff_size/(sizeof(uint32_t)), fp);
+    //     printf("Time in reading file =%g\n",toc() );
+    //     FaultArrPtr = 0;
+    //     fclose(fp);
+    // }
+    // else
+    // {
+    //     printf("Please set the FAULT_FILE correctly\n");
+    // }
+
     if (getenv("NORM_PROB") != NULL)
         // if (0)
     {
@@ -794,6 +859,7 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
     printf("NUmber of iteration for fault free=%d\n", iteration );
 #endif
     free(cc_prev);
+    free (FaultArr);
 
     return cc_curr;
 }
