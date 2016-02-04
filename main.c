@@ -152,7 +152,7 @@ int main (const int argc, char *argv[])
     InitStat(&statFF);
     InitStat(&statFT);
 
-    int max_iter = 100;
+    int max_iter = 1000;
 
     uint32_t* cc_bl = FaultFreeSVMain( nv, ne, off, ind, &statBL);
 
@@ -179,7 +179,7 @@ int main (const int argc, char *argv[])
 
     }
 
-
+    // statFT.numIteration = 50;
 
     PrintCompStat2(GraphName, norm_prob, &statBL, &statFF, &statFT);
 

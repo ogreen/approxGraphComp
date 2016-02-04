@@ -2,7 +2,7 @@
 #pragma once
 // file contain description and routines for collecting execution stat stats 
 
-#define MAX_SV_SWEEP 100 /*maximum number of sv sweep allowed*/
+#define MAX_SV_SWEEP 1000 /*maximum number of sv sweep allowed*/
 
 typedef long long ltime; 	/*to use rtdsc timer*/ 
 typedef long long lcount; 	/*to count number of memory access*/ 
