@@ -16,7 +16,8 @@
 #include <string.h>
 #include <errno.h>
 
-off_t fsize(const char *filename) {
+off_t fsize(const char *filename)
+{
     struct stat st;
 
     if (stat(filename, &st) == 0)
@@ -39,7 +40,7 @@ uint32_t FaultArrSz;
 
 uint32_t FaultInjectByteFile(uint32_t val)
 {
-    return FaultArr[(FaultArrPtr++) % FaultArrSz]^val; 
+    return FaultArr[(FaultArrPtr++) % FaultArrSz] ^ val;
 
 }
 
@@ -242,7 +243,7 @@ int FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             uint32_t u = vind[edge];
 
 
-            
+
             u = FaultInjectByte(u, fProb1);
 
             /*sanity check for u*/
@@ -318,22 +319,22 @@ int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             // if(v==270) printf("%d ->",u  );
 
             // u = FaultInjectByte(u, 0);
-            #ifdef FAULT_INJECT_FILE
+#ifdef FAULT_INJECT_FILE
             u = FaultInjectByteFile(u);
-            #else
+#else
             u = FaultInjectByte(u, fProb1);
-            #endif 
+#endif
             /*sanity check for u*/
             while (u >= nv)    /*a better check can be used*/
             {
                 u = vind[edge];
                 MemAccessCount++;
 
-                #ifdef FAULT_INJECT_FILE
-            u = FaultInjectByteFile(u);
-            #else
-            u = FaultInjectByte(u, fProb1);
-            #endif
+#ifdef FAULT_INJECT_FILE
+                u = FaultInjectByteFile(u);
+#else
+                u = FaultInjectByte(u, fProb1);
+#endif
             }
             // if(v==6085) printf("%d ->",u  );
             if (u != vind[edge])
@@ -346,11 +347,11 @@ int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             MemAccessCount++;
             do
             {
-                #ifdef FAULT_INJECT_FILE
+#ifdef FAULT_INJECT_FILE
                 var = FaultInjectByteFile(cc_prev_u);
-                #else 
+#else
                 var = FaultInjectByte(cc_prev_u, fProb2);
-                #endif
+#endif
             }
             while (var > u);
             cc_prev_u = var;
@@ -393,6 +394,107 @@ int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
 }
 
+
+uint32_t FaultInjectWord(uint32_t value)
+{
+
+    uint32_t mask = 0;
+
+    mask += (1 << rand() % 32);
+    return mask ^ (value);
+
+}
+
+
+int FaultySVSweep_FaultArr(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
+                           uint32_t* m_curr, uint32_t* off, uint32_t* ind,
+                           uint32_t* FaultArrEdge,         /*probability of bit flip*/
+                           uint32_t* FaultArrCC         /*probability of bit flip for type-2 faults*/
+                          )
+{
+    int changed = 0;
+
+    for (size_t v = 0; v < nv; v++)
+    {
+
+        const uint32_t *restrict vind = &ind[off[v]];
+        const size_t vdeg = off[v + 1] - off[v];
+        MemAccessCount += 5;
+        for (size_t edge = 0; edge < vdeg; edge++)
+        {
+            uint32_t uT = vind[edge];
+            uint32_t u;
+            MemAccessCount++;
+
+            if (FaultArrEdge[off[v] + edge])
+            {
+                /* code */
+                u = FaultInjectWord(uT);
+
+                while (u >= nv)    /*a better check can be used*/
+                {
+                    uT = vind[edge];
+                    MemAccessCount++;
+
+                    u = FaultInjectWord(uT);
+                }
+            }
+            else
+            {
+                u = uT;
+            }
+
+
+
+
+            uint32_t cc_prev_u = cc_prev[u];
+            uint32_t var;
+            MemAccessCount++;
+            if (FaultArrEdge[off[v] + edge])
+            {
+                do
+                {
+                    var = FaultInjectWord(cc_prev_u);
+
+                }
+                while (var > u);
+            }
+            else
+            {
+                var = cc_prev_u;
+            }
+
+            cc_prev_u = var;
+
+            if (cc_prev_u < cc_curr[v])
+            {
+                m_curr[v] = edge;
+                cc_curr[v] = cc_prev_u;
+                changed++;
+                MemAccessCount++;
+                if (cc_prev_u != cc_prev[u])
+                {
+
+                    for (int edge = 0; edge < vdeg; ++edge)
+                    {
+
+                        uint32_t u = vind[edge];
+
+                    }
+
+                }
+
+
+            }
+        }
+    }
+
+
+    /*shortcutting goes here*/
+    return changed;
+
+}
+
 #define REL_PARENT
 
 
@@ -417,6 +519,7 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
         double ind = (double) atof(getenv("NORM_PROB"));
         // int num_edge = off[numVertices];
         fProb1 = pow(2.0, -ind) / ( 32) ;
+        // fProb1 = pow(2.0, -ind) ;
         fProb2 = fProb1;
 #ifdef DEBUG
         printf("Using fProb1=%g \n", fProb1);
@@ -459,6 +562,10 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
     uint32_t* m_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
     uint32_t* m_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
 
+
+    uint32_t* FaultArrEdge = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
+    uint32_t* FaultArrCC = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
+
     /* Initialize level array */
     for (size_t i = 0; i < numVertices; i++)
     {
@@ -478,6 +585,35 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
         memcpy(cc_prev, cc_curr, numVertices * sizeof(uint32_t));
         memcpy(m_prev, m_curr, numVertices * sizeof(uint32_t));
 
+        for (int i = 0; i < numEdges; ++i)
+        {
+
+            double random_num = (double) rand() / ((double) RAND_MAX + 1.0);
+            if (random_num < fProb1)
+            {
+                /* code */
+                FaultArrEdge[i] = 1;
+            }
+            else
+            {
+                FaultArrEdge[i] = 0;
+            }
+
+            random_num = (double) rand() / ((double) RAND_MAX + 1.0);
+
+            if (random_num < fProb2)
+            {
+                /* code */
+                FaultArrCC[i] = 1;
+            }
+            else
+            {
+                FaultArrCC[i] = 0;
+            }
+
+
+        }
+
 
         tic();
 
@@ -487,10 +623,19 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
                           off, ind);
 
         else
+        {
+#if 1
+            num_changes = FaultySVSweep_FaultArr(numVertices,
+                                                 cc_prev, cc_curr, m_curr,
+                                                 off, ind,
+                                                 FaultArrEdge, FaultArrCC);
+#else
             num_changes = FaultySVSweep_RelParent(numVertices,
                                                   cc_prev, cc_curr, m_curr,
                                                   off, ind,
                                                   fProb1, fProb2);
+#endif
+        }
         // 0.0, 0.0);
 
         stat->SvTime[iteration] = toc();
@@ -519,5 +664,7 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
     free(cc_prev);
     free (FaultArr);
 
+    free (FaultArrEdge);
+    free (FaultArrCC);
     return cc_curr;
 }

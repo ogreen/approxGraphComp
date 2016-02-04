@@ -84,7 +84,7 @@ static inline uint32_t FaultInjectBit(uint32_t value, double prob)
     return mask ^ (value);
 }
 
-uint32_t FaultInjectWord(uint32_t value, double prob)
+static inline uint32_t FaultInjectWord(uint32_t value, double prob)
 {
     double random_num = (double) rand() / ((double) RAND_MAX + 1.0);
     if (random_num > 32 * prob)
