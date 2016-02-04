@@ -1,0 +1,11 @@
+#!/bin/sh
+#SBATCH -p regular
+#SBATCH -N 1
+#SBATCH -t 06:00:00
+#SBATCH -J my_job
+#SBATCH -e my_job.%j.err
+#SBATCH -o my_job.%j.out
+
+# chmod +x run_exp.sh
+# make clean
+make
