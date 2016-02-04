@@ -64,7 +64,7 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
     int corrections = 0;
 
     /*now correcting bad parent*/
-
+// #pragma omp parallel for 
     for (size_t v = 0; v < nv; v++)
     {
         const uint32_t *restrict vind = &ind[off[v]];
@@ -231,7 +231,7 @@ int FaultySVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                  )
 {
     int changed = 0;
-
+    
     for (size_t v = 0; v < nv; v++)
     {
 
@@ -305,7 +305,7 @@ int FaultySVSweep_RelParent(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                            )
 {
     int changed = 0;
-
+// #pragma omp parallel for 
     for (size_t v = 0; v < nv; v++)
     {
 
@@ -416,7 +416,7 @@ int FaultySVSweep_FaultArr(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
     for (size_t v = 0; v < nv; v++)
     {
-
+        // printf("vertex %u\n", v);
         const uint32_t *restrict vind = &ind[off[v]];
         const size_t vdeg = off[v + 1] - off[v];
         MemAccessCount += 5;
@@ -437,6 +437,7 @@ int FaultySVSweep_FaultArr(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                     MemAccessCount++;
 
                     u = FaultInjectWord(uT);
+                    // printf("stuck 1\n");
                 }
             }
             else
@@ -450,21 +451,29 @@ int FaultySVSweep_FaultArr(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             uint32_t cc_prev_u = cc_prev[u];
             uint32_t var;
             MemAccessCount++;
-            if (FaultArrEdge[off[v] + edge])
+            if (u == 0)
             {
-                do
-                {
-                    var = FaultInjectWord(cc_prev_u);
-
-                }
-                while (var > u);
+                /* code */
+                cc_prev_u = 0;
             }
             else
             {
-                var = cc_prev_u;
-            }
+                if (FaultArrCC[off[v] + edge])
+                {
+                    do
+                    {
+                        var = FaultInjectWord(cc_prev_u);
+                        // printf("stuck 2 %u %u\n", var, u);
+                    }
+                    while (var > u);
+                }
+                else
+                {
+                    var = cc_prev_u;
+                }
 
-            cc_prev_u = var;
+                cc_prev_u = var;
+            }
 
             if (cc_prev_u < cc_curr[v])
             {
@@ -518,8 +527,8 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
     {
         double ind = (double) atof(getenv("NORM_PROB"));
         // int num_edge = off[numVertices];
-        fProb1 = pow(2.0, -ind) / ( 32) ;
-        // fProb1 = pow(2.0, -ind) ;
+        // fProb1 = pow(2.0, -ind) / ( 32) ;
+        fProb1 = pow(2.0, -ind) ;
         fProb2 = fProb1;
 #ifdef DEBUG
         printf("Using fProb1=%g \n", fProb1);
@@ -585,37 +594,65 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
         memcpy(cc_prev, cc_curr, numVertices * sizeof(uint32_t));
         memcpy(m_prev, m_curr, numVertices * sizeof(uint32_t));
 
+        tic();
+
+        // for (int i = 0; i < numEdges; ++i)
+        // {
+
+        //     double random_num = (double) rand() / ((double) RAND_MAX + 1.0);
+        //     if (random_num < fProb1)
+        //     {
+        //         /* code */
+        //         FaultArrEdge[i] = 1;
+        //     }
+        //     else
+        //     {
+        //         FaultArrEdge[i] = 0;
+        //     }
+
+        //     random_num = (double) rand() / ((double) RAND_MAX + 1.0);
+
+        //     if (random_num < fProb2)
+        //     {
+        //         /* code */
+        //         FaultArrCC[i] = 1;
+        //     }
+        //     else
+        //     {
+        //         FaultArrCC[i] = 0;
+        //     }
+
+
+        // }
+
         for (int i = 0; i < numEdges; ++i)
         {
+            /* code */
+            FaultArrEdge[i] = 0;
+            FaultArrCC[i] = 0;
+        }
 
-            double random_num = (double) rand() / ((double) RAND_MAX + 1.0);
-            if (random_num < fProb1)
-            {
-                /* code */
-                FaultArrEdge[i] = 1;
-            }
-            else
-            {
-                FaultArrEdge[i] = 0;
-            }
+        int numEdgeFault = 0;
+        int numCCFault = 0;
 
-            random_num = (double) rand() / ((double) RAND_MAX + 1.0);
+        while (numEdgeFault <  0.5*fProb1 * numEdges)
+        {
+            uint32_t ind = rand() % numEdges;
+            FaultArrEdge[ind] = 1;
+            numEdgeFault++;
 
-            if (random_num < fProb2)
-            {
-                /* code */
-                FaultArrCC[i] = 1;
-            }
-            else
-            {
-                FaultArrCC[i] = 0;
-            }
+        }
 
+        while (numCCFault <  0.5*fProb2 * numEdges)
+        {
+            uint32_t ind = rand() % numEdges;
+            FaultArrCC[ind] = 1;
+            numCCFault++;
 
         }
 
 
-        tic();
+
 
         if (0)
             num_changes = FaultTolerantSVSweep_RelParent(numVertices,

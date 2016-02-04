@@ -1,7 +1,7 @@
 
 CC := icc  
 
-CFLAGS := -g -O3 -std=gnu99
+CFLAGS := -g -O3 -std=gnu99 -fopenmp 
 
 LOAD_FLAGS := -lrt 
 

@@ -74,7 +74,7 @@ int FaultFreeSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                      uint32_t* off, uint32_t* ind)
 {
     int changed = 0;
-
+    // #pragma omp parallel for 
     for (size_t v = 0; v < nv; v++)
     {
 
@@ -156,7 +156,7 @@ int FTSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
               uint32_t* off, uint32_t* ind)
 {
     int changed = 0;
-
+    // #pragma omp parallel for 
     for (size_t v = 0; v < nv; v++)
     {
 
