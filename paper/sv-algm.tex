@@ -1,0 +1,33 @@
+\begin{algorithm}[!t]
+\small
+\caption{Label propagation algorithm}
+\label{alg:SV_ALG}
+\begin{algorithmic}[1]
+\Require {$G=(V,E)$}
+
+\State Initialization ;
+\For {each $v\in V$}
+\State	$CC[v]=v; CCp[v]=v$;
+\EndFor
+
+\State $NumChange=|V|$
+\While{$NumChange>0$};
+\State $NumChange\leftarrow 0$
+\State MemCpy($CCp$,$CC$,$|V|$)
+\For {each $v\in V$}
+\For {each $u\in E(v)$}
+
+\If {$CCp[u]<CC[v]$}
+\State $CC[v]\leftarrow CCp[u]$
+\State NumChanges = NumChanges+1;
+\EndIf
+
+\EndFor
+\EndFor
+
+\EndWhile 
+
+
+\end{algorithmic}
+\end{algorithm}
+%

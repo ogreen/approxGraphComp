@@ -1,0 +1,56 @@
+\begin{algorithm}[!t]
+\small
+\caption{Fault Tolerant Label propagation algorithm}
+\label{alg:FTSV_ALG}
+\begin{algorithmic}[1]
+\Require {$G=(V,E)$}
+
+\State Initialization ;
+\For {each $v\in V$}
+	\State	$CC[v]=v; CCp[v]=v, H[v]=v$;
+\EndFor
+
+\State $NumChanges=|V|$
+\While{$NumChanges>NumCorrections$};
+	\State $NumChanges\leftarrow 0$
+	\State MemCpy($CCp$,$CC$,$|V|$)
+	\For {each $v\in V$}
+		\For {each $u\in E(v)$}
+
+			\If {$CCp[u]<CC[v]$}
+			\State $CC[v]\leftarrow CCp[u]$
+			\State $H[v]\leftarrow u$
+			\State $NumChanges = NumChanges+1$;
+			\EndIf
+
+		\EndFor
+	\EndFor
+
+	\State Fault detection and correction
+	\State $NumCorrections=0$
+	\For {each $v\in V$}
+
+
+		\If {$CC[v] \neq CCp[H[v]] | CC[v] > v | H[v] \notin E(v) $}
+		\State $NumCorrections = NumCorrections+1$;
+		\For {each $u\in E(v)$}
+
+			\If {$CCp[u]<CC[v]$}
+			\State $CC[v]\leftarrow CCp[u]$
+			\State $H[v]\leftarrow u$
+			\EndIf
+
+		\EndFor
+
+		\EndIf
+
+
+	\EndFor
+
+
+\EndWhile 
+
+
+\end{algorithmic}
+\end{algorithm}
+%
