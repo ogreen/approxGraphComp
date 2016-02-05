@@ -1,5 +1,79 @@
-\documentclass{sig-alternate-05-2015}
-\usepackage[utf8]{inputenc}
+\documentclass[english]{sig-alternate-05-2015}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{verbatim}
+
+%% without following commands, amsthm complains proof being already defined 
+\let\proof\relax
+\let\endproof\relax
+\usepackage{amsthm}
+\usepackage{amstext}
+\usepackage{graphicx}
+
+\usepackage{mdwlist} % compact lists
+
+\usepackage{relsize} % relative font sizes
+\usepackage{todonotes} % private notes
+
+\usepackage{soul}
+
+\usepackage{hyperref}
+\hypersetup{bookmarks=true,bookmarksnumbered=true,pdfstartview=FitB,colorlinks=true,pdfborder=0 0 0}
+
+\usepackage{amsmath}
+
+\usepackage{xspace}
+
+%\usepackage[sort&compress]{natbib}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+%% A simple dot to overcome graphicx limitations
+\newcommand{\lyxdot}{.}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\theoremstyle{plain}
+\newtheorem{thm}{\protect\theoremname}
+\theoremstyle{definition}
+\newtheorem{defn}{\protect\definitionname}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{algorithm}
+
+
+\usepackage{algpseudocode}
+
+\@ifundefined{showcaptionsetup}{}{%
+ \PassOptionsToPackage{caption=false}{subfig}}
+\usepackage{subfig}
+\makeatother
+
+\usepackage{babel}
+\providecommand{\definitionname}{Definition}
+\providecommand{\theoremname}{Theorem}
+
+\DeclareCaptionType{copyrightbox}
+%========== Custom typographic commands ==========
+\newcommand{\emailAddr}[1]{\texttt{\smaller {#1}}}
+\newcommand{\mailtoLink}[2]{\href{mailto:#2}{\emailAddr{#1}}}
+\newcommand{\refSection}[1]{Section~\ref{#1}}
+\newcommand{\refsec}[1]{\S~\ref{#1}}
+\newcommand{\refequ}[1]{eq.~\eqref{#1}}
+\newcommand{\refEquation}[1]{Equation~\eqref{#1}}
+\newcommand{\refFigure}[1]{Figure~\ref{#1}}
+\newcommand{\reffig}[1]{fig.~\ref{#1}}
+\newcommand{\refDefinition}[1]{Definition~\ref{#1}}
+\newcommand{\refdef}[1]{defn.~\ref{#1}}
+\newcommand{\refAlgorithm}[1]{Algorithm~\ref{#1}}
+\newcommand{\refalg}[1]{alg.~\ref{#1}}
+\newcommand{\refTable}[1]{Table~\ref{#1}}
+\newcommand{\reftab}[1]{table~\ref{#1}}
+\newcommand{\refTheorem}[1]{Theorem~\ref{#1}}
+\newcommand{\refthm}[1]{thm.~\ref{#1}}
 
 \begin{document}
 
@@ -32,21 +106,27 @@
 
 \section{Introduction}
 \input{intro}
+\label{sec:intro}
 
 \section{Fault Model}
 \input{fault}
+\label{sec:fault}
 
 \section{Fault tolerant Label propagation algorithm for graph connected component}
 \input{connected}
+\label{sec:connected}
 
 \section{Results}
 \input{results}
+\label{sec:results}
 
 \section{Related work}
 \input{related}
+\label{sec:related}
 
 \section{Conclusion and future work}
 \input{conclusion}
+\label{sec:conclusion}
 
 \section{Acknowledgment}
 \input{ack}
