@@ -37,6 +37,27 @@ We ran all our experiments on SNB16c, key properties of the systems are listed i
 
 \subsection{Convergence in presence of faults}
 
+\begin{figure}[tbp]
+\includegraphics[width=.5\textwidth]{plots/plot_conv.eps}
+\caption{\label{fig:con-plot} 
+\small Comparison of model-driven work partitioning scheme to
+two static work partitioning scheme}
+\end{figure}
+
+First, we try to understand the convergence property of~\sv algorithm 
+in presence of faults. 
+Recall that in the worst case, an \emph{acceptable} fault that is not detected by~\refalg{alg:FTSV_ALG}, may delay the convergence by one iteration. On the other hand, one additional iteration means additional faults, which may necessitate an additional iteration for convergence. 
+Thus, it is expected that with increasing fault rate, convergence might slow down. To understand practicality of our algorithm, it becomes essential to understand such slow down in convergence.  
+
+% what do we do
+In~\reffig{fig:con-plot}, we show the convergence of \sv~algorithm in presence of faults for four graphs. We vary the fault rate from $2^-{10} \times |E|$ bit flips in every~{\sv}~ iteration to $2^-{1} \times |E|$ bit flips. Note that this fault injection rate is extremely high and, we do so to stress test the proposed algorithm.
+
+%what do we observe
+In~\reffig{fig:con-plot}, we observe that for all practical fault rates($<2^{-6}|E|$) , algorithm converges without any additional iteration.
+Additionally, except~\graphname{astro-ph}, all other graphs converge to correct solution within 5\% additional iteration at the highest fault rate. As such, we conclude that our proposed algorithm can withstand high fault rates, with minimal additional iteration overhead.   
+
+% why do we observe that
+The difference in behavior between graph~\graphname{astro-ph}, and other graphs is due to two reasons. First, the graph~\graphname{astro-ph} has  the smallest diameter all four test cases, and it only takes 10 iterations in fault free case to converge. If a fault that might cause an additional iteration occurs, it provides fewer opportunity to be corrected in later iterations. Secondly, ...
 
 \subsection{Overhead of fault detection and correction}
 %% compare it with double modular redundancy 
