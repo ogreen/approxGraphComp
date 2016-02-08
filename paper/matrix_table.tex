@@ -1,22 +1,27 @@
-\begin{table*}[]
+\begin{table*}[ht]
+\ra{1.3}
 \centering
 \caption{List of matrices used for experimentation}
-\label{tab:matrix}
-\begin{tabular}{llll}
-Matrix Name              & Source                      & \#Vertices & \#Edges  \\
-astro-ph                 & collaboration network       & 16706      & 242502   \\
-audikw1                  & UF Sparse Matrix Collection & 943695     & 77651847 \\
-caidaRouterLevel         & Clustering                  & 192244     & 1218132  \\
-cnr-2000                 &                             & 325557     & 2738969  \\
-coAuthorsDBLP            &                             & 299067     & 977676   \\
-coPapersDBLP             &                             & 540486     & 15245729 \\
-cond-mat-2005            &                             & 40421      & 175691   \\
-delaunay\_n18            &                             & 262144     & 786396   \\
-er-fact1.5-scale20       &                             & 1048576    & 10904496 \\
-G\_n\_pin\_pout          &                             & 100000     & 501198   \\
-kron\_g500-simple-logn18 &                             & 262144     & 10582686 \\
-ldoor                    &                             & 952203     & 22785136 \\
-preferentialAttachment   &                             & 100000     & 499985   \\
-rgg\_n\_2\_18\_s0        &                             & 262144     & 1547283 
+\label{tab:graphs}
+\begin{tabular}{l|llll}
+\toprule 
+Matrix Name              & Source                          & \#Vertices & \#Edges  & $|E|/|V|$ \\
+\midrule 
+astro-ph                 & collaboration network           & 16706      & 242502   & 14.5      \\
+audikw1                  & UF Sparse Matrix Collection     & 943695     & 77651847 & 82.3      \\
+caidaRouterLevel         & Internet router-level graph     & 192244     & 1218132  & 6.3       \\
+cnr-2000                 & Web crawl                       & 325557     & 2738969  & 8.4       \\
+coAuthorsDBLP            & Citation network                & 299067     & 977676   & 3.3       \\
+coPapersDBLP             & Citation network                & 540486     & 15245729 & 28.2      \\
+cond-mat-2005            & Condensed matter collaborations & 40421      & 175691   & 4.32      \\
+delaunay\_n18            & Delaunay triangulations         & 262144     & 786396   & 3.0       \\
+er-fact1.5-scale20       & Erdos-Renyi Graphs              & 1048576    & 10904496 & 10.4      \\
+G\_n\_pin\_pout          & Gnp random-graph                & 100000     & 501198   & 5.01      \\
+kron\_g500-simple-logn18 & synthetic graphs                & 262144     & 10582686 & 40.4      \\
+ldoor                    & Sparse Matrix                   & 952203     & 22785136 & 24        \\
+preferentialAttachment   & Clustering Instances            & 100000     & 499985   & 5         \\
+rgg\_n\_2\_18\_s0        & random geometric graph          & 262144     & 1547283  & 5.9      \\
+
+\bottomrule 
 \end{tabular}
 \end{table*}
