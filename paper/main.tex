@@ -28,11 +28,19 @@
 
 \makeatletter
 
+%% for manually breaking cells in tables.
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
 %% Because html converters don't know tabularnewline
 \providecommand{\tabularnewline}{\\}
-%% A simple dot to overcome graphicx limitations
-\newcommand{\lyxdot}{.}
+
+
+%%%%
+\usepackage{booktabs}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
@@ -79,6 +87,7 @@
 
 
 \newcommand{\sv}{SV}
+\newcommand{\ftsv}{\textsc{FT-SV}}
 \newcommand{\graphname}[1]{\emph{#1}}
 
 
@@ -121,9 +130,14 @@
 \input{fault}
 \label{sec:fault}
 
-\section{Fault tolerant Label propagation algorithm for graph connected component}
+\section{\sv~algorithm for graph connected component}
 \input{connected}
 \label{sec:connected}
+
+\section{Fault Tolerant \sv~ Algorithm}
+\input{ft-connected}
+\label{sec:ft-connected}
+
 
 \section{Results}
 \input{results}
