@@ -60,23 +60,49 @@ Additionally, except~\graphname{astro-ph}, all other graphs converge to correct 
 The difference in behavior between graph~\graphname{astro-ph}, and other graphs is due to two reasons. First, the graph~\graphname{astro-ph} has  the smallest diameter all four test cases, and it only takes 10 iterations in fault free case to converge. If a fault that might cause an additional iteration occurs, it provides fewer opportunity to be corrected in later iterations. Secondly, ...
 
 \subsection{Overhead of fault detection and correction}
-%% compare it with double modular redundancy 
-\paragraph{Zero-Overhead}
 
-\begin{figure}[tbp]
+\begin{figure}[ht]
 \includegraphics[width=.6\textwidth]{plots/plot_zero_overhead.eps}
-\caption{\label{fig:con-plot} 
+\caption{\label{fig:zero-oh-plot} 
 \small Comparison of model-driven work partitioning scheme to
 two static work partitioning scheme}
 \end{figure}
 
 \paragraph{Overhead with increasing Faults}
 
-\begin{figure}[tbp]
+
+%% compare it with double modular redundancy 
+In addition to extra iteration to converge, extra computation that goes in 
+fault detection  and correction can be also a source of significant overhead. 
+We analyze overhead of fault detection and correction in two parts.
+ First, we evaluate the overhead of algorithm \ftsv when no faults are injected.
+  Then, we evaluate how overhead of proposed algorithm behaves at different fault rates. 
+
+\paragraph{Zero-Overhead} Zero-overhead denotes the overhead of the algorithm 
+in absence of any injected faults. In this case, all the additional computation
+ goes into fault detection. We compare the zero-overhead of~\refalg{alg:FTSV_ALG}, with 
+ fault free execution of~\refalg{alg:SV_ALG}. 
+
+ %
+ In~\reffig{fig:zero-oh-plot}, we show the \emph{relative} zero-overhead of~\refalg{alg:FTSV_ALG} 
+ different test graphs. In all the test cases, zero-overhead remains smaller than 25\%. 
+ In the graphs with smaller $|E|/|V|$ ratio, for instance~\graphname{citationCiteseer} ($|E|/|V|=4.3$),
+ \graphname{coAuthorsDBLP} (3.3), \graphname{rgg\_n\_2\_18\_s0} (5.9), have large zero-overhead. On the other hand graphs with large $|E|/|V|$ ratio such as \graphname{kron\_g500-simple-logn18} ($|E|/|V|=40$), we observe small zero-overhead. This variation of zero-overhead with $|E|/|V|$ ratio, us expected as asymptomatic complexity of fault detection in an ~\ftsv iteration is $\mathcal{O}(V)$, while cost of an ~\sv iteration is $\mathcal{O}(|V|+|E|)$.  
+
+\paragraph{Overhead of~\ftsv in presence of faults}
+
+\begin{figure}[ht]
 \includegraphics[width=.5\textwidth]{plots/plot_overhead_fault.eps}
-\caption{\label{fig:con-plot} 
+\caption{\label{fig:oh-plot} 
 \small Comparison of model-driven work partitioning scheme to
 two static work partitioning scheme}
 \end{figure}
+
+We evaluated overhead of~\ftsv in presence of faults to understand scalability of the proposed algorithm 
+with increasing fault rates. To do so, we vary fault rates from $2^-{18}|E|$ to $2^-{6}|E|$ distinct bit flips in every iteration for different graphs. In ~\reffig{fig:}
+
+
+
+
 
 
