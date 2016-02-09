@@ -99,8 +99,23 @@ two static work partitioning scheme}
 \end{figure}
 
 We evaluated overhead of~\ftsv in presence of faults to understand scalability of the proposed algorithm 
-with increasing fault rates. To do so, we vary fault rates from $2^-{18}|E|$ to $2^-{6}|E|$ distinct bit flips in every iteration for different graphs. In ~\reffig{fig:}
-
+with increasing fault rates. To do so, we vary fault rates from $2^-{18}|E|$ to $2^-{6}|E|$ distinct bit
+flips in every iteration for all test graphs. In~\reffig{fig:oh-plot}, we show the the relative overhead 
+of ~\ftsv algorithm with respect to increasing fault rates for four matrices.
+We expect that overhead will increase linearly with increasing fault rates.
+For all the four matrices, overhead of fault detection is small for fault rates upto $2^{-10}|E|$ bit flips 
+in every iteration. Beyond $2^{-10}|E|$, we see overhead increasing slowly, however increase in all the cases 
+is sub-linear. 
+This is due to many graphs considered in our study follows power law distribution of for degree of vertices, thus
+these graphs have very high number of vertices with very small degrees, thus correction 
+for large number of vertices are $\mathcal{O}(1)$ operations. 
+Among all the graphs tested, the graph \graphname{kron\_g500-simple-logn18} showed steepest increase in overhead with increasing
+ fault rates. The graph \graphname{kron\_g500-simple-logn18} is a random Kronecker geometric graph and
+  has very uniform distribution of degree among vertices, and 
+  thus with fault rate, correction cost shows  linear increase. 
+In all cases even in the highest fault rates considered in the paper, net overhead of \ftsv were smaller than 35\%.
+ In contrast to that, naive redundency based fault tolerance algorithm will have overhead of more than 100\%. 
+ Thus, we see that \ftsv can tolerate efficiently withstand high fault rates.  
 
 
 
