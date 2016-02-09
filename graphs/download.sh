@@ -21,3 +21,19 @@ bunzip2 packing-500x100x100-b050.graph.bz2
 
 wget http://www.cc.gatech.edu/dimacs10/archive/data/streets/belgium.osm.graph.bz2
 bunzip2 belgium.osm.graph.bz2
+
+
+wget http://www.cc.gatech.edu/dimacs10/archive/data/kronecker/kron_g500-simple-logn18.graph.bz2
+bunzip2 kron_g500-simple-logn18.graph.bz2
+
+
+wget http://www.cc.gatech.edu/dimacs10/archive/data/kronecker/kron_g500-simple-logn20.graph.bz2
+bunzip2 kron_g500-simple-logn20.graph.bz2
+
+wget http://www.cc.gatech.edu/dimacs10/archive/data/delaunay/delaunay_n18.graph.bz2
+bunzip2 delaunay_n18.graph.bz2
+
+scp condesa.cc.gt.atl.ga.us:/home/piyush/approxGraphComp/graphs/caidaRouterLevel.graph  .
+scp condesa.cc.gt.atl.ga.us:/home/piyush/approxGraphComp/graphs/astro-ph.graph  .
+scp condesa.cc.gt.atl.ga.us:/home/piyush/approxGraphComp/graphs/cnr-2000.graph  .
+scp condesa.cc.gt.atl.ga.us:/home/piyush/approxGraphComp/graphs/cond-mat-2005.graph  .
