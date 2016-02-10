@@ -15,13 +15,21 @@ propagation based. We modify the parallel algorithm of Shiloach-Vishkin \cite{sh
 make it fault-tolerant by augmenting the data structures used by the algorithm and by adding a 
 detection and correction scheme at the end of every iteration. By detecting and correcting the 
 error at the end of each iteration we are able to limit the propagation of the error to the 
-remainder of the graph in the following iterations.
-
-Main contributions:
-* Little overhead when there aren't any faults.
-* Same number of iterations as a fault-free execution for reasonable error rates.
-* Overhead if rather constant in time until the number of threads is significantly high.
-* 
+remainder of the graph in the following iterations. This can prove to be especially important for 
+distributed implementations that are communication bound.
 
 
+In this paper we show that the overhead of our fault tolerant algorithm is not significant. 
+Specifically, when comparing the fault tolerant algorithm with the its fault-free counter part for 
+a fault-free execution (i.e. there are no faults), the use overhead of our algorithm is on average 
+$15\%$. This overhead includes updating the new auxiliary data structure and running the detection 
+scheme \footnote{The correction scheme is not executed as no faults are detected.}. When faults do 
+occur, the execution time of our fault tolerant algorithm is near constant for small to moderate 
+fault rates. For extremely high fault rates, where there is one error in each 64-1024 memory 
+operations, we see the overhead increasing by anywhere $2X-4X$ that the no-fault overhead. It is 
+well worth noting that systems working at such a high fault rate would be considered highly 
+unreliable. Lastly, we show that so long as the fault rate is reasonable (i.e. the system is 
+reliable), then our algorithm typically does not increase significantly the number of iterations 
+needed to converge to the correct answer. Extremely high error rates can prevent propagation of a
+label in a specific iteration, thus adding an iteration to the end.
 
