@@ -62,6 +62,7 @@ is executed to compute $s^{i+1} = (CC^{i+1},H^{i+1})$:
 \] 
 then, there will not be any loop as long as $S^{i+1}$ satisfies condition 1, 2 and 3 of ~\refthm{thm:strong-SV-converg-cond}. Thus, fault detection and correction becomes computationally more tractable.
 
+\subsection{Fault Detection}
 To detect a fault, after each faulty~\sv iteration, we check condition 1, 2 and 3 of ~\refthm{thm:strong-SV-converg-cond}. Checking for condition 2, 3, and 4 require $mathcal{O}(1)$ computations. 
 
  To check for any vertex $v$ whether $H(v) \in \{ v, E(v)\}$, in a naive algorithm, 
@@ -71,10 +72,27 @@ We  overcome this problem by storing relative address of $H(v)$ in the adjacency
  then we store $ind$. This reduces the checking if $H(v)\in{v,E(v)}$ to checking if $ind<|E(v)|$.  Thus, checking first condition becomes $\mathcal{O}(1)$ operations. 
  Therefore total overhead of fault detection is  $\mathcal{O}(|V|)$.
 
+\subsection{Fault Recovery}
 If a fault is detected for any vertex $v$, we correct it by calculating $CC[v]$ again. 
 If we assume fault rate is $f$, and average degree of any vertex is $\mathcal{O}(|E|/|V|)$, 
 then cost of correction will be $\mathcal{O}(f|E|/|V|)$.
 
+\subsection{Convergence Detection}
+Recall that, in a fault free execution of \sv algorithm, algorithm terminates when there
+are no more label swaps in an iteration. In presence of faults, however, there can be label
+swaps due to faults even when algorithm has already converged. Thus, our previous 
+convergence detection scheme will not be efficient in presence of faults. 
+
+%
+To detect the convergence in presence of faults, we make use of following observation. 
+In any iteration of~\refalg{alg:FTSV_ALG}, number of label swaps in the main loop, is greater 
+than or equal to number of corrections in correction phase.  If the algorithm has converged to 
+correct solution, then any following iteration, any label swap can happen only due to faults.
+In the following correction phase, some of those faults might get detected and corrected, thus 
+number of corrections will be less than or equal to number of changes. On the other, if all
+incorrect values are detected and corrected, then algorithm has converged to correct solution.  
+
+\subsection{Selective reliability}
 Since, weak condition require that $CC$ from previous iteration should be correct, for algorithm
 to converge to correct value, in this work, we assume that fault detection and corrections steps 
 are done in a reliable mode.  \refAlgorithm{alg:FTSV_ALG} shows the complete algorithm.
