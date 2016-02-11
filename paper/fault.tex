@@ -1,16 +1,36 @@
+
+%ODED - Citations are missing in this section.
+%ODED - what are some of the latest and greatest results in fault tolerant research?
+
+
 In this paper, a fault includes any instance in which the underlying
 hardware deviates from its expected behavior.
-We will use the taxonomy of faults outlined by Hoemmen and Heroux~\cite{hoemmen2011reliability}, among others, as summarized below.
+We will use the taxonomy of faults outlined by Hoemmen and Heroux~\cite{hoemmen2011reliability}, 
+among others, as summarized below.
 
 %
-We distinguish \emph{hard faults} and \emph{soft faults}. A hard fault interrupts the program, causing it to immediately crash or terminate. This occurs when, for instance, a node or net- work link fails. By contrast, a soft fault does not cause immediate interruption of the program. L1 cache bit flips
+We distinguish \emph{hard faults} and \emph{soft faults}. A hard fault interrupts the program, 
+causing it to immediately crash or terminate. This occurs when, for instance, a node or net- work 
+link fails. By contrast, a soft fault does not cause immediate interruption of the program. L1 cache 
+bit flips
 are a common type of soft fault.
 
 %
 Soft faults can be further divided into transient or non-
-transient faults. A transient fault is temporary. Examples include temporarily incorrect output from the floating point unit or a momentary bit flip while reading data from mem- ory. By contrast, non-transient faults are permanent. For instance, suppose the input data stored on disk is corrupted. In this case, reading the data may succeed but the data is wrong on every read.
+transient faults. A transient fault is temporary. Examples include temporarily incorrect output from 
+the floating point unit or a momentary bit flip while reading data from mem- ory. By contrast, 
+non-transient faults are permanent. For instance, suppose the input data stored on disk is 
+corrupted. In this case, reading the data may succeed but the data is wrong on every read.
 
 
 %
-This paper concerns only transient soft faults. Thus, in the consequent, a ``fault'' is a transient soft fault unless otherwise noted. When faults cause the output to fall outside acceptable limits, we say the algorithm has failed.
-For an algorithm to terminate successfully, at least some amount of computation must be done reliably. However, in general we do not have control over which operations are done correctly and which operations are done incorrectly. In this paper, we will attempt to distinguish algorithmic operations that must be performed reliably from those that may be performed unreliably. We refer to these different modes of computation as reliable mode (or reliable computation) from unreliable mode (or computation), without saying precisely how to implement these modes. The prior work of others similarly assumes ``selective reliability'' ~\cite{hoemmen2011reliability}.
+This paper concerns only transient soft faults. Thus, in the consequent, a ``fault'' is a transient 
+soft fault unless otherwise noted. When faults cause the output to fall outside acceptable limits, 
+we say the algorithm has failed.
+For an algorithm to terminate successfully, at least some amount of computation must be done 
+reliably. However, in general we do not have control over which operations are done correctly and 
+which operations are done incorrectly. In this paper, we will attempt to distinguish algorithmic 
+operations that must be performed reliably from those that may be performed unreliably. We refer to 
+these different modes of computation as reliable mode (or reliable computation) from unreliable mode 
+(or computation), without saying precisely how to implement these modes. The prior work of others 
+similarly assumes ``selective reliability'' ~\cite{hoemmen2011reliability}.

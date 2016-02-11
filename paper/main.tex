@@ -26,6 +26,8 @@
 
 \usepackage[sort&compress]{natbib}
 
+\usepackage{comment}
+
 \makeatletter
 
 %% for manually breaking cells in tables.
@@ -126,11 +128,13 @@
 \input{intro}
 \label{sec:intro}
 
+
+%ODED I think that the fault section should come after the connected components section
 \section{Fault Model}
 \input{fault}
 \label{sec:fault}
 
-\section{\sv~algorithm for graph connected component}
+\section{Connected components}
 \input{connected}
 \label{sec:connected}
 

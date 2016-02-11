@@ -1,14 +1,22 @@
 \input{ftsv-algm}
 
+%ODED  - I don't recall seeeing the definition of silent data corruptions/
 As a motivation for proposed algorithm, we analyze effects of silent data corruption in the~\sv~algorithm on convergence of the algorithm.
 
 \subsection{Fault Propagation}
+%ODED - it seems that the only faults are to the CC array. You don't mention the faults can occur when reading the graph G=(V,E)
 In presence of faults, the $CC$ vector may get corrupted.
+%ODED - why willl the convergence be slower?
 Corruption of $CC$ vector may result in slower convergence, converging to incorrect results, or converging to a result which may be considered technically-correct, however it may not be correct from
-convention of output. For instance, in presence of fault 
+convention of output. 
+%ODED - this seems like it is in the incorrect section. Maybe an additional subsection in the connected component section that discusses the impact of faults on conncect compoents.
+
+For instance, in presence of fault 
  final connected component id is second minimum, as oppose to minimum according to our convention.
 We consider such cases as incorrect results, as consumer application of the algorithm may use properties of defined convention.
 
+%-------------
+%ODED
 
 To analyze propagation of data corruption in $CC$ vector, consider any vertex $v$, and it's $CC$ value in the $i$-th 
 iteration as $CC^{i}[v]$. Let $CC^{\infty}[v]$ be the final $CC$ value of $v$ in case of fault free execution. Suppose a fault occurs and due to the fault $CC^{i}[v]$ is changed to $\hat{CC}^{i}[v]$.
@@ -27,6 +35,11 @@ For instance, if in a given iteration, $CC[v]>CCp[u]$, then~\sv algorithm update
 and we correspondingly we update $H[v]\leftarrow u$.
 We present following theorem that establishes validity of a state vector. 
 
+%This entire paragraph needs to be clarified.  The message is not being conveyed simply.
+%----------
+
+%ODED - commented this section out for the time being.
+\begin{comment}
 \begin{thm}
 \label{thm:strong-SV-converg-cond}
 Given a graph $G=(V,E)$ and a arbitrary state vector $S=(CC,H)$, the~\refalg{alg:SV_ALG} starting from $S$ will converge to correct solution defined by [insert ref to definition], if $S$ satisfies following condition:
@@ -44,6 +57,9 @@ Given a graph $G=(V,E)$ and a arbitrary state vector $S=(CC,H)$, the~\refalg{alg
  where $E^{*}=\{ (v,H(v)) \forall v \in V \}$ .
 \end{enumerate*}
 \end{thm}
+\end{comment}
+
+
 
 \subsection{Fault tolerant~\sv Algorithm}
 In principle~\refthm{thm:strong-SV-converg-cond} can be used to construct a fault detection and correction scheme. 
@@ -62,6 +78,9 @@ is executed to compute $s^{i+1} = (CC^{i+1},H^{i+1})$:
 \] 
 then, there will not be any loop as long as $S^{i+1}$ satisfies condition 1, 2 and 3 of ~\refthm{thm:strong-SV-converg-cond}. Thus, fault detection and correction becomes computationally more tractable.
 
+%ODED - other than stating that the pseudo code exists, there is little discussion of it. I would probably discuss the different phases of this algorithm. 
+%ODED - right now the detection and correction scheme lack motivation and extremely formal.
+
 \subsection{Fault Detection}
 To detect a fault, after each faulty~\sv iteration, we check condition 1, 2 and 3 of ~\refthm{thm:strong-SV-converg-cond}. Checking for condition 2, 3, and 4 require $mathcal{O}(1)$ computations. 
 
@@ -72,6 +91,9 @@ We  overcome this problem by storing relative address of $H(v)$ in the adjacency
  then we store $ind$. This reduces the checking if $H(v)\in{v,E(v)}$ to checking if $ind<|E(v)|$.  Thus, checking first condition becomes $\mathcal{O}(1)$ operations. 
  Therefore total overhead of fault detection is  $\mathcal{O}(|V|)$.
 
+%ODED - Fault Correction - We don't use recovery.
+%ODED - the complexity here is wrong.
+%ODED - explain why the correction scheme takes at most O(V) steps for each correction 
 \subsection{Fault Recovery}
 If a fault is detected for any vertex $v$, we correct it by calculating $CC[v]$ again. 
 If we assume fault rate is $f$, and average degree of any vertex is $\mathcal{O}(|E|/|V|)$, 
@@ -92,6 +114,8 @@ In the following correction phase, some of those faults might get detected and c
 number of corrections will be less than or equal to number of changes. On the other, if all
 incorrect values are detected and corrected, then algorithm has converged to correct solution.  
 
+%ODED - there was very little discussion on the topic of reliable mode versus unrelaible mode.
+%ODED -  at this point this subsection seems out place.
 \subsection{Selective reliability}
 Since, weak condition require that $CC$ from previous iteration should be correct, for algorithm
 to converge to correct value, in this work, we assume that fault detection and corrections steps 

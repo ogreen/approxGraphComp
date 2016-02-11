@@ -2,11 +2,13 @@
 %% displays experimental setup, and description of matrices 
 We performed a series of experiments to test robustness and overhead of our algorithm described in~\refsec{sec:connected}. 
 
-%
+%ODED - this subsection should be part of the experimental setup/
 \subsection{Fault Injection Methodology}
 Since memory accesses are most performance critical part in~\sv computation, we inject faults in memory access pattern. There are two main memory accesses in~\sv iteration: traversing adjacency list for each vertex; and 
 accessing $CC$ array for each vertex in adjacency list. 
 
+
+%ODED - in our meeting yesterday you stated that f was not a rate (between 0 and 1) rather it represented the actual number of errors.  Here is seems that it is rate.  
 In the first case, before each~\sv sweep, we randomly select $f|E|$ edges, where $f$ is fault-rate. Let $e=(v,u)$ be  one of the selected edges. When we encounter $e$ while traversing adjacency list of $v$, we flip one of the bits of $u$---the vertex which $e$ is pointing---randomly. 
 Therefore, due to the fault, $v$ will visit flipped vertex $\hat{u}$, instead of accessing $u$. 
 
@@ -20,7 +22,7 @@ vertex $v_{1},\ v_{2}$, and if $CC[u]$ is corrupted while visiting $v_{1}$, then
 \subsection{Experimental Setup}
 
 
-
+%ODED - the term "matrix" should never appear in the paper. We should only use the term "network" or "graph"
 % type of matrices 
 \paragraph{Test Graphs}
 The graphs used in our tests are listed in~\reftab{tab:graphs}. 
@@ -32,6 +34,8 @@ These graphs are taken from the 10th Dimacs Implementation Challenge~\cite{Bader
 We prototyped baseline and fault tolerant implementation using $C$ language. 
 We used the Intel C Compiler (ICC 15.0.0), with highest level of
  optimization $-O3$ to compile our benchmarks.
+%ODED - instead of using a table for this system, I would probably just put the properties in text.
+%ODED - be specific on the type of processor being Intel Xeon XYZW
 We ran all our experiments on SNB16c, key properties of the systems are listed in~\reftab{tab:sys_info}
 
 
