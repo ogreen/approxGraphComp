@@ -2,18 +2,25 @@
 
 %ODED  - I don't recall seeeing the definition of silent data corruptions/
 As a motivation for proposed algorithm, we analyze effects of silent data corruption in the~\sv~algorithm on convergence of the algorithm.
+First, we discuss sources of faults in the \sv algorithm. Then, we analyze if one such fault occur than
 
 \subsection{Fault Propagation}
 %ODED - it seems that the only faults are to the CC array. You don't mention the faults can occur when reading the graph G=(V,E)
-In presence of faults, the $CC$ vector may get corrupted.
-%ODED - why willl the convergence be slower?
-Corruption of $CC$ vector may result in slower convergence, converging to incorrect results, or converging to a result which may be considered technically-correct, however it may not be correct from
-convention of output. 
+In \refalg{alg:SV_ALG}, a fault occurred can manifest in many ways. For instance, a fault may cause a vertex $v$ to read its adjacency
+list incorrectly, i.e. instead of reading $u$ as its neighbor, it read some other vertex $\hat{u}$ as its neighbor. 
+Similarly, a fault may cause incorrectly reading $CCp[u]$ value, or incorrect comparison of $CC[v]$ and $CCp[u]$. 
+As a result of any or a combination of the above faults, the $CC[v]$ will not be updated correctly. 
+If $CC[v]$ is not updated, then we call $CC[v]$ is corrupted. 
+%
+%
+%ODED - why willl the convergence be slower? Piyush: it will take atleast an additional iteration to correct, assuming it can be corrected.  
+The corruption of values in $CC$ vector will propagate to other vertices, and eventually
+result in delayed convergence or converging to incorrect results.
 %ODED - this seems like it is in the incorrect section. Maybe an additional subsection in the connected component section that discusses the impact of faults on conncect compoents.
 
-For instance, in presence of fault 
- final connected component id is second minimum, as oppose to minimum according to our convention.
-We consider such cases as incorrect results, as consumer application of the algorithm may use properties of defined convention.
+% For instance, in presence of fault 
+%  final connected component id is second minimum, as oppose to minimum according to our convention.
+% We consider such cases as incorrect results, as consumer application of the algorithm may use properties of defined convention.
 
 %-------------
 %ODED
