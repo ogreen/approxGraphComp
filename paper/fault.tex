@@ -10,18 +10,45 @@ among others, as summarized below.
 
 %
 We distinguish \emph{hard faults} and \emph{soft faults}. A hard fault interrupts the program, 
-causing it to immediately crash or terminate. This occurs when, for instance, a node or net- work 
+causing it to immediately crash or terminate. This occurs when, for instance, a node or network 
 link fails. By contrast, a soft fault does not cause immediate interruption of the program. L1 cache 
 bit flips
-are a common type of soft fault.
+are a common type of soft fault. 
 
+A particularly insidious manifestation of soft faults is \emph{silent data corruption} (SDC), where 
+an soft fault corrupts the intermediate variables of the algorithm without notifying the
+application. Such data corruption may propagates and eventually result in incorrect output
+masquerading as correct. 
+
+Recently, a number of techniques have been developed for dealing with soft faults in numerical
+linear algebra. There is a large and growing literature on so called
+\emph{algorithm based fault tolerance} (ABFT), that primarily rely on testing checksum invariants
+\cite{huang1984abft,luk1988abft,du2012abft,shantharam2012ftcg}. 
+For iterative numerical algorithms, techniques have been developed where 
+algorithm can recover from fault by itself, thus obviating need for fault detection and
+correction\cite{hoemmen2011reliability,sao2013sscg, elliott2016exploiting}. 
+% 
+
+\icomment{Insert Citations}
+In contrast to numerical linear algebra---which is characterized by large data parallel floating point 
+computation,  the graph computation is characterized by irregular and indirect memory accesses.
+While for slow storage
+such as DRAM and disk, error correcting codes are deployed and efficient, fast memory 
+such as cache and registers still remains unprotected[cite, cite]. Therefore, large scale graph computation is
+as susceptible to soft faults as any other computation. 
+
+As far as we know, the issue of fault tolerance 
+in graph computation is, so far, addressed only in context of hard fault and they are based on 
+check-pointing and restarting method[cite cite]. Checkpoint and restart based method are usually not 
+scalable with high fault rates, and are still prone to silent data corruption.  
 %
-Soft faults can be further divided into transient or non-
-transient faults. A transient fault is temporary. Examples include temporarily incorrect output from 
-the floating point unit or a momentary bit flip while reading data from mem- ory. By contrast, 
-non-transient faults are permanent. For instance, suppose the input data stored on disk is 
-corrupted. In this case, reading the data may succeed but the data is wrong on every read.
+% Soft faults can be further divided into transient or non-
+% transient faults. A transient fault is temporary. Examples include temporarily incorrect output from 
+% the floating point unit or a momentary bit flip while reading data from mem- ory. By contrast, 
+% non-transient faults are permanent. For instance, suppose the input data stored on disk is 
+% corrupted. In this case, reading the data may succeed but the data is wrong on every read.
 
+\icomment{Redo the summary}
 
 %
 This paper concerns only transient soft faults. Thus, in the consequent, a ``fault'' is a transient 
