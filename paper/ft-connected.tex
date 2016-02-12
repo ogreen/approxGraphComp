@@ -25,19 +25,36 @@ result in delayed convergence or converging to incorrect results.
 %-------------
 %ODED
 
-To analyze propagation of data corruption in $CC$ vector, consider any vertex $v$, and it's $CC$ value in the $i$-th 
-iteration as $CC^{i}[v]$. Let $CC^{\infty}[v]$ be the final $CC$ value of $v$ in case of fault free execution. Suppose a fault occurs and due to the fault $CC^{i}[v]$ is changed to $\hat{CC}^{i}[v]$.
+To analyze propagation of data corruption in $CC$ vector, consider any vertex $v$, and its $CC$ value in the $i$-th 
+iteration $CC^{i}[v]$. Let $CC^{\infty}[v]$ be the final $CC$ value of $v$ in case of fault free execution. 
+Suppose a fault occurs while updating $CC^{i}[v]$, and  $CC^{i}[v]$ is corrupted. 
+We denote the corrupted value as $\hat{CC}^{i}[v]$, to distinguish it from uncorrupted value $CC^{i}[v]$.
 Now depending on value of $\hat{CC}^{i}[v]$, the data corruption may propagate, or will be corrected in a later iteration. We consider following two cases:
 
-\paragraph{Case 1: $\hat{CC}^{i}[v] > CC^{\infty}[v]$} 
-In this case, since minimum $CC$ in the connected component remains unchanged,  $\hat{CC}^{i}[v]$ will be eventually overwritten by $CC^{\infty}[v]$. However, it may still delay convergence and if $v$ is minimum vertex id in the connected component, i.e. $CC[v]=CC^{\infty}[v]$, connected component will converge to second minimum vertex-id, thus giving incorrect result.
+\begin{itemize}
+\item \textbf{Case 1: $\widehat{CC}^{i}[v] > CC^{\infty}[v]$} 
+Recall that $CC^{\infty}[v]$ is the minimum vertex-id in the connected component which $v$ belongs.  
+Therefore, $\widehat{CC}^{i}[v]$ may propagate to some of neighbors of $v$, but eventually $CC^{\infty}[v]$ being
+smaller than $\widehat{CC}^{i}[v]$ will propagate to all the vertex in the connected component. 
+However, it may still delay the convergence. 
+
+% In this case, since minimum $CC$ in the connected component remains unchanged,  $\hat{CC}^{i}[v]$ will be eventually overwritten by $CC^{\infty}[v]$. However, it may still delay convergence and if $v$ is minimum vertex id in the connected component, i.e. $CC[v]=CC^{\infty}[v]$, connected component will converge to second minimum vertex-id, thus giving incorrect result.
 
 
-\paragraph{Case 2: $\hat{CC}^{i}[v] < CC^{\infty}[v]$} 
-In this case, minimum $CC$ in the connected component is changed and, thus $\hat{CC}^{i}[v]$ will propagate to all other vertex, resulting in converging to incorrect results.
+\item \textbf{Case 2: $\widehat{CC}^{i}[v] < CC^{\infty}[v]$} 
+In this case,  $\widehat{CC}^{i}[v]$ is smaller than smallest label $CC^{\infty}[v]$ in the connected component. By design of \sv algorithm, $\widehat{CC}^{i}[v]$
+will propagate to all other vertex in the connected component.  Thus, such a data corruption will result in incorrect output. 
 
-THe difficulty is, looking at $CC$ array it is not possible to determine if: a) a fault has occurred that needs corrections; b) algorithm will converge to correct answer. To felicitate, determining if the algorithm is in valid state, we introduce another vector that we call \emph{parent} vector denoted by $H$. 
-For each vertex, the $H$ vector stores the vertex that caused the last change in its $CC$ value.
+% In this case, minimum $CC$ in the connected component is changed and, thus $\hat{CC}^{i}[v]$ will propagate to all other vertex, resulting in converging to incorrect results.
+
+\end{itemize}
+
+The difficulty is, $CC^{\infty}[v]$---being the output, is only known after algorithm has successfully terminated. 
+Therefore, by looking at $CC$ vector, it is not possible to determine if algorithm will converge to correct answer. 
+%
+We introduce another vector that we call \emph{parent} vector denoted by $H$, to determine whether algorithm is 
+in correct state. 
+For each vertex $v$, the $H$ vector stores the vertex that caused the last change in $CC[v]$ value.
 For instance, if in a given iteration, $CC[v]>CCp[u]$, then~\sv algorithm updates $CC[v]\leftarrow CCp[u]$, 
 and we correspondingly we update $H[v]\leftarrow u$.
 We present following theorem that establishes validity of a state vector. 
