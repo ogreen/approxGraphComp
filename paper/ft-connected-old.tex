@@ -49,13 +49,10 @@ will propagate to all other vertex in the connected component.  Thus, such a dat
 
 \end{itemize}
 
-Thus, depending on how $CC[v]$ is corrupted, the fault may either self-correct itself, or propagate to entire connected-component.
 The difficulty is, $CC^{\infty}[v]$---being the output, is only known after algorithm has successfully terminated. 
 Therefore, by looking at $CC$ vector, it is not possible to determine if algorithm will converge to correct answer. 
-
-
 %
-We introduce another vector that we call \emph{parent} vector---denoted by $H$, to determine whether algorithm is 
+We introduce another vector that we call \emph{parent} vector denoted by $H$, to determine whether algorithm is 
 in correct state. 
 For each vertex $v$, the $H$ vector stores the vertex that caused the last change in $CC[v]$ value.
 For instance, if in a given iteration, $CC[v]>CCp[u]$, then~\sv algorithm updates $CC[v]\leftarrow CCp[u]$, 
@@ -121,14 +118,10 @@ We  overcome this problem by storing relative address of $H(v)$ in the adjacency
 %ODED - Fault Correction - We don't use recovery.
 %ODED - the complexity here is wrong.
 %ODED - explain why the correction scheme takes at most O(V) steps for each correction 
-\subsection{Fault Correction}
+\subsection{Fault Recovery}
 If a fault is detected for any vertex $v$, we correct it by calculating $CC[v]$ again. 
-For re-calculating $CC[v]$, we need to transverse through adjacency list of $v$ again.
-If $f$ vertices require corrections, then worst case complexity of the algorithm would
-be $\mathcal{O}(f|V|)$, as for any vertex maximum number of neighbors it can have is $|V|-1$.  
-In the limiting fault rates, we may have to correct all the vertices in the graph, which would 
-require $\mathcal{O}(|V|+|E|)$ work. 
-
+If we assume fault rate is $f$, and average degree of any vertex is $\mathcal{O}(|E|/|V|)$, 
+then cost of correction will be $\mathcal{O}(f|E|/|V|)$.
 
 \subsection{Convergence Detection}
 Recall that, in a fault free execution of \sv algorithm, algorithm terminates when there
@@ -151,7 +144,7 @@ incorrect values are detected and corrected, then algorithm has converged to cor
 Since, weak condition require that $CC$ from previous iteration should be correct, for algorithm
 to converge to correct value, in this work, we assume that fault detection and corrections steps 
 are done in a reliable mode.  \refAlgorithm{alg:FTSV_ALG} shows the complete algorithm.
-We list overhead of~\refalg{alg:FTSV_ALG} in \reftab{tab:overhead}.
+We list overhead of~\refalg{alg:FTSV_ALG} in 
 
 \begin{table}[htbp]
 \centering
@@ -163,7 +156,7 @@ We list overhead of~\refalg{alg:FTSV_ALG} in \reftab{tab:overhead}.
 \midrule                  
 Memory           & $\mathcal{O}(|V|)$      \\
 Fault Detection  & $\mathcal{O}(|V|)$      \\
-Fault Correction & $\mathcal{O}(|E|)$ \\
+Fault Correction & $\mathcal{O}(f|E|/|V|)$ \\
 \bottomrule 
 \end{tabular}
 \end{table}
