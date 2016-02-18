@@ -35,13 +35,13 @@ for i = 1:n
 end
 
 
-set(gca,'XLim',[-10, 0]);
+set(gca,'XLim',[-10, -1]);
 % set(gca,'YLim',[-10, 400]);
-set(gca,'YLim',[98, 160]);
+set(gca,'YLim',[0, 450]);
 
-hTitle  = title ('Convergence in presence of faults');
-hXLabel = xlabel('Fault injection rate'                     );
-hYLabel = ylabel('Relative Number of Iterations (in \%)');    
+hTitle  = title ('Convergence Rate Vs. Fault Rate');
+hXLabel = xlabel('Fault Rate f'                     );
+hYLabel = ylabel('Normalized Increase in Iterations Ratio (%)');    
 
 legend('astro-ph','cnr-2000','delaunay\_n18','rgg\_2\_18');
 set(gcf, 'Color', 'w'); %setting the back ground color

@@ -1,5 +1,5 @@
 %% read teh data 
-AS = csvread('zero-overhead-2.csv');
+AS = csvread('overhead_2e-6.csv');
 
 
 % draw the figure 
@@ -8,9 +8,9 @@ figure;
 bar(100*AS,'stacked','EdgeColor',[.2 .2 .2],'LineWidth',1.02);
 
 %%
-hTitle  = title ('Fault-Tolerant Algorithm Overhead - Error Free Execution');
+hTitle  = title ('Fault Tolerant Algorithm Overhead at f=2^{-6}|E|');
 hXLabel = xlabel('Graphs'                     );
-hYLabel = ylabel('Relative Overhead (in %)');    
+hYLabel = ylabel('Relative Overhead (%)');    
 
 
 set(gca,'XLim',[0, 16]);
@@ -37,5 +37,5 @@ set(gca, ...
   'YColor'      , [.3 .3 .3], ...
   'LineWidth'   , 1         );
 
-legend('Auxiliary Data Structure Overhead', 'Fault Detection Overhead')
-colormap hsv(2)
+legend('Auxiliary Data Structure Overhead', 'Fault Detection Overhead','Fault Correction Overhead') 
+colormap hsv(4);
