@@ -7,7 +7,7 @@ DT = csvread('Overhead-fault.csv');
 linestyles = cellstr(char('-','-','-','-','-','-.','--','-',':','-',':',...
 '-.','--','-',':','-.','--','-',':','-.'));
 
-MarkerEdgeColors=hsv(n);  % n is the number of different items you have
+MarkerEdgeColors=hsv(n-1);  % n is the number of different items you have
 Markers=['o','s','d','v','^','<','>','p','h','.',...
 '+','*','o','x','*','x','^','<','h','+','.','>','p','s','d','v',...
 'o','x','+','*','s','d','v','^','<','>','p','h','.'];
@@ -24,11 +24,11 @@ set(gca,'XLim',[-18, -5]);
 % set(gca,'YLim',[-10, 400]);
 set(gca,'YLim',[0, 50]);
 
-hTitle  = title ('Overhead with increasing faults');
-hXLabel = xlabel('Fault injection rate'                     );
-hYLabel = ylabel('Relative overhead (in %)');    
+hTitle  = title ('Overhead Vs. Fault Rate');
+hXLabel = xlabel('Fault Rate'                     );
+hYLabel = ylabel('Relative overhead (%)');    
 
-legend('astro-ph','CoPapersDBLP','kron\_g500-simple','cnr-2000','rgg\_2\_18');
+legend('astro-ph','cnr-2000', 'delaunay_n18', 'kron\_g500-simple','rgg\_2\_18');
 set(gcf, 'Color', 'w'); %setting the back ground color
 
 set(gca, 'XTickLabel',[])                      %# suppress current x-labels
