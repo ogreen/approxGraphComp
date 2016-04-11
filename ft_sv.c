@@ -62,6 +62,7 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
                                       uint32_t* off, uint32_t* ind)
 {
     int corrections = 0;
+    int changes =0; 
 
     /*now correcting bad parent*/
 // #pragma omp parallel for 
@@ -106,14 +107,14 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
 #ifdef DEBUG
             printf("2.Error detected - BadParent %d.... correcting\n", v);
 #endif
-            // if(v==6085 || v==6084)printf("correcting for v=%d, cc[v] =%d\n",v,cc_curr[v] );
-            /*do the correction*/
             corrections++;
+            /*do the exact correction*/
+
+            // if(0)
             for (size_t edge = 0; edge < vdeg; edge++)
             {
                 const uint32_t u = vind[edge];
                 MemAccessCount += 2;
-                // if(v==6085) printf(" u=%d cc_prev[u]=%d\n",u,cc_prev[u]);
                 if (cc_prev[u] < cc_curr[v])
                 {
                     m_curr[v] = edge;
@@ -151,9 +152,15 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
 
         }
 
+        if (cc_curr[v] != cc_prev[v] )
+        {
+            changes++;
+        }
+
     }
 
-    return corrections;
+    // return corrections;
+    return changes;
 }
 
 
@@ -682,6 +689,7 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
         tic();
         num_corrections = ftBadAdjacencyBadParent_RelParent(numVertices, cc_curr, cc_prev,
                           m_curr, m_prev, off, ind);
+
         stat->FtTime[iteration] = toc();
         stat->FtMemCount[iteration] = MemAccessCount - prMemAccessCount;
         stat->NumChanges[iteration] = num_changes;
@@ -693,7 +701,10 @@ uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* of
 #endif
         iteration += 1;
     }
-    while (num_changes > num_corrections && iteration <= max_iter);
+    // while (num_changes > num_corrections && iteration <= max_iter);
+    while (num_corrections>0);
+
+
     stat->numIteration = iteration;
 #ifdef DEBUG
     printf("NUmber of iteration for fault free=%d\n", iteration );
