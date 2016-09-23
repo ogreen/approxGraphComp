@@ -1,9 +1,10 @@
 
 CC := icc  
+# CC := gcc  
 
 CFLAGS := -g -O3 -std=gnu99 -fopenmp 
 
-LOAD_FLAGS := -lrt 
+LOAD_FLAGS := -lrt -lm
 
 SRCS := timer.c sv.c ft_sv.c faultInjection.c  stat.c 
 
@@ -18,7 +19,7 @@ MAT_SM :=  as-22july06.graph astro-ph.graph caidaRouterLevel.graph \
 		 citationCiteseer.graph
 
 .PHONY:	all clean test_small 
-all: sv FaultGenerator
+all: sv FaultGenerator sssv
 
 OBJS: $(SRCS) $(HEADERS)
 	@$(CC) $(CFLAGS)  -c $< -o $@ 
@@ -26,6 +27,10 @@ OBJS: $(SRCS) $(HEADERS)
 
 sv: main.c  $(OBJS) $(HEADERS) Makefile 
 	$(CC)  $(CFLAGS) -o $@ main.c $(OBJS) $(LOAD_FLAGS)
+
+sssv: sssv.c  $(OBJS) $(HEADERS) Makefile 
+	$(CC)  $(CFLAGS) -o $@ sssv.c $(OBJS) $(LOAD_FLAGS)
+
 
 FaultGenerator: FaultGen.c 
 	$(CC)  $(CFLAGS) -fopenmp -o $@ FaultGen.c $(LOAD_FLAGS)
