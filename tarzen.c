@@ -74,11 +74,18 @@ typedef struct
 } ts_t;	// tarzen structure
 
 
-void init_ts(int ns, ts_t *ts)
+void init_ts(int nv, ts_t *ts)
 {
-	ts->vind = (int*) malloc(sizeof(int) * ns);
-	ts->vlowlink = (int*) malloc(sizeof(int) * ns);
-	ts->vonstack = (int*) malloc(sizeof(int) * ns);
+	ts->vind = (int*) malloc(sizeof(int) * nv);
+	ts->vlowlink = (int*) malloc(sizeof(int) * nv);
+	ts->vonstack = (int*) malloc(sizeof(int) * nv);
+
+	for (int i = 0; i < nv; ++i)
+	{
+		ts->vind[i] = -1;
+		ts->vlowlink[i] = 0;
+		ts->vonstack[i] = 0;
+	}
 }
 
 void free_ts(ts_t *ts)
@@ -93,13 +100,18 @@ void free_ts(ts_t *ts)
 
 
 
-int strongConnected(int ii, mystack& S, int &global_index, int nv, uint32_t* CC, uint32_t* P,
-                    int* vind, int* vlowlink, int* vonstack)
+// int strongConnected(int ii, mystack& S, int &global_index, int nv, uint32_t* CC, uint32_t* P,
+//                     int* vind, int* vlowlink, int* vonstack)
+int strongConnected(int ii, int nv, uint32_t* CC, uint32_t* P,
+                    ts_t *ts)
 {
-	vind[ii] = global_index;
-	vlowlink[ii] = global_index;
-	global_index = global_index + 1;
-	S.push(ii);
+	int* vind = ts->vind;
+	int* vlowlink = ts->vlowlink;
+	int* vonstack = ts->vonstack;
+	vind[ii] = ts->global_index;
+	vlowlink[ii] = ts->global_index;
+	ts->global_index = ts->global_index + 1;
+	(ts->S).push(ii);
 	vonstack[ii] = 1;
 
 	if (!(P[ii] == ii))
@@ -109,7 +121,8 @@ int strongConnected(int ii, mystack& S, int &global_index, int nv, uint32_t* CC,
 		int jj = P[ii];
 		if (vind[jj] == -1)
 		{
-			strongConnected(jj, S, global_index, nv, CC, P, vind, vlowlink, vonstack);
+			// strongConnected(jj, S, global_index, nv, CC, P, vind, vlowlink, vonstack);
+			strongConnected(jj, nv, CC, P, ts);
 			// strongConnected(i, S, global_index, nv, CC, P, vind, vlowlink, vonstack);
 			vlowlink[ii] = MIN(vlowlink[ii], vlowlink[jj]);
 		}
@@ -129,8 +142,8 @@ int strongConnected(int ii, mystack& S, int &global_index, int nv, uint32_t* CC,
 		printf("The SCC ");
 		do
 		{
-			jj = S.top();
-			S.pop();
+			jj = (ts->S).top();
+			(ts->S).pop();
 
 			printf("%d  ->", jj );
 		}
@@ -141,25 +154,27 @@ int strongConnected(int ii, mystack& S, int &global_index, int nv, uint32_t* CC,
 }
 
 int cycleDetect(int nv, uint32_t* CC, uint32_t* P,
-                int* vind, int* vlowlink, int* vonstack)
+                ts_t *ts)
 // detects cycle in the linked list and resolve the cycle issues
 {
-	mystack S;
-	int global_index = 0;
+	// mystack S;
+	// ts->S = S;
+	ts->global_index = 0;
 	for (int i = 0; i < nv; ++i)
 	{
-		vind[i] = -1;
-		vlowlink[i] = 0;
-		vonstack[i] = 0;
+		ts->vind[i] = -1;
+		ts->vlowlink[i] = 0;
+		ts->vonstack[i] = 0;
 	}
 
 
+
 	for (int i = 0; i < nv; ++i)
 	{
-		if (vind[i] == -1)
+		if (ts->vind[i] == -1)
 		{
 			/* node not yet discovered */
-			strongConnected(i, S, global_index, nv, CC, P, vind, vlowlink, vonstack);
+			strongConnected(i,  nv, CC, P, ts);
 
 		}
 	}
@@ -177,8 +192,13 @@ int main(int argc, char const *argv[])
 	int lowlink[12];
 	int vonstack[12];
 
+	ts_t ts; 
+	// ts = (ts_t *) malloc(sizeof(ts_t));
+	init_ts(12, &ts);
 
-	cycleDetect(12, CC, P, ind, lowlink, vonstack);
+
+	cycleDetect(12, CC, P, &ts);
+	free_ts(&ts);
 
 	return 0;
 }
