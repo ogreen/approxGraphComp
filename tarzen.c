@@ -6,6 +6,7 @@
 #include <stack>          // std::stack
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 
 /** the algorithm from wikipedia
@@ -56,34 +57,63 @@
   **/
 
 
-#define MIN(a,b) a>b?b:a 
+#define MIN(a,b) a>b?b:a
 
 typedef  std::stack<int> mystack;
+
+
+typedef struct
+{
+
+	mystack S;
+	int global_index;
+	int* vind;
+	int* vlowlink;
+	int* vonstack;
+
+} ts_t;	// tarzen structure
+
+
+void init_ts(int ns, ts_t *ts)
+{
+	ts->vind = (int*) malloc(sizeof(int) * ns);
+	ts->vlowlink = (int*) malloc(sizeof(int) * ns);
+	ts->vonstack = (int*) malloc(sizeof(int) * ns);
+}
+
+void free_ts(ts_t *ts)
+{
+	free(ts->vind );
+	free(ts->vlowlink );
+	free(ts->vonstack );
+}
+
+
 
 
 
 
 int strongConnected(int ii, mystack& S, int &global_index, int nv, uint32_t* CC, uint32_t* P,
-	int* vind, int* vlowlink, int* vonstack)
+                    int* vind, int* vlowlink, int* vonstack)
 {
 	vind[ii] = global_index;
-	vlowlink[ii]= global_index;
-	global_index = global_index +1;
+	vlowlink[ii] = global_index;
+	global_index = global_index + 1;
 	S.push(ii);
 	vonstack[ii] = 1;
 
-	if (!(P[ii]==ii))
+	if (!(P[ii] == ii))
 		// it must not be self-loop
 	{
 		/* code */
 		int jj = P[ii];
-		if (vind[jj]==-1)
+		if (vind[jj] == -1)
 		{
 			strongConnected(jj, S, global_index, nv, CC, P, vind, vlowlink, vonstack);
 			// strongConnected(i, S, global_index, nv, CC, P, vind, vlowlink, vonstack);
 			vlowlink[ii] = MIN(vlowlink[ii], vlowlink[jj]);
 		}
-		else if (vonstack[jj]==1)
+		else if (vonstack[jj] == 1)
 		{
 			/* code */
 			vlowlink[ii] = MIN(vlowlink[ii], vlowlink[jj]);
@@ -92,39 +122,41 @@ int strongConnected(int ii, mystack& S, int &global_index, int nv, uint32_t* CC,
 
 
 
-	if (vind[ii]==vlowlink[ii])
+	if (vind[ii] == vlowlink[ii])
 	{
 		/* code */
 		int jj;
 		printf("The SCC ");
-		do{
-		jj = S.top();
-		S.pop();
+		do
+		{
+			jj = S.top();
+			S.pop();
 
-		printf("%d  ->",jj );
-		}while(jj != ii);
+			printf("%d  ->", jj );
+		}
+		while (jj != ii);
 
 		printf("\n");
 	}
 }
 
 int cycleDetect(int nv, uint32_t* CC, uint32_t* P,
-	int* vind, int* vlowlink, int* vonstack)
+                int* vind, int* vlowlink, int* vonstack)
 // detects cycle in the linked list and resolve the cycle issues
 {
 	mystack S;
-	int global_index =0;
+	int global_index = 0;
 	for (int i = 0; i < nv; ++i)
 	{
-		vind[i] =-1;
-		vlowlink[i] =0;
-		vonstack[i] =0;
+		vind[i] = -1;
+		vlowlink[i] = 0;
+		vonstack[i] = 0;
 	}
 
 
 	for (int i = 0; i < nv; ++i)
 	{
-		if (vind[i]==-1)
+		if (vind[i] == -1)
 		{
 			/* node not yet discovered */
 			strongConnected(i, S, global_index, nv, CC, P, vind, vlowlink, vonstack);
@@ -137,16 +169,16 @@ int cycleDetect(int nv, uint32_t* CC, uint32_t* P,
 
 int main(int argc, char const *argv[])
 {
-	
+
 
 	uint32_t CC[12];
-	uint32_t P[12]= {11,1,1,1,2,7,5,6,4,4,0,10};
+	uint32_t P[12] = {11, 1, 1, 1, 2, 7, 5, 6, 4, 4, 0, 10};
 	int ind[12];
 	int lowlink[12];
 	int vonstack[12];
-	
 
-	cycleDetect(12,CC,P,ind,lowlink, vonstack);
+
+	cycleDetect(12, CC, P, ind, lowlink, vonstack);
 
 	return 0;
 }
