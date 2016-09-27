@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <errno.h>
+#include "sv.h"
 
 off_t fsize(const char *filename)
 {
@@ -516,12 +517,18 @@ int FaultySVSweep_FaultArr(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
 
 
-uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
+uint32_t* FaultTolerantSVMain( graph_t *graph,
                                stat_t* stat,       /*for counting stats of each iteration*/
                                int max_iter        /*contgrolling maximum number of iteration*/
                              )
 {
+        size_t numVertices  = graph->numVertices;
+    size_t numEdges  = graph->numEdges;
+    uint32_t* off  = graph->off;
+    uint32_t* ind  = graph->ind;
+
     /*initialize */
+
 
     MemAccessCount = 0;
 

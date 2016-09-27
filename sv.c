@@ -10,6 +10,7 @@
 #include "timer.h"
 #include "stat.h"
 
+#include "sv.h"
 static long long MemAccessCount;
 
 
@@ -40,10 +41,16 @@ bool BaselineSVSweep(size_t nv, uint32_t* component_map, uint32_t* off, uint32_t
 
 
 
-uint32_t* BaselineSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
-                          stat_t* stat       /*for counting stats of each iteration*/
-                        )
+// uint32_t* BaselineSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
+//                           stat_t* stat       /*for counting stats of each iteration*/
+//                         )
+uint32_t* BaselineSVMain( graph_t *graph,
+                          stat_t* stat)
 {
+    size_t numVertices  = graph->numVertices;
+    size_t numEdges  = graph->numEdges;
+    uint32_t* off  = graph->off;
+    uint32_t* ind  = graph->ind;
 
 
     uint32_t* components_map = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
@@ -73,8 +80,9 @@ uint32_t* BaselineSVMain( size_t numVertices, size_t numEdges, uint32_t* off, ui
 int FaultFreeSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                      uint32_t* off, uint32_t* ind)
 {
+
     int changed = 0;
-    // #pragma omp parallel for 
+    // #pragma omp parallel for
     for (size_t v = 0; v < nv; v++)
     {
 
@@ -105,10 +113,17 @@ int FaultFreeSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
 
 
-uint32_t* FaultFreeSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
+uint32_t* FaultFreeSVMain( graph_t *graph,
+                           // size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
                            stat_t* stat       /*for counting stats of each iteration*/
                          )
 {
+
+    size_t numVertices  = graph->numVertices;
+    size_t numEdges  = graph->numEdges;
+    uint32_t* off  = graph->off;
+    uint32_t* ind  = graph->ind;
+
     /*initialize */
     MemAccessCount = 0;
 
@@ -156,7 +171,7 @@ int FTSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
               uint32_t* off, uint32_t* ind)
 {
     int changed = 0;
-    // #pragma omp parallel for 
+    // #pragma omp parallel for
     for (size_t v = 0; v < nv; v++)
     {
 
@@ -190,11 +205,19 @@ int FTSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
 
 
 
-uint32_t* FTSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
+uint32_t* FTSVMain( graph_t *graph,
+    // size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
                     stat_t* stat,       /*for counting stats of each iteration*/
                     int max_iter        /*contgrolling maximum number of iteration*/
                   )
 {
+
+    size_t numVertices  = graph->numVertices;
+    size_t numEdges  = graph->numEdges;
+    uint32_t* off  = graph->off;
+    uint32_t* ind  = graph->ind;
+
+
     /*initialize */
     MemAccessCount = 0;
 

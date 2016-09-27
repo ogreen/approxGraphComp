@@ -145,6 +145,12 @@ int main (const int argc, char *argv[])
 
     readGraphDIMACS(argv[1], &off, &ind, &nv, &ne);
 
+    graph_t graph;
+    graph.numVertices=nv;
+    graph.numEdges=ne;
+    graph.off=off;
+    graph.ind=ind;
+
     /*starting the stat*/
 
     stat_t statBL, statFF, statFT;
@@ -154,11 +160,11 @@ int main (const int argc, char *argv[])
 
     int max_iter = 1000;
 
-    uint32_t* cc_bl = FaultFreeSVMain( nv, ne, off, ind, &statBL);
+    uint32_t* cc_bl = FaultFreeSVMain( &graph, &statBL);
 
-    uint32_t* cc_ft = FaultTolerantSVMain( nv, ne, off, ind, &statFT, max_iter);
+    uint32_t* cc_ft = FaultTolerantSVMain( &graph, &statFT, max_iter);
 
-    uint32_t*  cc_ff = FTSVMain( nv, ne, off, ind, &statFF, max_iter);
+    uint32_t*  cc_ff = FTSVMain( &graph, &statFF, max_iter);
 
 
     for (int i = 0; i < nv; ++i)
