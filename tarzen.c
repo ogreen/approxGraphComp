@@ -9,6 +9,8 @@
 #include <stdlib.h>
 
 
+#include "sv.h"
+
 /** the algorithm from wikipedia
  algorithm tarjan is
   input: graph G = (V, E)
@@ -74,6 +76,9 @@ typedef struct
 } ts_t;	// tarzen structure
 
 
+
+
+
 void init_ts(int nv, ts_t *ts)
 {
 	ts->vind = (int*) malloc(sizeof(int) * nv);
@@ -100,9 +105,7 @@ void free_ts(ts_t *ts)
 
 
 
-// int strongConnected(int ii, mystack& S, int &global_index, int nv, uint32_t* CC, uint32_t* P,
-//                     int* vind, int* vlowlink, int* vonstack)
-int strongConnected(int ii, int nv, uint32_t* CC, uint32_t* P,
+int strongConnected(int ii, graph_t *graph, lp_state_t  *lp_state,
                     ts_t *ts)
 {
 	int* vind = ts->vind;
@@ -114,15 +117,21 @@ int strongConnected(int ii, int nv, uint32_t* CC, uint32_t* P,
 	(ts->S).push(ii);
 	vonstack[ii] = 1;
 
-	if (!(P[ii] == ii))
+
+
+	if (!(lp_state->Ps[ii] == -1))
 		// it must not be self-loop
 	{
 		/* code */
-		int jj = P[ii];
+		// int jj = P[ii];
+		// int jj = P[ii];
+		int jj = graph->ind[graph->off[ii]  + lp_state->Ps[ii]] ;
+
+
 		if (vind[jj] == -1)
 		{
 			// strongConnected(jj, S, global_index, nv, CC, P, vind, vlowlink, vonstack);
-			strongConnected(jj, nv, CC, P, ts);
+			strongConnected(jj, graph, lp_state, ts);
 			// strongConnected(i, S, global_index, nv, CC, P, vind, vlowlink, vonstack);
 			vlowlink[ii] = MIN(vlowlink[ii], vlowlink[jj]);
 		}
@@ -153,28 +162,26 @@ int strongConnected(int ii, int nv, uint32_t* CC, uint32_t* P,
 	}
 }
 
-int cycleDetect(int nv, uint32_t* CC, uint32_t* P,
-                ts_t *ts)
+// int cycleDetect(int nv, uint32_t* CC, uint32_t* P, ts_t *ts)
+int cycleDetect(graph_t *graph, lp_state_t*lp_state, ts_t *ts)
 // detects cycle in the linked list and resolve the cycle issues
 {
-	// mystack S;
-	// ts->S = S;
+
 	ts->global_index = 0;
-	for (int i = 0; i < nv; ++i)
+	for (int i = 0; i < graph->numVertices; ++i)
 	{
 		ts->vind[i] = -1;
 		ts->vlowlink[i] = 0;
 		ts->vonstack[i] = 0;
 	}
 
-
-
-	for (int i = 0; i < nv; ++i)
+	for (int i = 0; i < graph->numVertices; ++i)
 	{
 		if (ts->vind[i] == -1)
 		{
 			/* node not yet discovered */
-			strongConnected(i,  nv, CC, P, ts);
+			// strongConnected(i,  nv, CC, P, ts);
+			strongConnected(i, graph, lp_state, ts);
 
 		}
 	}
@@ -185,19 +192,49 @@ int cycleDetect(int nv, uint32_t* CC, uint32_t* P,
 int main(int argc, char const *argv[])
 {
 
+	graph_t graph;
+	graph.numVertices = 12;
+	graph.numEdges = 22;
+
+	uint32_t off[13] = {0, 2, 4, 6, 7, 10, 12, 14, 16, 17, 18, 20, 22};
+	uint32_t ind[22] = {10, 11,
+	                    2, 3,
+	                    1, 4,
+	                    1,
+	                    2, 8, 9,
+	                    6, 7,
+	                    5, 7,
+	                    5, 6,
+	                    4,
+	                    4,
+	                    0, 11,
+	                    0, 10
+	                   };
+
+	graph.off = off;
+	graph.ind = ind;
+
 
 	uint32_t CC[12];
 	uint32_t P[12] = {11, 1, 1, 1, 2, 7, 5, 6, 4, 4, 0, 10};
-	int ind[12];
-	int lowlink[12];
-	int vonstack[12];
 
-	ts_t ts; 
+	// uint32_t P[12] = {11, 1, 1, 1, 2, 7, 5, 6, 4, 4, 0, 10};
+	uint32_t Ps[12] = {1, -1, 0, 0, 0,1,0,1,0,0,0,1};
+
+	lp_state_t lp_state;
+
+	lp_state.CC = CC; 
+	lp_state.Ps = Ps; 
+
+
+
+
+	ts_t ts;
 	// ts = (ts_t *) malloc(sizeof(ts_t));
 	init_ts(12, &ts);
 
-
-	cycleDetect(12, CC, P, &ts);
+	cycleDetect(&graph, &lp_state, &ts);
+	// cycleDetect(12, CC, P, &ts);
 	free_ts(&ts);
 
 	return 0;

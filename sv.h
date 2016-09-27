@@ -10,8 +10,8 @@
 typedef struct
 {
 
-	int* CC; // connected component array
-	int* Ps; // parent array in index format
+	uint32_t* CC; // connected component array
+	uint32_t* Ps; // parent array in index format
 
 } lp_state_t;	// label propagation state
 
