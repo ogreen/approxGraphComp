@@ -11,6 +11,8 @@
 
 #include "sv.h"
 
+// #define MIN(A, B) ((A < B) ? A : B)
+
 /** the algorithm from wikipedia
  algorithm tarjan is
   input: graph G = (V, E)
@@ -146,23 +148,98 @@ int strongConnected(int ii, graph_t *graph, lp_state_t  *lp_state,
 
 	if (vind[ii] == vlowlink[ii])
 	{
+
 		/* code */
+		int mn = ii;  /*min label*/
 		int jj;
+
+
+
 		printf("The SCC ");
 		do
 		{
 			jj = (ts->S).top();
+			mn = MIN( mn , jj );
 			(ts->S).pop();
 
 			printf("%d  ->", jj );
 		}
 		while (jj != ii);
 
-		printf("\n");
+		printf(": minimum elements is %d\n", mn);
+
+		/*correction step */
+		lp_state->Ps[mn] = -1;
+		lp_state->CC[mn] = mn;
 	}
 }
 
-// int cycleDetect(int nv, uint32_t* CC, uint32_t* P, ts_t *ts)
+
+/* Shortcutting */
+int shortcut_LP(graph_t *graph, lp_state_t*lp_state, ts_t *ts)
+/*
+for each vertex in the graph it changes the label of the vertex to the
+root of the tree
+*/
+{
+	size_t nv = graph->numVertices;
+	uint32_t*CC = lp_state->CC;
+	int numChanges = 1;
+	while (numChanges > 0)
+	{
+		numChanges = 0;
+		for (uint32_t v = 0; v < nv; v++)
+		{
+			/* code */
+			uint32_t Pv = lp_state->Ps[v] == -1 ? v : graph->ind[graph->off[v]  + lp_state->Ps[v]];
+			printf("v=%u Pv=%u ",v, Pv);
+			uint32_t PPv =  lp_state->Ps[Pv] == -1 ? Pv : graph->ind[graph->off[Pv]  + lp_state->Ps[Pv]];
+			printf("PPv=%u\n", PPv );
+			if (CC[v] != CC[PPv])
+			{
+				CC[v] = CC[ PPv];
+				numChanges++;
+			}
+		}
+
+		printf("finish iteration\n");
+	}
+
+}
+
+
+int selfStab_LP(graph_t *graph, lp_state_t*lp_state, ts_t *ts)
+// detects cycle in the linked list and resolve the cycle issues
+/*makes the arbitrary step lp_state of label propagation algorithm
+self-stabilizing; i.e.
+lp_state<-SS(lp_state, graph)
+LP(lp_state) -> correct solution
+*/
+{
+
+	ts->global_index = 0;
+	for (int i = 0; i < graph->numVertices; ++i)
+	{
+		ts->vind[i] = -1;
+		ts->vlowlink[i] = 0;
+		ts->vonstack[i] = 0;
+	}
+
+	for (int i = 0; i < graph->numVertices; ++i)
+	{
+		if (ts->vind[i] == -1)
+		{
+			/* node not yet discovered */
+			strongConnected(i, graph, lp_state, ts);
+
+		}
+	}
+
+}
+
+
+
+
 int cycleDetect(graph_t *graph, lp_state_t*lp_state, ts_t *ts)
 // detects cycle in the linked list and resolve the cycle issues
 {
@@ -180,7 +257,6 @@ int cycleDetect(graph_t *graph, lp_state_t*lp_state, ts_t *ts)
 		if (ts->vind[i] == -1)
 		{
 			/* node not yet discovered */
-			// strongConnected(i,  nv, CC, P, ts);
 			strongConnected(i, graph, lp_state, ts);
 
 		}
@@ -216,15 +292,21 @@ int main(int argc, char const *argv[])
 
 
 	uint32_t CC[12];
+
+	for (int i = 0; i < 12; ++i)
+	{
+		CC[i]=i;
+	}
 	uint32_t P[12] = {11, 1, 1, 1, 2, 7, 5, 6, 4, 4, 0, 10};
 
 	// uint32_t P[12] = {11, 1, 1, 1, 2, 7, 5, 6, 4, 4, 0, 10};
-	uint32_t Ps[12] = {1, -1, 0, 0, 0,1,0,1,0,0,0,1};
+	// uint32_t Ps[12] = {1, -1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1};
+	uint32_t Ps[12] = {1, -1, 0, 0, 0, -1, 0, 1, 0, 0, 0, 1};
 
 	lp_state_t lp_state;
 
-	lp_state.CC = CC; 
-	lp_state.Ps = Ps; 
+	lp_state.CC = CC;
+	lp_state.Ps = Ps;
 
 
 
@@ -234,6 +316,17 @@ int main(int argc, char const *argv[])
 	init_ts(12, &ts);
 
 	cycleDetect(&graph, &lp_state, &ts);
+
+	shortcut_LP(&graph, &lp_state, &ts);
+
+	printf("After Shortcutting\n");
+
+	// cycleDetect(&graph, &lp_state, &ts);
+
+	for (int i = 0; i < 12; ++i)
+	{
+		printf("%u \n", lp_state.CC[i]);
+	}
 	// cycleDetect(12, CC, P, &ts);
 	free_ts(&ts);
 
