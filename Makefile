@@ -6,9 +6,9 @@ CFLAGS := -g -O3 -std=gnu99 -fopenmp
 
 LOAD_FLAGS := -lrt -lm
 
-SRCS := timer.c sv.c ft_sv.c faultInjection.c  stat.c 
+SRCS := timer.c sv.c ft_sv.c faultInjection.c  stat.c graph.c 
 
-HEADERS := timer.h sv.h ft_sv.h faultInjection.h stat.h
+HEADERS := timer.h sv.h ft_sv.h faultInjection.h stat.h graph.h
 
 OBJS  := $(SRCS:.c=.o)
 

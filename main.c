@@ -15,104 +15,11 @@
 #include <asm/unistd.h>
 #include "sv.h"
 #include "stat.h"
+#include "graph.h"
 
 #define COUNTOF(array) (sizeof(array) / sizeof(array[0]))
 
-void readGraphDIMACS(char* filePath, uint32_t** prmoff, uint32_t** prmind, uint32_t* prmnv, uint32_t* prmne)
-{
-    FILE *fp = fopen (filePath, "r");
-    int32_t nv, ne;
 
-    char* line = NULL;
-
-    // Read data from file
-    int32_t temp, lineRead;
-    size_t bytesRead = 0;
-    getline (&line, &bytesRead, fp);
-
-
-    sscanf (line, "%d %d", &nv, &ne); 
-
-
-    free(line);
-
-    // printf("nv =%u, ne=%u\n",nv,ne );
-    int32_t * off = (int32_t *) malloc ((nv + 2) * sizeof (int32_t));
-    int32_t * ind = (int32_t *) malloc ((ne * 2) * sizeof (int32_t));
-    off[0] = 0;
-    off[1] = 0;
-    int32_t counter = 0;
-    int32_t u;
-    line = NULL;
-    bytesRead = 0;
-
-
-    for (u = 1; (temp = getline (&line, &bytesRead, fp)) != -1; u++)
-    {
-        uint32_t neigh = 0;
-        uint32_t v = 0;
-        char *ptr = line;
-        int read = 0;
-        char tempStr[1000];
-        lineRead = 0;
-        while (lineRead < bytesRead && (read = sscanf (ptr, "%s", tempStr)) > 0)
-        {
-            v = atoi(tempStr);
-            read = strlen(tempStr);
-            ptr += read + 1;
-            lineRead = read + 1;
-            neigh++;
-            ind[counter++] = v;
-        }
-        off[u + 1] = off[u] + neigh;
-        free(line);
-        bytesRead = 0;
-    }
-
-
-    fclose (fp);
-
-
-    nv++;
-    ne *= 2;
-    *prmnv = nv;
-    *prmne = ne;
-    *prmind = ind;
-    *prmoff = off;
-}
-
-/*extracts name of the matrix from file given from path*/
-char *ExtractGraphName(char* s)
-{
-
-    const char dlm[2] = "/.";
-    char *GraphName =  strdup(s);
-    char *GraphName1 =  strtok(GraphName, dlm);
-    char *GraphName2 =  strtok(NULL, dlm);
-    char *GraphName3 =  strtok(NULL, dlm);
-
-    if (GraphName1 != NULL && GraphName2 != NULL)
-    {
-        /* code */
-        while (GraphName3 != NULL)
-        {
-            GraphName1 = GraphName2;
-            GraphName2 = GraphName3;
-            GraphName3 =  strtok(NULL, dlm);
-
-        }
-    }
-    else
-    {
-        printf("Error occured\n");
-    }
-
-#ifdef DEBUG
-    printf("extension free file name is %s\n", GraphName1 );
-#endif
-    return GraphName1;
-
-}
 int main (const int argc, char *argv[])
 {
 
@@ -127,9 +34,6 @@ int main (const int argc, char *argv[])
     }
     const char dlm[2] = ".";
 
-    // char *GraphName =  strdup(argv[1]);
-    // GraphName =  strtok(GraphName, dlm);
-    // printf("File name is %s\n", GraphName );
     char *GraphName = ExtractGraphName(argv[1]);
 
     int norm_prob;
@@ -143,13 +47,9 @@ int main (const int argc, char *argv[])
         norm_prob = 0;
     }
 
-    readGraphDIMACS(argv[1], &off, &ind, &nv, &ne);
-
+    /*initializing the graph*/
     graph_t graph;
-    graph.numVertices=nv;
-    graph.numEdges=ne;
-    graph.off=off;
-    graph.ind=ind;
+    readGraphDIMACS(argv[1], &graph);
 
     /*starting the stat*/
 
@@ -160,28 +60,35 @@ int main (const int argc, char *argv[])
 
     int max_iter = 1000;
 
-    uint32_t* cc_bl = FaultFreeSVMain( &graph, &statBL);
+    lp_state_t lps_bl = FaultFreeSVMain( &graph, &statBL);
 
-    uint32_t* cc_ft = FaultTolerantSVMain( &graph, &statFT, max_iter);
+    lp_state_t lps_ft = FaultTolerantSVMain( &graph, &statFT, max_iter);
 
-    uint32_t*  cc_ff = FTSVMain( &graph, &statFF, max_iter);
+    lp_state_t lps_ff = FTSVMain( &graph, &statFF, max_iter);
 
 
-    for (int i = 0; i < nv; ++i)
+    // uint32_t* cc_bl = FaultFreeSVMain( &graph, &statBL);
+
+    // uint32_t* cc_ft = FaultTolerantSVMain( &graph, &statFT, max_iter);
+
+    // uint32_t*  cc_ff = FTSVMain( &graph, &statFF, max_iter);
+
+
+    for (int i = 0; i < graph.numVertices; ++i)
     {
-        /* code */
-        if (cc_ft[i] != cc_ff[i])
+        
+        if (lps_ft.CC[i] != lps_ff.CC[i])
         {
-            printf("Error occured at %d: (%d, %d) \n", i, cc_ft[i], cc_ff[i] );
+            printf("Error occured at %d: (%d, %d) \n", i, lps_ft.CC[i], lps_ff.CC[i] );
         }
-        // assert(cc_ft[i] == cc_ff[i]);
+        
 
     }
 
-    for (int i = 0; i < nv; ++i)
+    for (int i = 0; i < graph.numVertices; ++i)
     {
         /* code */
-        assert(cc_ff[i] == cc_bl[i]);
+        assert(lps_ff.CC[i] == lps_bl.CC[i]);
 
     }
 
@@ -189,14 +96,12 @@ int main (const int argc, char *argv[])
 
     PrintCompStat2(GraphName, norm_prob, &statBL, &statFF, &statFT);
 
-    free(cc_bl);
-    free(cc_ft);
-    free(cc_ff);
+    free_lp_state(&lps_bl);
+    free_lp_state(&lps_ft);
+    free_lp_state(&lps_ff);
 
 
-
-    free(off);
-    free(ind);
+    free_graph(&graph);
     return 0;
 }
 

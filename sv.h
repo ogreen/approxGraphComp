@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #include "stat.h"
-
+#include "graph.h"
 typedef struct
 {
 
@@ -16,43 +16,22 @@ typedef struct
 } lp_state_t;	// label propagation state
 
 
-typedef struct
-{
-	size_t numVertices;
-	size_t numEdges;
-	uint32_t *off;
-	uint32_t *ind;
 
-} graph_t;
+lp_state_t BaselineSVMain( graph_t *graph, stat_t* stat);
 
+lp_state_t FaultTolerantSVMain( graph_t *graph, stat_t* stat, int max_iter);
 
-
-// uint32_t* BaselineSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
-// 	 stat_t* stat);
-
-// uint32_t* FaultTolerantSVMain( size_t numVertices, size_t numEdges,
-// 	uint32_t* off, uint32_t* ind, stat_t* stat, int max_iter);
-
-// uint32_t* FaultFreeSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
-// 	 stat_t* stat);
-
-// /*for checking the overhead*/
-// uint32_t* FTSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
-//                            stat_t* stat       /*for counting stats of each iteration*/
-//                          , int max_iter);
-
-
-
-uint32_t* BaselineSVMain( graph_t *graph,
-                          stat_t* stat);
-
-uint32_t* FaultTolerantSVMain( graph_t *graph,
-                               stat_t* stat, int max_iter);
-
-uint32_t* FaultFreeSVMain( graph_t *graph,
-                           stat_t* stat);
+lp_state_t FaultFreeSVMain( graph_t *graph, stat_t* stat);
 
 /*for checking the overhead*/
-uint32_t* FTSVMain( graph_t *graph,
-                    stat_t* stat       /*for counting stats of each iteration*/
-                    , int max_iter);
+lp_state_t FTSVMain( graph_t *graph, stat_t* stat, int max_iter);
+
+
+/*allocates space for a lp_state*/
+int alloc_lp_state(graph_t *graph, lp_state_t *lp_state);
+
+/*frees space for a lp_state*/
+int free_lp_state(lp_state_t *lp_state);
+
+/*initializes an lp_state*/
+int init_lp_state(graph_t *graph, lp_state_t *lp_state);

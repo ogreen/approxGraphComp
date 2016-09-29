@@ -14,8 +14,45 @@
 static long long MemAccessCount;
 
 
-bool BaselineSVSweep(size_t nv, uint32_t* component_map, uint32_t* off, uint32_t* ind)
+int alloc_lp_state(graph_t *graph, lp_state_t *lp_state)
 {
+    size_t numVertices  = graph->numVertices;
+
+    lp_state->CC = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    lp_state->Ps = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+
+    return 0;
+}
+
+int init_lp_state(graph_t *graph, lp_state_t *lp_state)
+{
+    size_t numVertices  = graph->numVertices;
+
+    for (int i = 0; i < numVertices; ++i)
+    {
+        lp_state->CC[i] = i;
+        lp_state->Ps[i] = -1;
+    }
+    return 0;
+}
+
+
+int free_lp_state(lp_state_t *lp_state)
+{
+    free(lp_state->CC);
+    free(lp_state->Ps);
+}
+
+
+
+// bool BaselineSVSweep(size_t nv, uint32_t* component_map, uint32_t* off, uint32_t* ind)
+bool BaselineSVSweep(graph_t *graph, lp_state_t *lp_state)
+{
+    size_t nv = graph->numVertices;
+    uint32_t* off = graph->off;
+    uint32_t* ind = graph->ind;
+    uint32_t* component_map = lp_state->CC;
+
     bool changed = false;
 
     for (size_t v = 0; v < nv; v++)
@@ -41,30 +78,29 @@ bool BaselineSVSweep(size_t nv, uint32_t* component_map, uint32_t* off, uint32_t
 
 
 
-// uint32_t* BaselineSVMain( size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
-//                           stat_t* stat       /*for counting stats of each iteration*/
-//                         )
-uint32_t* BaselineSVMain( graph_t *graph,
-                          stat_t* stat)
+lp_state_t BaselineSVMain( graph_t *graph,
+                           stat_t* stat)
 {
     size_t numVertices  = graph->numVertices;
     size_t numEdges  = graph->numEdges;
     uint32_t* off  = graph->off;
     uint32_t* ind  = graph->ind;
 
+    lp_state_t lp_state;
+    alloc_lp_state(graph, &lp_state);
+    init_lp_state(graph, &lp_state);
 
-    uint32_t* components_map = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    /* Initialize level array */
-    for (size_t i = 0; i < numVertices; i++)
-    {
-        components_map[i] = i;
-    }
+    // uint32_t* components_map = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    // for (size_t i = 0; i < numVertices; i++)
+    // {
+    //     components_map[i] = i;
+    // }
 
     bool changed;
     size_t iteration = 0;
     do
     {
-        changed = BaselineSVSweep(numVertices, components_map, off, ind);
+        changed = BaselineSVSweep(graph, &lp_state);
         iteration += 1;
     }
     while (changed);
@@ -73,7 +109,7 @@ uint32_t* BaselineSVMain( graph_t *graph,
     stat->numIteration = iteration;
     printf("Number of iteration is %d\n", iteration );
 
-    return components_map;
+    return lp_state;
 }
 
 /*fault tolerant SV sweep */
@@ -113,10 +149,9 @@ int FaultFreeSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
 
 
-uint32_t* FaultFreeSVMain( graph_t *graph,
-                           // size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
-                           stat_t* stat       /*for counting stats of each iteration*/
-                         )
+lp_state_t FaultFreeSVMain( graph_t *graph,
+                            stat_t* stat       /*for counting stats of each iteration*/
+                          )
 {
 
     size_t numVertices  = graph->numVertices;
@@ -127,15 +162,23 @@ uint32_t* FaultFreeSVMain( graph_t *graph,
     /*initialize */
     MemAccessCount = 0;
 
-    uint32_t* cc_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    uint32_t* cc_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    lp_state_t lps_curr, lps_prev;
+    alloc_lp_state(graph, &lps_curr);
+    alloc_lp_state(graph, &lps_prev);
 
-    /* Initialize level array */
-    for (size_t i = 0; i < numVertices; i++)
-    {
-        cc_curr[i] = i;
-        cc_prev[i] = i;
-    }
+    init_lp_state(graph, &lps_curr);
+    init_lp_state(graph, &lps_prev);
+
+
+    uint32_t* cc_curr = lps_curr.CC;
+    uint32_t* cc_prev = lps_prev.CC;
+
+    // /* Initialize level array */
+    // for (size_t i = 0; i < numVertices; i++)
+    // {
+    //     cc_curr[i] = i;
+    //     cc_prev[i] = i;
+    // }
 
 
     bool changed;
@@ -159,9 +202,12 @@ uint32_t* FaultFreeSVMain( graph_t *graph,
 #ifdef DEBUG
     printf("NUmber of iteration for fault free=%d\n", iteration );
 #endif
-    free(cc_prev);
 
-    return cc_curr;
+    // free(cc_prev);
+    // return cc_curr;
+
+    free_lp_state(&lps_prev);
+    return lps_curr;
 }
 
 
@@ -205,11 +251,11 @@ int FTSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
 
 
 
-uint32_t* FTSVMain( graph_t *graph,
-    // size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
-                    stat_t* stat,       /*for counting stats of each iteration*/
-                    int max_iter        /*contgrolling maximum number of iteration*/
-                  )
+lp_state_t FTSVMain( graph_t *graph,
+                     // size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
+                     stat_t* stat,       /*for counting stats of each iteration*/
+                     int max_iter        /*contgrolling maximum number of iteration*/
+                   )
 {
 
     size_t numVertices  = graph->numVertices;
@@ -220,19 +266,32 @@ uint32_t* FTSVMain( graph_t *graph,
 
     /*initialize */
     MemAccessCount = 0;
+    lp_state_t lps_curr, lps_prev;
+    alloc_lp_state(graph, &lps_curr);
+    alloc_lp_state(graph, &lps_prev);
 
-    uint32_t* cc_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    uint32_t* cc_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    uint32_t* m_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    uint32_t* m_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    init_lp_state(graph, &lps_curr);
+    init_lp_state(graph, &lps_prev);
 
-    /* Initialize level array */
-    for (size_t i = 0; i < numVertices; i++)
-    {
-        cc_curr[i] = i;
-        cc_prev[i] = i;
-        m_curr[i] = -1;    /*relative parent*/
-    }
+
+    uint32_t* cc_curr = lps_curr.CC;
+    uint32_t* cc_prev = lps_prev.CC;
+
+    uint32_t* m_curr = lps_curr.Ps;
+    uint32_t* m_prev = lps_prev.Ps;
+
+    // uint32_t* cc_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    // uint32_t* cc_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    // uint32_t* m_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    // uint32_t* m_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+
+    // /* Initialize level array */
+    // for (size_t i = 0; i < numVertices; i++)
+    // {
+    //     cc_curr[i] = i;
+    //     cc_prev[i] = i;
+    //     m_curr[i] = -1;    /*relative parent*/
+    // }
 
 
     bool changed;
@@ -258,7 +317,8 @@ uint32_t* FTSVMain( graph_t *graph,
     printf("NUmber of iteration for fault free=%d\n", iteration );
 #endif
 
-    free(cc_prev);
-
-    return cc_curr;
+    // free(cc_prev);
+    // return cc_curr;
+    free_lp_state(&lps_prev);
+    return lps_curr;
 }

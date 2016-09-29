@@ -192,9 +192,9 @@ root of the tree
 		{
 			/* code */
 			uint32_t Pv = lp_state->Ps[v] == -1 ? v : graph->ind[graph->off[v]  + lp_state->Ps[v]];
-			printf("v=%u Pv=%u ",v, Pv);
+			// printf("v=%u Pv=%u ",v, Pv);
 			uint32_t PPv =  lp_state->Ps[Pv] == -1 ? Pv : graph->ind[graph->off[Pv]  + lp_state->Ps[Pv]];
-			printf("PPv=%u\n", PPv );
+			// printf("PPv=%u\n", PPv );
 			if (CC[v] != CC[PPv])
 			{
 				CC[v] = CC[ PPv];
@@ -202,7 +202,7 @@ root of the tree
 			}
 		}
 
-		printf("finish iteration\n");
+		// printf("finish iteration\n");
 	}
 
 }
@@ -216,6 +216,42 @@ lp_state<-SS(lp_state, graph)
 LP(lp_state) -> correct solution
 */
 {
+
+	size_t nv = graph->numVertices;
+	uint32_t*CC = lp_state->CC;
+
+
+	/*first check following condition for all vertex
+
+	1.  P[v] \in N(v) => Ps[v]+2>=1 & Ps[v] < |adj(v)|
+	2.  CC[v] >= CC[P[v]]
+	*/
+	for (uint32_t v = 0; v < nv; v++)
+	{
+		const size_t vdeg = graph->off[v + 1] - graph->off[v];
+
+		if (lp_state->Ps[v] >= vdeg || lp_state->Ps[v] + 2 < 1)
+		{
+			/* reset that node */
+			lp_state->Ps[v] = -1;
+			lp_state->CC[v] = v;
+		}
+		else
+		{
+			uint32_t Pv = graph->ind[graph->off[v]  + lp_state->Ps[v]];
+			if (lp_state->CC[v] < lp_state->CC[Pv])
+			{
+				/* reset that node */
+				lp_state->Ps[v] = -1;
+				lp_state->CC[v] = v;
+			}
+		}
+
+
+	}
+
+	/*Now do the Cycle Correction*/
+
 
 	ts->global_index = 0;
 	for (int i = 0; i < graph->numVertices; ++i)
@@ -235,6 +271,10 @@ LP(lp_state) -> correct solution
 		}
 	}
 
+	/*finally use short cut to set all the nodes */
+	shortcut_LP(graph, lp_state, ts);
+
+	return 0;
 }
 
 
@@ -295,7 +335,7 @@ int main(int argc, char const *argv[])
 
 	for (int i = 0; i < 12; ++i)
 	{
-		CC[i]=i;
+		CC[i] = i;
 	}
 	uint32_t P[12] = {11, 1, 1, 1, 2, 7, 5, 6, 4, 4, 0, 10};
 
@@ -315,10 +355,11 @@ int main(int argc, char const *argv[])
 	// ts = (ts_t *) malloc(sizeof(ts_t));
 	init_ts(12, &ts);
 
-	cycleDetect(&graph, &lp_state, &ts);
+	// cycleDetect(&graph, &lp_state, &ts);
 
-	shortcut_LP(&graph, &lp_state, &ts);
+	// shortcut_LP(&graph, &lp_state, &ts);
 
+	selfStab_LP(&graph, &lp_state, &ts);
 	printf("After Shortcutting\n");
 
 	// cycleDetect(&graph, &lp_state, &ts);

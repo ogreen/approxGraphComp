@@ -100,7 +100,6 @@ int ftBadAdjacencyBadParent_RelParent(size_t nv,
 
             }
         }
-        // else if (cc_curr[v] != cc_prev[vind[m_curr[v]]] )
         else if (cc_curr[v] != cc_prev[vind[m_curr[v]]] )
         {
             /* code */
@@ -517,7 +516,7 @@ int FaultySVSweep_FaultArr(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
 
 
-uint32_t* FaultTolerantSVMain( graph_t *graph,
+lp_state_t FaultTolerantSVMain( graph_t *graph,
                                stat_t* stat,       /*for counting stats of each iteration*/
                                int max_iter        /*contgrolling maximum number of iteration*/
                              )
@@ -580,22 +579,37 @@ uint32_t* FaultTolerantSVMain( graph_t *graph,
         }
     }
 
-    uint32_t* cc_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    uint32_t* cc_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    uint32_t* m_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    uint32_t* m_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+        lp_state_t lps_curr, lps_prev;
+    alloc_lp_state(graph, &lps_curr);
+    alloc_lp_state(graph, &lps_prev);
+
+    init_lp_state(graph, &lps_curr);
+    init_lp_state(graph, &lps_prev);
+
+
+    uint32_t* cc_curr = lps_curr.CC;
+    uint32_t* cc_prev = lps_prev.CC;
+
+    uint32_t* m_curr = lps_curr.Ps;
+    uint32_t* m_prev = lps_prev.Ps;
+
+    // uint32_t* cc_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    // uint32_t* cc_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    // uint32_t* m_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    // uint32_t* m_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+
+    //     /* Initialize level array */
+    // for (size_t i = 0; i < numVertices; i++)
+    // {
+    //     cc_curr[i] = i;
+    //     cc_prev[i] = i;
+    //     m_curr[i] = -1;    /*relative parent*/
+    // }
 
 
     uint32_t* FaultArrEdge = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
     uint32_t* FaultArrCC = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
 
-    /* Initialize level array */
-    for (size_t i = 0; i < numVertices; i++)
-    {
-        cc_curr[i] = i;
-        cc_prev[i] = i;
-        m_curr[i] = -1;    /*relative parent*/
-    }
 
 
     bool changed;
@@ -716,10 +730,12 @@ uint32_t* FaultTolerantSVMain( graph_t *graph,
 #ifdef DEBUG
     printf("NUmber of iteration for fault free=%d\n", iteration );
 #endif
-    free(cc_prev);
+    // free(cc_prev);
     free (FaultArr);
 
     free (FaultArrEdge);
     free (FaultArrCC);
-    return cc_curr;
+    // return cc_curr;
+    free_lp_state(&lps_prev);
+    return lps_curr;
 }
