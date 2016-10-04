@@ -516,12 +516,13 @@ int FaultySVSweep_FaultArr(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
 
 
+
 lp_state_t FaultTolerantSVMain( graph_t *graph,
                                stat_t* stat,       /*for counting stats of each iteration*/
                                int max_iter        /*contgrolling maximum number of iteration*/
                              )
 {
-        size_t numVertices  = graph->numVertices;
+    size_t numVertices  = graph->numVertices;
     size_t numEdges  = graph->numEdges;
     uint32_t* off  = graph->off;
     uint32_t* ind  = graph->ind;
@@ -534,52 +535,9 @@ lp_state_t FaultTolerantSVMain( graph_t *graph,
     /*get fault probability*/
     double fProb1, fProb2;
 
-
-    if (getenv("NORM_PROB") != NULL)
-        // if (0)
-    {
-        double ind = (double) atof(getenv("NORM_PROB"));
-        // int num_edge = off[numVertices];
-        // fProb1 = pow(2.0, -ind) / ( 32) ;
-        fProb1 = pow(2.0, -ind) ;
-        fProb2 = fProb1;
-#ifdef DEBUG
-        printf("Using fProb1=%g \n", fProb1);
-        printf("Using fProb2=%g \n", fProb2);
-#endif
-    }
-    else
-    {
-        if (getenv("FAULT_PROB1") != NULL)
-        {
-            fProb1 = (double) atof(getenv("FAULT_PROB1"));
-#ifdef DEBUG
-            printf("Using fProb1=%g \n", fProb1);
-#endif
-        }
-        else
-        {
-            printf("Environment variable FAULT_PROB1 not set: using default 0\n");
-            fProb1 = 0;
-        }
-
-
-        if (getenv("FAULT_PROB2") != NULL)
-        {
-            fProb2 = (double) atof(getenv("FAULT_PROB2"));
-#ifdef DEBUG
-            printf("Using fProb2=%g \n", fProb2);
-#endif
-
-        }
-        else
-        {
-            printf("Environment variable FAULT_PROB2 not set: using default 0\n");
-            fProb2 = 0;
-        }
-    }
-
-        lp_state_t lps_curr, lps_prev;
+    getFault_prob(&fProb1, &fProb2);
+    
+    lp_state_t lps_curr, lps_prev;
     alloc_lp_state(graph, &lps_curr);
     alloc_lp_state(graph, &lps_prev);
 

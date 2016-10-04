@@ -12,12 +12,13 @@ typedef struct
 
 	uint32_t* CC; // connected component array
 	uint32_t* Ps; // parent array in index format
+	uint32_t* P; // parent array in absolute format
 
 } lp_state_t;	// label propagation state
 
 
 
-lp_state_t BaselineSVMain( graph_t *graph, stat_t* stat);
+int BaselineSVMain(lp_state_t *lp_state, graph_t *graph, stat_t* stat);
 
 lp_state_t FaultTolerantSVMain( graph_t *graph, stat_t* stat, int max_iter);
 

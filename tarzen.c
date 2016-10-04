@@ -360,7 +360,7 @@ int main(int argc, char const *argv[])
 	// shortcut_LP(&graph, &lp_state, &ts);
 
 	selfStab_LP(&graph, &lp_state, &ts);
-	printf("After Shortcutting\n");
+	printf("After Self-stabilizing\n");
 
 	// cycleDetect(&graph, &lp_state, &ts);
 

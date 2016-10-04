@@ -1,17 +1,23 @@
 
 CC := icc  
 # CC := gcc  
+CXX := icpc 
 
 CFLAGS := -g -O3 -std=gnu99 -fopenmp 
 
 LOAD_FLAGS := -lrt -lm
 
-SRCS := timer.c sv.c ft_sv.c faultInjection.c  stat.c graph.c 
+CSRCS := timer.c sv.c ft_sv.c faultInjection.c  stat.c graph.c 
+
+CPPSRCS := sssv.cpp 
 
 HEADERS := timer.h sv.h ft_sv.h faultInjection.h stat.h graph.h
 
-OBJS  := $(SRCS:.c=.o)
+COBJS  := $(CSRCS:.c=.o)
 
+CPPOBJS  := $(CPPSRCS:.cpp=.o)
+
+OBJS := $(COBJS) $(CPPOBJS)
 # for testing the matrix
 GRAPH_DIR := graphs
 MAT_SM :=  as-22july06.graph astro-ph.graph caidaRouterLevel.graph \
@@ -19,17 +25,25 @@ MAT_SM :=  as-22july06.graph astro-ph.graph caidaRouterLevel.graph \
 		 citationCiteseer.graph
 
 .PHONY:	all clean test_small 
-all: sv FaultGenerator sssv
+all: sv FaultGenerator selfStab_test 
 
-OBJS: $(SRCS) $(HEADERS)
+COBJS: $(CSRCS) $(HEADERS)
 	@$(CC) $(CFLAGS)  -c $< -o $@ 
+	@echo "Compiled "$<" successfully!"
+
+
+CPPOBJS: $(CPPSRCS) $(HEADERS)
+	@$(CXX) $(CFLAGS)  -c $< -o $@ 
 	@echo "Compiled "$<" successfully!"
 
 sv: main.c  $(OBJS) $(HEADERS) Makefile 
 	$(CC)  $(CFLAGS) -o $@ main.c $(OBJS) $(LOAD_FLAGS)
 
-sssv: sssv.c  $(OBJS) $(HEADERS) Makefile 
-	$(CC)  $(CFLAGS) -o $@ sssv.c $(OBJS) $(LOAD_FLAGS)
+selfStab_test: selfStab_test.c $(OBJS) $(HEADERS) Makefile 
+	$(CC)  $(CFLAGS) -o $@ selfStab_test.c $(OBJS) $(LOAD_FLAGS)
+
+# sssv: sssv.c  $(COBJS) $(HEADERS) Makefile 
+# 	$(CC)  $(CFLAGS) -o $@ sssv.c $(COBJS) $(LOAD_FLAGS)
 
 
 FaultGenerator: FaultGen.c 
@@ -39,5 +53,5 @@ test_small: sv
 	$(foreach testcase,$(MAT_SM),./sv $(GRAPH_DIR)/$(testcase);)
  
 clean:
-	-rm -f sv $(OBJS) FaultGenerator
+	-rm -f sv $(OBJS)  FaultGenerator
 	

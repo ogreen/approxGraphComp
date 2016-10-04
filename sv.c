@@ -20,7 +20,7 @@ int alloc_lp_state(graph_t *graph, lp_state_t *lp_state)
 
     lp_state->CC = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
     lp_state->Ps = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-
+    lp_state->P = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
     return 0;
 }
 
@@ -41,6 +41,7 @@ int free_lp_state(lp_state_t *lp_state)
 {
     free(lp_state->CC);
     free(lp_state->Ps);
+    free(lp_state->P);
 }
 
 
@@ -65,6 +66,7 @@ bool BaselineSVSweep(graph_t *graph, lp_state_t *lp_state)
             const uint32_t u = vind[edge];
             if (component_map[u] < component_map[v])
             {
+                lp_state->Ps[v] = edge;
                 component_map[v] = component_map[u];
                 changed = true;
             }
@@ -78,7 +80,7 @@ bool BaselineSVSweep(graph_t *graph, lp_state_t *lp_state)
 
 
 
-lp_state_t BaselineSVMain( graph_t *graph,
+int BaselineSVMain( lp_state_t *lp_state,  graph_t *graph,
                            stat_t* stat)
 {
     size_t numVertices  = graph->numVertices;
@@ -86,9 +88,9 @@ lp_state_t BaselineSVMain( graph_t *graph,
     uint32_t* off  = graph->off;
     uint32_t* ind  = graph->ind;
 
-    lp_state_t lp_state;
-    alloc_lp_state(graph, &lp_state);
-    init_lp_state(graph, &lp_state);
+    // lp_state_t lp_state;
+    // alloc_lp_state(graph, &lp_state);
+    // init_lp_state(graph, &lp_state);
 
     // uint32_t* components_map = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
     // for (size_t i = 0; i < numVertices; i++)
@@ -100,7 +102,7 @@ lp_state_t BaselineSVMain( graph_t *graph,
     size_t iteration = 0;
     do
     {
-        changed = BaselineSVSweep(graph, &lp_state);
+        changed = BaselineSVSweep(graph, lp_state);
         iteration += 1;
     }
     while (changed);
@@ -109,7 +111,7 @@ lp_state_t BaselineSVMain( graph_t *graph,
     stat->numIteration = iteration;
     printf("Number of iteration is %d\n", iteration );
 
-    return lp_state;
+    return 0;
 }
 
 /*fault tolerant SV sweep */
@@ -279,19 +281,6 @@ lp_state_t FTSVMain( graph_t *graph,
 
     uint32_t* m_curr = lps_curr.Ps;
     uint32_t* m_prev = lps_prev.Ps;
-
-    // uint32_t* cc_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    // uint32_t* cc_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    // uint32_t* m_curr = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    // uint32_t* m_prev = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-
-    // /* Initialize level array */
-    // for (size_t i = 0; i < numVertices; i++)
-    // {
-    //     cc_curr[i] = i;
-    //     cc_prev[i] = i;
-    //     m_curr[i] = -1;    /*relative parent*/
-    // }
 
 
     bool changed;

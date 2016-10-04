@@ -132,3 +132,53 @@ uint32_t FaultInjectByte(uint32_t value, double prob)
     // return FaultInjectBit(value, prob);
     return FaultInjectWord(value, prob);
 }
+
+
+int getFault_prob(double *fProb1, double *fProb2)
+{
+    if (getenv("NORM_PROB") != NULL)
+        // if (0)
+    {
+        double ind = (double) atof(getenv("NORM_PROB"));
+        // int num_edge = off[numVertices];
+        // fProb1 = pow(2.0, -ind) / ( 32) ;
+        *fProb1 = pow(2.0, -ind) ;
+        *fProb2 = *fProb1;
+#ifdef DEBUG
+        printf("Using *fProb1=%g \n", *fProb1);
+        printf("Using *fProb2=%g \n", *fProb2);
+#endif
+    }
+    else
+    {
+        if (getenv("FAULT_PROB1") != NULL)
+        {
+            *fProb1 = (double) atof(getenv("FAULT_PROB1"));
+#ifdef DEBUG
+            printf("Using *fProb1=%g \n", *fProb1);
+#endif
+        }
+        else
+        {
+            printf("Environment variable FAULT_PROB1 not set: using default 0\n");
+            *fProb1 = 0;
+        }
+
+
+        if (getenv("FAULT_PROB2") != NULL)
+        {
+            *fProb2 = (double) atof(getenv("FAULT_PROB2"));
+#ifdef DEBUG
+            printf("Using *fProb2=%g \n", *fProb2);
+#endif
+
+        }
+        else
+        {
+            printf("Environment variable FAULT_PROB2 not set: using default 0\n");
+            *fProb2 = 0;
+        }
+    }
+
+}
+
