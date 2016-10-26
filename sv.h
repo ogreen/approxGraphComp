@@ -13,6 +13,7 @@ typedef struct
 	uint32_t* CC; // connected component array
 	uint32_t* Ps; // parent array in index format
 	uint32_t* P; // parent array in absolute format
+	int* Cr;
 
 } lp_state_t;	// label propagation state
 

@@ -154,13 +154,15 @@ int strongConnected(int ii, graph_t *graph, lp_state_t  *lp_state,
 		int jj;
 
 
-
+		jj = (ts->S).top();
 		printf("The SCC ");
 		do
 		{
 			jj = (ts->S).top();
 			mn = MIN( mn , jj );
 			(ts->S).pop();
+			vonstack[jj]=0;
+			
 
 			printf("%d  ->", jj );
 		}
@@ -341,7 +343,7 @@ int main(int argc, char const *argv[])
 
 	// uint32_t P[12] = {11, 1, 1, 1, 2, 7, 5, 6, 4, 4, 0, 10};
 	// uint32_t Ps[12] = {1, -1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1};
-	uint32_t Ps[12] = {1, -1, 0, 0, 0, -1, 0, 1, 0, 0, 0, 1};
+	uint32_t Ps[12] = {1, -1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1};
 
 	lp_state_t lp_state;
 

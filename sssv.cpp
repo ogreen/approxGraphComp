@@ -167,6 +167,8 @@ int strongConnected(int ii, graph_t *graph, lp_state_t  *lp_state,
         /*correction step */
         lp_state->Ps[mn] = -1;
         lp_state->CC[mn] = mn;
+        // mark mn as invalid
+        // lp_state->Cr[mn] = 1;
     }
 }
 
@@ -187,7 +189,14 @@ root of the tree
     {
         uint32_t Pv = lp_state->Ps[v] == -1 ? v : graph->ind[graph->off[v]  + lp_state->Ps[v]];
         lp_state->P[v] = Pv;
+        if (v == 1)
+        {
+            /* code */
+            printf("checks SC: %d, %d, %d, %d\n", lp_state->CC[v], lp_state->Ps[v], lp_state->P[v], lp_state->Cr[v] );
+        }
     }
+
+    int corrupted = 0;
 
     while (numChanges > 0)
     {
@@ -216,39 +225,20 @@ root of the tree
 
     }
 
-    /*first loop for reduce*/
+
     for (uint32_t v = 0; v < nv; v++)
     {
-        uint32_t Pv = lp_state->P[v];
-        if (v==Pv)
+        /* code */
+        if (lp_state->Cr[lp_state->P[v]])
         {
-            // printf("top vertexs are %d \n",v);
-            /* code */
-        }
-
-        if (v < CC[Pv])
-        {
-            /* code */
-            CC[Pv] = v;
+            /* easy fix : reset */
+            lp_state->CC[v] = v;
             lp_state->Ps[v] = -1;
-
+            corrupted++;
         }
-
     }
 
-    /*second loop for broad cast*/
-    for (uint32_t v = 0; v < nv; v++)
-    {
-        uint32_t Pv = lp_state->P[v];
-
-        if (CC[v] != CC[Pv])
-        {
-            // printf("v=%d CC[v]=%d CC[Pv]=%d \n", v, CC[v], CC[Pv] );
-            // CC[v] = CC[Pv];
-        }
-
-    }
-    printf("finish Shortcutting %d\n", iteration);
+    printf("finish Shortcutting %d, number of corruption %d\n", iteration, corrupted);
 
 }
 
@@ -267,7 +257,16 @@ LP(lp_state) -> correct solution
     uint32_t*CC = lp_state->CC;
 
 
-    printf("cc[261780]=%d\n", CC[261780] );
+
+    for (uint32_t v = 0; v < nv; v++)
+    {
+        lp_state->Cr[v] = 0;
+        if (v == 1)
+        {
+            /* code */
+            printf("checks0: %d, %d, %d, %d\n", lp_state->CC[v], lp_state->Ps[v], lp_state->P[v], lp_state->Cr[v] );
+        }
+    }
 
 
     /*first check following condition for all vertex
@@ -275,37 +274,88 @@ LP(lp_state) -> correct solution
     1.  P[v] \in N(v) => Ps[v]+2>=1 & Ps[v] < |adj(v)|
     2.  CC[v] >= CC[P[v]]
     */
+    int corrupted = 0;
     for (uint32_t v = 0; v < nv; v++)
     {
         const size_t vdeg = graph->off[v + 1] - graph->off[v];
 
-        if (CC[v] >= v)
+        if (CC[v] > v) // should be greater than
         {
             /* code */
             CC[v] = v;
             lp_state->Ps[v] = -1;
+            // mark the vertex as corrupted
+            lp_state->Cr[v] = 1;
+            corrupted++;
+            if (v == 1)
+            {
+                /* code */
+                printf("checks1: %d, %d, %d, %d\n", lp_state->CC[v], lp_state->Ps[v], lp_state->P[v], lp_state->Cr[v] );
+            }
         }
 
-        else if (lp_state->Ps[v] >= vdeg || lp_state->Ps[v] + 2 < 1)
+        else if ((lp_state->Ps[v] >= vdeg && lp_state->Ps[v] != -1) || lp_state->Ps[v] +2 <1)
         {
+            if (v == 1)
+            {
+                /* code */
+                printf("checks2: %d, %d, %d, %d\n", lp_state->CC[v], lp_state->Ps[v], lp_state->P[v], lp_state->Cr[v] );
+                printf(" %d %d\n",lp_state->Ps[v] >= vdeg,lp_state->Ps[v] <4294967295 );
+            }
             /* reset that node */
             lp_state->Ps[v] = -1;
             lp_state->CC[v] = v;
+            lp_state->Cr[v] = 1;
+            corrupted++;
+            if (v == 1)
+            {
+                /* code */
+                printf("checks2: %d, %d, %d, %d\n", lp_state->CC[v], lp_state->Ps[v], lp_state->P[v], lp_state->Cr[v] );
+                printf(" %d %d\n",lp_state->Ps[v] >= vdeg,lp_state->Ps[v] <4294967295 );
+            }
         }
         else
         {
-            uint32_t Pv = graph->ind[graph->off[v]  + lp_state->Ps[v]];
-            if (lp_state->CC[v] < lp_state->CC[Pv])
+            if (lp_state->Ps[v] == -1 )
             {
-                /* reset that node */
-                // lp_state->Ps[v] = -1;
-                // lp_state->CC[v] = v;
+                /* code */
+                if (lp_state->CC[v] != v)
+                {
+                    lp_state->CC[v] = v;
+                    lp_state->Cr[v] = 1;
+                    corrupted++;
+                    if (v == 1)
+                    {
+                        /* code */
+                        printf("checks3: %d, %d, %d, %d\n", lp_state->CC[v], lp_state->Ps[v], lp_state->P[v], lp_state->Cr[v] );
+                    }
+                }
+            }
+            else
+            {
+
+                uint32_t Pv = graph->ind[graph->off[v]  + lp_state->Ps[v]];
+                if (lp_state->CC[v] < lp_state->CC[Pv])
+                {
+                    /* reset that node */
+                    lp_state->Ps[v] = -1;
+                    lp_state->CC[v] = v;
+                    // mark it as incorrect
+                    lp_state->Cr[v] = 1;
+                    corrupted++;
+                    if (v == 1)
+                    {
+                        /* code */
+                        printf("checks4: %d, %d, %d, %d\n", lp_state->CC[v], lp_state->Ps[v], lp_state->P[v], lp_state->Cr[v] );
+                    }
+                }
             }
         }
 
 
     }
-    printf("cc[261780]=%d\n", CC[261780] );
+    printf("cc[1]=%d\n", CC[1] );
+
     /*Now do the Cycle Correction*/
 
 
@@ -326,11 +376,12 @@ LP(lp_state) -> correct solution
 
         }
     }
+    printf("cc[1]=%d\n", CC[1] );
 
-    printf("cc[261780]=%d\n", CC[261780] );
-    /*finally use short cut to set all the nodes */
+
+
+    printf("NUmber of corruptions is %d, NV %d\n", corrupted, nv );
     shortcut_LP(graph, lp_state, ts);
-    printf("cc[261780]=%d\n", CC[261780] );
 
     return 0;
 }
