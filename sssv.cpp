@@ -149,7 +149,7 @@ int strongConnected(int ii, graph_t *graph, lp_state_t  *lp_state,
         int mn = ii;  /*min label*/
         int jj;
 
-
+        int count=0;
 
         // printf("The SCC ");
         do
@@ -157,6 +157,7 @@ int strongConnected(int ii, graph_t *graph, lp_state_t  *lp_state,
             jj = S.top();
             mn = MIN( mn , jj );
             S.pop();
+            count++;
 
             // printf("%d  ->", jj );
         }
@@ -165,8 +166,19 @@ int strongConnected(int ii, graph_t *graph, lp_state_t  *lp_state,
         // printf(": minimum elements is %d\n", mn);
 
         /*correction step */
-        lp_state->Ps[mn] = -1;
-        lp_state->CC[mn] = mn;
+        if (count>1)
+        {
+            /* code */
+            lp_state->Ps[mn] = -1;
+            if (lp_state->CC[mn] != mn)
+            {
+                /* code */
+                lp_state->CC[mn] = mn;
+                // lp_state->Cr[mn] = 1;
+            }
+            
+        }
+        
         // mark mn as invalid
         // lp_state->Cr[mn] = 1;
     }
@@ -285,7 +297,7 @@ LP(lp_state) -> correct solution
             CC[v] = v;
             lp_state->Ps[v] = -1;
             // mark the vertex as corrupted
-            lp_state->Cr[v] = 1;
+            lp_state->Cr[v] = 0;
             corrupted++;
             if (v == 1)
             {

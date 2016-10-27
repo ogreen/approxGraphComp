@@ -57,7 +57,7 @@ int rand_flip_output( double fprob,             // probability of flipping an en
     {
         uint32_t u = lp_state->CC[i];
         lp_state->CC[i] = FaultInjectByte(u, fprob);
-        // lp_state->Ps[i] = FaultInjectByte(lp_state->Ps[i], fprob);
+        lp_state->Ps[i] = FaultInjectByte(lp_state->Ps[i], fprob);
     }
     return 0;
 }

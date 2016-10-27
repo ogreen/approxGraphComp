@@ -152,6 +152,7 @@ int strongConnected(int ii, graph_t *graph, lp_state_t  *lp_state,
 		/* code */
 		int mn = ii;  /*min label*/
 		int jj;
+		int count =0;
 
 
 		jj = (ts->S).top();
@@ -162,17 +163,19 @@ int strongConnected(int ii, graph_t *graph, lp_state_t  *lp_state,
 			mn = MIN( mn , jj );
 			(ts->S).pop();
 			vonstack[jj]=0;
+			count++;
 			
 
 			printf("%d  ->", jj );
 		}
 		while (jj != ii);
 
+		// if(count>1)
 		printf(": minimum elements is %d\n", mn);
 
 		/*correction step */
-		lp_state->Ps[mn] = -1;
-		lp_state->CC[mn] = mn;
+		// lp_state->Ps[mn] = -1;
+		// lp_state->CC[mn] = mn;
 	}
 }
 
@@ -228,29 +231,29 @@ LP(lp_state) -> correct solution
 	1.  P[v] \in N(v) => Ps[v]+2>=1 & Ps[v] < |adj(v)|
 	2.  CC[v] >= CC[P[v]]
 	*/
-	for (uint32_t v = 0; v < nv; v++)
-	{
-		const size_t vdeg = graph->off[v + 1] - graph->off[v];
+	// for (uint32_t v = 0; v < nv; v++)
+	// {
+	// 	const size_t vdeg = graph->off[v + 1] - graph->off[v];
 
-		if (lp_state->Ps[v] >= vdeg || lp_state->Ps[v] + 2 < 1)
-		{
-			/* reset that node */
-			lp_state->Ps[v] = -1;
-			lp_state->CC[v] = v;
-		}
-		else
-		{
-			uint32_t Pv = graph->ind[graph->off[v]  + lp_state->Ps[v]];
-			if (lp_state->CC[v] < lp_state->CC[Pv])
-			{
-				/* reset that node */
-				lp_state->Ps[v] = -1;
-				lp_state->CC[v] = v;
-			}
-		}
+	// 	if (lp_state->Ps[v] >= vdeg || lp_state->Ps[v] + 2 < 1)
+	// 	{
+	// 		/* reset that node */
+	// 		lp_state->Ps[v] = -1;
+	// 		lp_state->CC[v] = v;
+	// 	}
+	// 	else
+	// 	{
+	// 		uint32_t Pv = graph->ind[graph->off[v]  + lp_state->Ps[v]];
+	// 		if (lp_state->CC[v] < lp_state->CC[Pv])
+	// 		{
+	// 			/* reset that node */
+	// 			lp_state->Ps[v] = -1;
+	// 			lp_state->CC[v] = v;
+	// 		}
+	// 	}
 
 
-	}
+	// }
 
 	/*Now do the Cycle Correction*/
 
@@ -274,7 +277,7 @@ LP(lp_state) -> correct solution
 	}
 
 	/*finally use short cut to set all the nodes */
-	shortcut_LP(graph, lp_state, ts);
+	// shortcut_LP(graph, lp_state, ts);
 
 	return 0;
 }
