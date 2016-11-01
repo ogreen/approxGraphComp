@@ -19,14 +19,14 @@ typedef struct
 
 
 
-int BaselineSVMain(lp_state_t *lp_state, graph_t *graph, stat_t* stat);
+int FFSVAlg_Async(lp_state_t *lp_state, graph_t *graph, stat_t* stat);
 
-lp_state_t FaultTolerantSVMain( graph_t *graph, stat_t* stat, int max_iter);
+lp_state_t SCSVAlg_Sync( graph_t *graph, stat_t* stat, int max_iter);
 
-lp_state_t FaultFreeSVMain( graph_t *graph, stat_t* stat);
+lp_state_t FFWoSVAlg_Sync( graph_t *graph, stat_t* stat);
 
 /*for checking the overhead*/
-lp_state_t FTSVMain( graph_t *graph, stat_t* stat, int max_iter);
+lp_state_t FFSVAlg_Sync( graph_t *graph, stat_t* stat, int max_iter);
 
 
 /*allocates space for a lp_state*/

@@ -60,18 +60,11 @@ int main (const int argc, char *argv[])
 
     int max_iter = 1000;
 
-    lp_state_t lps_bl = FaultFreeSVMain( &graph, &statBL);
+    lp_state_t lps_bl = FFWoSVAlg_Sync( &graph, &statBL);
 
-    lp_state_t lps_ft = FaultTolerantSVMain( &graph, &statFT, max_iter);
+    lp_state_t lps_ft = SCSVAlg_Sync( &graph, &statFT, max_iter);
 
-    lp_state_t lps_ff = FTSVMain( &graph, &statFF, max_iter);
-
-
-    // uint32_t* cc_bl = FaultFreeSVMain( &graph, &statBL);
-
-    // uint32_t* cc_ft = FaultTolerantSVMain( &graph, &statFT, max_iter);
-
-    // uint32_t*  cc_ff = FTSVMain( &graph, &statFF, max_iter);
+    lp_state_t lps_ff = FFSVAlg_Sync( &graph, &statFF, max_iter);
 
 
     for (int i = 0; i < graph.numVertices; ++i)

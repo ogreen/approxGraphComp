@@ -108,8 +108,8 @@ int main (const int argc, char *argv[])
 
     lp_state_t lp_state_bl;
     alloc_lp_state(&graph, &lp_state_bl); // allocate space
-    init_lp_state(&graph, &lp_state_bl); // correct state
-    BaselineSVMain(&lp_state_bl,  &graph, &statBL);
+    init_lp_state(&graph, &lp_state_bl); // initialize state
+    FFSVAlg_Async(&lp_state_bl,  &graph, &statBL);
 
     // calling srand to setting initialize random number
     // srand(time(NULL));
@@ -122,7 +122,7 @@ int main (const int argc, char *argv[])
     alloc_ts(graph.numVertices, &ts);
     init_ts(graph.numVertices, &ts);
     selfStab_LP(&graph, &lp_state_t1, &ts);   // initializing self-stabilizing step
-    BaselineSVMain(&lp_state_t1,  &graph, &statFF); // calling LP   
+    FFSVAlg_Async(&lp_state_t1,  &graph, &statFF); // calling LP   
 
 
 
@@ -142,7 +142,7 @@ int main (const int argc, char *argv[])
     getFault_prob(&fProb1, &fProb2);
     rand_flip_output(fProb1, &graph, &lp_state_t1);
     selfStab_LP(&graph, &lp_state_t1, &ts);   // initializing self-stabilizing step
-    BaselineSVMain(&lp_state_t1,  &graph, &statFF); // calling LP   
+    FFSVAlg_Async(&lp_state_t1,  &graph, &statFF); // calling LP   
 
 
 

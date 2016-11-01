@@ -149,7 +149,7 @@ int strongConnected(int ii, graph_t *graph, lp_state_t  *lp_state,
         int mn = ii;  /*min label*/
         int jj;
 
-        int count=0;
+        int count = 0;
 
         // printf("The SCC ");
         do
@@ -166,7 +166,7 @@ int strongConnected(int ii, graph_t *graph, lp_state_t  *lp_state,
         // printf(": minimum elements is %d\n", mn);
 
         /*correction step */
-        if (count>1)
+        if (count > 1)
         {
             /* code */
             lp_state->Ps[mn] = -1;
@@ -174,14 +174,74 @@ int strongConnected(int ii, graph_t *graph, lp_state_t  *lp_state,
             {
                 /* code */
                 lp_state->CC[mn] = mn;
-                // lp_state->Cr[mn] = 1;
+                lp_state->Cr[mn] = 1;
             }
-            
+
         }
-        
+
         // mark mn as invalid
         // lp_state->Cr[mn] = 1;
     }
+}
+
+
+int selfstabShortcut(graph_t *graph, lp_state_t*lp_state, ts_t *ts)
+// performs shortcutting and cycle detection togather
+{
+    size_t nv = graph->numVertices;
+    uint32_t*CC = lp_state->CC;
+    uint32_t*P = lp_state->P;
+    int numChanges = 1;
+    int iteration = 0;
+
+    for (uint32_t v = 0; v < nv; v++)
+    {
+        uint32_t Pv = lp_state->Ps[v] == -1 ? v : graph->ind[graph->off[v]  + lp_state->Ps[v]];
+        lp_state->P[v] = Pv;
+        lp_state->CC[v] = Pv; // init to parent
+
+    }
+
+    while (numChanges)
+    {
+        iteration++;
+        // printf("iteration %d\n",iteration );
+        numChanges = 0;
+        for (uint32_t v = 0; v < nv; v++)
+        {
+            uint32_t tmp = MIN(CC[v], CC[P[v]]);
+            if (CC[v] != tmp)
+            {
+                numChanges++;
+                
+                // printf("%d %d %d \n",v, CC[v], tmp );
+                CC[v] = MIN(CC[v], CC[P[v]]);
+
+                // printf("%d %d %d %d\n",i,M1[i], M[i],M[A[i]]);
+            }
+
+        }
+
+        for (uint32_t v = 0; v < nv; v++)
+        {
+            P[v] =  P[P[v]];
+        }
+
+    }
+
+    // loop detect and correct
+    for (uint32_t v = 0; v < nv; v++)
+    {
+        if (v==CC[v])
+        {
+            /* code */
+            lp_state->Ps[v] = -1;
+        }
+    }
+
+    printf("finish self-stabilizing Shortcutting %d\n", iteration);
+
+
 }
 
 
@@ -306,13 +366,13 @@ LP(lp_state) -> correct solution
             }
         }
 
-        else if ((lp_state->Ps[v] >= vdeg && lp_state->Ps[v] != -1) || lp_state->Ps[v] +2 <1)
+        else if ((lp_state->Ps[v] >= vdeg && lp_state->Ps[v] != -1) || lp_state->Ps[v] + 2 < 1)
         {
             if (v == 1)
             {
                 /* code */
                 printf("checks2: %d, %d, %d, %d\n", lp_state->CC[v], lp_state->Ps[v], lp_state->P[v], lp_state->Cr[v] );
-                printf(" %d %d\n",lp_state->Ps[v] >= vdeg,lp_state->Ps[v] <4294967295 );
+                printf(" %d %d\n", lp_state->Ps[v] >= vdeg, lp_state->Ps[v] < 4294967295 );
             }
             /* reset that node */
             lp_state->Ps[v] = -1;
@@ -323,7 +383,7 @@ LP(lp_state) -> correct solution
             {
                 /* code */
                 printf("checks2: %d, %d, %d, %d\n", lp_state->CC[v], lp_state->Ps[v], lp_state->P[v], lp_state->Cr[v] );
-                printf(" %d %d\n",lp_state->Ps[v] >= vdeg,lp_state->Ps[v] <4294967295 );
+                printf(" %d %d\n", lp_state->Ps[v] >= vdeg, lp_state->Ps[v] < 4294967295 );
             }
         }
         else
@@ -370,30 +430,28 @@ LP(lp_state) -> correct solution
 
     /*Now do the Cycle Correction*/
 
-
-    ts->global_index = 0;
-    for (int i = 0; i < graph->numVertices; ++i)
-    {
-        ts->vind[i] = -1;
-        ts->vlowlink[i] = 0;
-        ts->vonstack[i] = 0;
-    }
-
-    for (int i = 0; i < graph->numVertices; ++i)
-    {
-        if (ts->vind[i] == -1)
-        {
-            /* node not yet discovered */
-            strongConnected(i, graph, lp_state, ts);
-
-        }
-    }
-    printf("cc[1]=%d\n", CC[1] );
-
-
-
     printf("NUmber of corruptions is %d, NV %d\n", corrupted, nv );
-    shortcut_LP(graph, lp_state, ts);
+    // ts->global_index = 0;
+    // for (int i = 0; i < graph->numVertices; ++i)
+    // {
+    //     ts->vind[i] = -1;
+    //     ts->vlowlink[i] = 0;
+    //     ts->vonstack[i] = 0;
+    // }
+
+    // for (int i = 0; i < graph->numVertices; ++i)
+    // {
+    //     if (ts->vind[i] == -1)
+    //     {
+    //         /* node not yet discovered */
+    //         strongConnected(i, graph, lp_state, ts);
+
+    //     }
+    // }
+    // printf("cc[1]=%d\n", CC[1] );
+    // shortcut_LP(graph, lp_state, ts);
+    
+    selfstabShortcut(graph, lp_state, ts);
 
     return 0;
 }

@@ -49,8 +49,8 @@ int free_lp_state(lp_state_t *lp_state)
 
 
 
-// bool BaselineSVSweep(size_t nv, uint32_t* component_map, uint32_t* off, uint32_t* ind)
-bool BaselineSVSweep(graph_t *graph, lp_state_t *lp_state)
+// bool FFSVSweep_Async(size_t nv, uint32_t* component_map, uint32_t* off, uint32_t* ind)
+bool FFSVSweep_Async(graph_t *graph, lp_state_t *lp_state)
 {
     size_t nv = graph->numVertices;
     uint32_t* off = graph->off;
@@ -83,7 +83,7 @@ bool BaselineSVSweep(graph_t *graph, lp_state_t *lp_state)
 
 
 
-int BaselineSVMain( lp_state_t *lp_state,  graph_t *graph,
+int FFSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
                            stat_t* stat)
 {
     size_t numVertices  = graph->numVertices;
@@ -105,7 +105,7 @@ int BaselineSVMain( lp_state_t *lp_state,  graph_t *graph,
     size_t iteration = 0;
     do
     {
-        changed = BaselineSVSweep(graph, lp_state);
+        changed = FFSVSweep_Async(graph, lp_state);
         iteration += 1;
     }
     while (changed);
@@ -118,7 +118,7 @@ int BaselineSVMain( lp_state_t *lp_state,  graph_t *graph,
 }
 
 /*fault tolerant SV sweep */
-int FaultFreeSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
+int FFWoSVSweep_Sync(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                      uint32_t* off, uint32_t* ind)
 {
 
@@ -151,10 +151,44 @@ int FaultFreeSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
 }
 
+/*fault tolerant SV sweep */
+int FTSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
+              uint32_t* off, uint32_t* ind)
+{
+    int changed = 0;
+    for (size_t v = 0; v < nv; v++)
+    {
+
+        const uint32_t *restrict vind = &ind[off[v]];
+        const size_t vdeg = off[v + 1] - off[v];
+
+        MemAccessCount += 6;
+        for (size_t edge = 0; edge < vdeg; edge++)
+        {
+            const uint32_t u = vind[edge];
+            MemAccessCount += 2;
+            if (cc_prev[u] < cc_curr[v])
+            {
+
+                m_curr[v] = edge;
+                cc_curr[v] = cc_prev[u];
+                changed++;
+                
+            }
+        }
+    }
+
+
+    /*shortcutting goes here*/
+    return changed;
+
+}
 
 
 
-lp_state_t FaultFreeSVMain( graph_t *graph,
+
+// FaultFreeSVMain
+lp_state_t FFWoSVAlg_Sync( graph_t *graph,
                             stat_t* stat       /*for counting stats of each iteration*/
                           )
 {
@@ -195,7 +229,7 @@ lp_state_t FaultFreeSVMain( graph_t *graph,
         long long prMemAccessCount = MemAccessCount;
         memcpy(cc_prev, cc_curr, numVertices * sizeof(uint32_t));
         tic();
-        num_changes = FaultFreeSVSweep(numVertices, cc_prev, cc_curr, off, ind);
+        num_changes = FFWoSVSweep_Sync(numVertices, cc_prev, cc_curr, off, ind);
         // printf("Executing Iteration     %d: Changes =%d, Corrections=%d\n",
         //        iteration, num_changes, num_corrections );
         stat->SvTime[iteration] = toc();
@@ -217,46 +251,11 @@ lp_state_t FaultFreeSVMain( graph_t *graph,
 
 
 
-/*fault tolerant SV sweep */
-int FTSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
-              uint32_t* off, uint32_t* ind)
-{
-    int changed = 0;
-    // #pragma omp parallel for
-    for (size_t v = 0; v < nv; v++)
-    {
-
-        const uint32_t *restrict vind = &ind[off[v]];
-        const size_t vdeg = off[v + 1] - off[v];
-
-        MemAccessCount += 6;
-        for (size_t edge = 0; edge < vdeg; edge++)
-        {
-            const uint32_t u = vind[edge];
-            MemAccessCount += 2;
-            // if(v==270) printf("%d \n",u  );
-            if (cc_prev[u] < cc_curr[v])
-            {
-
-                m_curr[v] = edge;
-                cc_curr[v] = cc_prev[u];
-                // changed = true;
-                changed++;
-                // if(v==270) printf("changed for %d, cc[%d]=%d edge=%d\n", v,v,cc_curr[v],edge );
-            }
-        }
-    }
-
-
-    /*shortcutting goes here*/
-    return changed;
-
-}
 
 
 
 
-lp_state_t FTSVMain( graph_t *graph,
+lp_state_t FFSVAlg_Sync( graph_t *graph,
                      // size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
                      stat_t* stat,       /*for counting stats of each iteration*/
                      int max_iter        /*contgrolling maximum number of iteration*/
