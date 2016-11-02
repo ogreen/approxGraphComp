@@ -147,6 +147,26 @@ int main (const int argc, char *argv[])
 
 
 
+    lp_state_t lp_state_ssa;
+    int ssf=100;
+    alloc_lp_state(&graph, &lp_state_ssa); 
+    init_lp_state(&graph, &lp_state_ssa); 
+    InitStat(&statFF);
+    SSSVAlg_Async( &lp_state_ssa,  &graph, &statFF, ssf );
+
+    for (int i = 0; i < graph.numVertices; ++i)
+    {
+
+        if (lp_state_ssa.CC[i] != lp_state_t1.CC[i])
+        {
+            printf("Error occured at %d: (%d, %d) \n", i, lp_state_ssa.CC[i], lp_state_t1.CC[i] );
+        }
+        assert(lp_state_ssa.CC[i] == lp_state_t1.CC[i]);
+    }
+    printf("Synchronous Self-stabilizing LP: Passed Random-output flip Test ........\n");
+
+
+
     free_graph(&graph);
     return 0;
 }

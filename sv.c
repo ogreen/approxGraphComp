@@ -244,14 +244,6 @@ lp_state_t FFWoSVAlg_Sync( graph_t *graph,
     uint32_t* cc_curr = lps_curr.CC;
     uint32_t* cc_prev = lps_prev.CC;
 
-    // /* Initialize level array */
-    // for (size_t i = 0; i < numVertices; i++)
-    // {
-    //     cc_curr[i] = i;
-    //     cc_prev[i] = i;
-    // }
-
-
     bool changed;
     int num_changes;
     int num_corrections;

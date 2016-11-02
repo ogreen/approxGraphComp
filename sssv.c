@@ -1,13 +1,19 @@
-// This file contains implementation for tarzen's algorithm for strongly connected component in the graph
-#include <iostream>       // std::cout
-#include <stack>          // std::stack
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <inttypes.h>
+#include <malloc.h>
+#include <math.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <errno.h>
 
 
 #include "sv.h"
 #include "sssv.h"
+#include "faultInjection.h"
+
+
 
 
 #define MIN(a,b) a>b?b:a
@@ -26,6 +32,7 @@
 int ssShortcut_Async(graph_t *graph, lp_state_t*lp_state)
 // performs shortcutting and cycle detection togather
 {
+
     size_t nv = graph->numVertices;
     uint32_t*CC = lp_state->CC;
     uint32_t*P = lp_state->P;
@@ -37,6 +44,10 @@ int ssShortcut_Async(graph_t *graph, lp_state_t*lp_state)
         uint32_t Pv = lp_state->Ps[v] == -1 ? v : graph->ind[graph->off[v]  + lp_state->Ps[v]];
         lp_state->P[v] = Pv;
         lp_state->CC[v] = Pv; // init to parent
+        if (v == 3615)
+        {
+            printf("Check0: %d  %d %d\n", v, CC[v], P[v] );
+        }
 
     }
 
@@ -47,9 +58,17 @@ int ssShortcut_Async(graph_t *graph, lp_state_t*lp_state)
         numChanges = 0;
         for (uint32_t v = 0; v < nv; v++)
         {
+            if (v == 3615)
+            {
+                printf("Check1: %d  %d %d\n", v, CC[v], P[v] );
+            }
             uint32_t tmp = MIN(CC[v], CC[P[v]]);
             if (CC[v] != tmp)
             {
+                if (v == 3615)
+                {
+                    printf("Check2: %d  %d %d\n", v, CC[v], P[v] );
+                }
                 numChanges++;
 
                 // printf("%d %d %d \n",v, CC[v], tmp );
@@ -68,17 +87,26 @@ int ssShortcut_Async(graph_t *graph, lp_state_t*lp_state)
     }
 
     // loop detect and correct
+    int loop=0;
     for (uint32_t v = 0; v < nv; v++)
     {
+        
         if (v == CC[v])
         {
-            /* code */
-            lp_state->Ps[v] = -1;
+            if(lp_state->Ps[v] != -1 )
+            {
+                printf("Loop found %d\n",v );
+                loop++;
+                lp_state->Ps[v] = -1;
+            }
+            
+            
         }
+        CC[v] = MIN(v, CC[v]);
     }
 
     printf("finish self-stabilizing Shortcutting %d\n", iteration);
-
+    return loop;
 
 }
 
@@ -107,6 +135,7 @@ int ssShortcut_Sync(graph_t *graph, lp_state_t*lps_curr, lp_state_t*lps_prev)
     P_prev = lps_prev->P;
     CC_curr = lps_curr->CC;
     P_curr = lps_curr->P;
+
 
     while (numChanges)
     {
@@ -154,7 +183,7 @@ int ssShortcut_Sync(graph_t *graph, lp_state_t*lps_curr, lp_state_t*lps_prev)
     for (uint32_t v = 0; v < nv; v++)
     {
 
-        lps_curr->CC[v] = MIN(v,CC_prev[v]);
+        lps_curr->CC[v] = MIN(v, CC_prev[v]);
     }
 
     // if(1)
@@ -210,10 +239,16 @@ LP(lp_state) -> correct solution
     1.  P[v] \in N(v) => Ps[v]+2>=1 & Ps[v] < |adj(v)|
     2.  CC[v] >= CC[P[v]]
     */
+    uint32_t v = 3615;
+    if (v == 3615)
+    {
+        printf("Check0: %d  %d \n", v, CC[v] );
+    }
     int corrupted = 0;
     for (uint32_t v = 0; v < nv; v++)
     {
         const size_t vdeg = graph->off[v + 1] - graph->off[v];
+
 
         if (CC[v] > v) // should be greater than
         {
@@ -221,6 +256,10 @@ LP(lp_state) -> correct solution
             CC[v] = v;
             lp_state->Ps[v] = -1;
             // mark the vertex as corrupted
+            if (v == 3615)
+            {
+                printf("Check1: %d  %d \n", v, CC[v] );
+            }
 
             corrupted++;
 
@@ -229,6 +268,10 @@ LP(lp_state) -> correct solution
         else if ((lp_state->Ps[v] >= vdeg && lp_state->Ps[v] != -1) || lp_state->Ps[v] + 2 < 1)
         {
 
+            if (v == 3615)
+            {
+                printf("Check2: %d  %d \n", v, CC[v] );
+            }
             /* reset that node */
             lp_state->Ps[v] = -1;
             lp_state->CC[v] = v;
@@ -240,6 +283,10 @@ LP(lp_state) -> correct solution
         {
             if (lp_state->Ps[v] == -1 )
             {
+                if (v == 3615)
+                {
+                    printf("Check3: %d  %d \n", v, CC[v] );
+                }
                 /* code */
                 if (lp_state->CC[v] != v)
                 {
@@ -255,6 +302,10 @@ LP(lp_state) -> correct solution
                 uint32_t Pv = graph->ind[graph->off[v]  + lp_state->Ps[v]];
                 if (lp_state->CC[v] < lp_state->CC[Pv])
                 {
+                    if (v == 3615)
+                    {
+                        printf("Check4: %d  %d \n", v, CC[v] );
+                    }
                     /* reset that node */
                     lp_state->Ps[v] = -1;
                     lp_state->CC[v] = v;
@@ -270,14 +321,22 @@ LP(lp_state) -> correct solution
     }
 
 
+    if (v == 3615)
+    {
+        printf("Check5: %d  %d \n", v, CC[v] );
+    }
     /*Now do the Cycle Correction*/
 
     printf("NUmber of corruptions is %d, NV %d\n", corrupted, nv );
 
 
-    ssShortcut_Async(graph, lp_state);
+    corrupted += ssShortcut_Async(graph, lp_state);
+    if (v == 3615)
+    {
+        printf("Check0: %d  %d \n", v, CC[v] );
+    }
 
-    return 0;
+    return corrupted;
 }
 
 
@@ -365,7 +424,171 @@ LP(lp_state) -> correct solution
 
     ssShortcut_Sync(graph, lp_state_out, lp_state_in);
 
-    return 0;
+    return corrupted;
 }
 
+
+static inline uint32_t FaultInjectWord(uint32_t value)
+{
+
+    uint32_t mask = 0;
+
+    mask += (1 << rand() % 32);
+    return mask ^ (value);
+
+}
+
+static long long MemAccessCount;
+/*fault tolerant SV sweep */
+int  FISVSweep_Async(graph_t *graph, lp_state_t *lp_state,
+                     uint32_t* FaultArrEdge,         /*probability of bit flip*/
+                     uint32_t* FaultArrCC )        /*probability of bit flip for type-2 faults*/
+{
+    size_t nv = graph->numVertices;
+    uint32_t* off = graph->off;
+    uint32_t* ind = graph->ind;
+    uint32_t* component_map = lp_state->CC;
+
+    int  changed = 0;
+
+    for (size_t v = 0; v < nv; v++)
+    {
+        uint32_t* vind = &ind[off[v]];
+        const size_t vdeg = off[v + 1] - off[v];
+
+        for (size_t edge = 0; edge < vdeg; edge++)
+        {
+            uint32_t uT = vind[edge];
+            uint32_t u;
+            MemAccessCount++;
+
+            if (FaultArrEdge[off[v] + edge])
+            {
+                /* code */
+                u = FaultInjectWord(uT);
+
+                while (u >= nv)    /*a better check can be used*/
+                {
+                    uT = vind[edge];
+                    MemAccessCount++;
+
+                    u = FaultInjectWord(uT);
+                    // printf("stuck 1\n");
+                }
+            }
+            else
+            {
+                u = uT;
+            }
+
+            uint32_t cc_prev_u = component_map[u];
+            uint32_t var;
+            MemAccessCount++;
+            if (u == 0)
+            {
+                /* code */
+                cc_prev_u = 0;
+            }
+            else
+            {
+                if (FaultArrCC[off[v] + edge])
+                {
+                    do
+                    {
+                        var = FaultInjectWord(cc_prev_u);
+                        // printf("stuck 2 %u %u\n", var, u);
+                    }
+                    while (var > u);
+                }
+                else
+                {
+                    var = cc_prev_u;
+                }
+
+                cc_prev_u = var;
+            }
+
+            if (cc_prev_u < component_map[v])
+            {
+                lp_state->Ps[v] = edge;
+                component_map[v] = cc_prev_u;
+                changed = 1;
+            }
+        }
+    }
+
+    /*shortcutting goes here*/
+    return changed;
+
+}
+
+
+int SSSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
+                   stat_t* stat, int ssf // frequency of self stabilization
+                 )
+{
+    size_t numVertices  = graph->numVertices;
+    size_t numEdges  = graph->numEdges;
+    uint32_t* off  = graph->off;
+    uint32_t* ind  = graph->ind;
+
+    /*get fault probability*/
+    double fProb1, fProb2;
+
+    getFault_prob(&fProb1, &fProb2);
+
+    uint32_t* FaultArrEdge = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
+    uint32_t* FaultArrCC = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
+
+
+    int  changed;
+    size_t iteration = 0;
+    int corrupted;
+    do
+    {
+        /*intialize fault array*/
+        for (int i = 0; i < numEdges; ++i)
+        {
+            /* code */
+            FaultArrEdge[i] = 0;
+            FaultArrCC[i] = 0;
+        }
+
+        int numEdgeFault = 0;
+        int numCCFault = 0;
+
+        while (numEdgeFault <  0.5 * fProb1 * numEdges)
+        {
+            uint32_t ind = rand() % numEdges;
+            FaultArrEdge[ind] = 1;
+            numEdgeFault++;
+
+        }
+
+        while (numCCFault <  0.5 * fProb2 * numEdges)
+        {
+            uint32_t ind = rand() % numEdges;
+            FaultArrCC[ind] = 1;
+            numCCFault++;
+
+        }
+
+        corrupted = 0;
+        changed = FISVSweep_Async(graph, lp_state, FaultArrEdge, FaultArrCC) ;
+        iteration += 1;
+        if (iteration % ssf == 0 || !changed)
+        {
+            corrupted = SSstep_Async(graph, lp_state);
+        }
+    }
+    while (changed || corrupted);
+
+    /*updating stats*/
+    stat->numIteration = iteration;
+    free (FaultArrEdge);
+    free (FaultArrCC);
+    printf("Number of iteration is %d\n", iteration );
+
+    return 0;
+}
 

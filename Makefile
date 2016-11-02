@@ -7,17 +7,17 @@ CFLAGS := -g -O3 -std=gnu99 -fopenmp
 
 LOAD_FLAGS := -lrt -lm
 
-CSRCS := timer.c sv.c ft_sv.c faultInjection.c  stat.c graph.c 
+CSRCS := timer.c sv.c sssv.c ft_sv.c faultInjection.c  stat.c graph.c 
 
-CPPSRCS := sssv.cpp 
+# CPPSRCS := sssv.c 
 
 HEADERS := timer.h sv.h ft_sv.h faultInjection.h stat.h graph.h
 
 COBJS  := $(CSRCS:.c=.o)
 
-CPPOBJS  := $(CPPSRCS:.cpp=.o)
+# CPPOBJS  := $(CPPSRCS:.cpp=.o)
 
-OBJS := $(COBJS) $(CPPOBJS)
+OBJS := $(COBJS) 
 # for testing the matrix
 GRAPH_DIR := graphs
 MAT_SM :=  as-22july06.graph astro-ph.graph caidaRouterLevel.graph \

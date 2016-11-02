@@ -144,7 +144,7 @@ int SCstep_Sync(size_t nv,
 
 
 
-uint32_t FaultInjectWord(uint32_t value)
+static inline uint32_t FaultInjectWord(uint32_t value)
 {
 
     uint32_t mask = 0;
@@ -251,6 +251,7 @@ int FISVSweep_Sync(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
     return changed;
 
 }
+
 
 
 
