@@ -64,8 +64,10 @@ int main (const int argc, char *argv[])
 
     lp_state_t lps_ft = SCSVAlg_Sync( &graph, &statFT, max_iter);
 
-    lp_state_t lps_ff = FFSVAlg_Sync( &graph, &statFF, max_iter);
-
+    lp_state_t lps_ff; 
+    alloc_lp_state(&graph, &lps_ff);    // allocate space
+    init_lp_state(&graph, &lps_ff);     // initialize state
+    lps_ff = FFSVAlg_Sync( &graph, lps_ff, &statFF, max_iter);
 
     for (int i = 0; i < graph.numVertices; ++i)
     {

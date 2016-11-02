@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -9,7 +10,7 @@
 
 #include "timer.h"
 #include "stat.h"
-
+#include "faultInjection.h"
 #include "sv.h"
 static long long MemAccessCount;
 
@@ -46,6 +47,47 @@ int free_lp_state(lp_state_t *lp_state)
     free(lp_state->P);
     free(lp_state->Cr);
 }
+
+
+/*test-1: Random Init 
+Starts with random starting state; 
+runs label propagation algorithm, checks the output with baseline; 
+*/
+int rand_lp_state( graph_t *graph,
+                               lp_state_t *lp_state)
+{
+    size_t numVertices  = graph->numVertices;
+
+    for (int i = 0; i < numVertices; ++i)
+    {
+        lp_state->CC[i] = rand();
+        lp_state->Ps[i] = rand();
+    }
+    return 0;
+}
+
+
+/*test-2
+Random-flip output test;
+Run a correct LP algorithm and randomly flip some of the output at the end.
+*/
+
+
+int rand_flip_output( double fprob,             // probability of flipping an entry
+    graph_t *graph,
+                               lp_state_t *lp_state)
+{
+    size_t numVertices  = graph->numVertices;
+
+    for (int i = 0; i < numVertices; ++i)
+    {
+        uint32_t u = lp_state->CC[i];
+        lp_state->CC[i] = FaultInjectByte(u, fprob);
+        lp_state->Ps[i] = FaultInjectByte(lp_state->Ps[i], fprob);
+    }
+    return 0;
+}
+
 
 
 
@@ -90,16 +132,6 @@ int FFSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
     size_t numEdges  = graph->numEdges;
     uint32_t* off  = graph->off;
     uint32_t* ind  = graph->ind;
-
-    // lp_state_t lp_state;
-    // alloc_lp_state(graph, &lp_state);
-    // init_lp_state(graph, &lp_state);
-
-    // uint32_t* components_map = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    // for (size_t i = 0; i < numVertices; i++)
-    // {
-    //     components_map[i] = i;
-    // }
 
     bool changed;
     size_t iteration = 0;
@@ -152,7 +184,7 @@ int FFWoSVSweep_Sync(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 }
 
 /*fault tolerant SV sweep */
-int FTSVSweep(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
+int FFSVSweep_Sync(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
               uint32_t* off, uint32_t* ind)
 {
     int changed = 0;
@@ -230,8 +262,6 @@ lp_state_t FFWoSVAlg_Sync( graph_t *graph,
         memcpy(cc_prev, cc_curr, numVertices * sizeof(uint32_t));
         tic();
         num_changes = FFWoSVSweep_Sync(numVertices, cc_prev, cc_curr, off, ind);
-        // printf("Executing Iteration     %d: Changes =%d, Corrections=%d\n",
-        //        iteration, num_changes, num_corrections );
         stat->SvTime[iteration] = toc();
         stat->SvMemCount[iteration] = MemAccessCount - prMemAccessCount;
         iteration += 1;
@@ -256,7 +286,7 @@ lp_state_t FFWoSVAlg_Sync( graph_t *graph,
 
 
 lp_state_t FFSVAlg_Sync( graph_t *graph,
-                     // size_t numVertices, size_t numEdges, uint32_t* off, uint32_t* ind,
+                     lp_state_t lps_curr,
                      stat_t* stat,       /*for counting stats of each iteration*/
                      int max_iter        /*contgrolling maximum number of iteration*/
                    )
@@ -270,11 +300,9 @@ lp_state_t FFSVAlg_Sync( graph_t *graph,
 
     /*initialize */
     MemAccessCount = 0;
-    lp_state_t lps_curr, lps_prev;
-    alloc_lp_state(graph, &lps_curr);
+    lp_state_t lps_prev;
+    
     alloc_lp_state(graph, &lps_prev);
-
-    init_lp_state(graph, &lps_curr);
     init_lp_state(graph, &lps_prev);
 
 
@@ -295,7 +323,7 @@ lp_state_t FFSVAlg_Sync( graph_t *graph,
         memcpy(cc_prev, cc_curr, numVertices * sizeof(uint32_t));
         memcpy(m_prev, m_curr, numVertices * sizeof(uint32_t));
         tic();
-        num_changes = FTSVSweep(numVertices, cc_prev, cc_curr, m_curr, off, ind);
+        num_changes = FFSVSweep_Sync(numVertices, cc_prev, cc_curr, m_curr, off, ind);
         // printf("Executing Iteration     %d: Changes =%d, Corrections=%d\n",
         //        iteration, num_changes, num_corrections );
         stat->SvTime[iteration] = toc();

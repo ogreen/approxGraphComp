@@ -97,15 +97,6 @@ static inline uint32_t FaultInjectWord(uint32_t value, double prob)
 
         uint32_t mask = 0;
 
-        // for (int i = 0; i < 8 * sizeof(uint32_t); ++i)
-        // {
-        //     if (flip(prob))
-        //     {
-        //         mask += (1 << i);
-        //         // printf("filpped %d\n",i );
-        //     }
-        // }
-
         mask += (1 << rand()%32);
         return mask ^ (value);
     }

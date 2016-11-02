@@ -373,7 +373,7 @@ lp_state_t SCSVAlg_Sync( graph_t *graph,
     stat->numIteration = iteration;
 
 
-    free (FaultArr);
+    
     free (FaultArrEdge);
     free (FaultArrCC);
     free_lp_state(&lps_prev);

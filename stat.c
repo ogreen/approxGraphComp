@@ -5,6 +5,7 @@
 
 int InitStat(stat_t* stat)
 {
+	stat->numIteration =0;
 	for (int i = 0; i < MAX_SV_SWEEP; ++i)
 	{
 		/* code */
