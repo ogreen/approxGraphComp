@@ -124,10 +124,14 @@ int main (const int argc, char *argv[])
     printf("Fault free SyncAlg took %d iteration\n", statFF.numIteration);
 
     rand_flip_output(fProb1, &graph, &lp_state_bl); // random flipping the output
-    SSstep_Async(&graph, &lp_state_bl);   // initializing self-stabilizing step
+    
     // lp_state_bl.CC[1] =0;
     InitStat(&statFF);
-    lp_state_bl = FFSVAlg_Sync( &graph, lp_state_bl, &statFF, max_iter);
+    lp_state_t lp_state_aux;
+    alloc_lp_state(&graph, &lp_state_aux);       // allocate space
+    SSstep_Sync(&graph, &lp_state_aux, &lp_state_bl);   // initializing self-stabilizing step
+    // SSstep_Async(&graph, &lp_state_bl);
+    lp_state_bl = FFSVAlg_Sync( &graph, lp_state_aux, &statFF, max_iter);
     printf("SS output flipped Fault free SyncAlg took %d iteration\n", statFF.numIteration);
 
     for (int i = 0; i < graph.numVertices; ++i)
