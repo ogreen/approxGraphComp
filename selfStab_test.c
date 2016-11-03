@@ -34,7 +34,7 @@ int main (const int argc, char *argv[])
     uint32_t* ind;
     if (argc < 2)
     {
-        printf("usage: %s GraphFile\n", argv[0]);
+        printf("// usage: %s GraphFile\n", argv[0]);
         exit(1);
 
     }
@@ -91,10 +91,10 @@ int main (const int argc, char *argv[])
 
         if (lp_state_bl.CC[i] != lp_state_t1.CC[i])
         {
-            printf("Error occured at %d: (%d, %d) \n", i, lp_state_bl.CC[i], lp_state_t1.CC[i] );
+            printf("// Error occured at %d: (%d, %d) \n", i, lp_state_bl.CC[i], lp_state_t1.CC[i] );
         }
     }
-    printf("Asynchronous Self-stabilizing LP: Passed Random-Init Test ........\n");
+    printf("// Asynchronous Self-stabilizing LP: Passed Random-Init Test ........\n");
 
 
     /*get fault probability*/
@@ -109,11 +109,11 @@ int main (const int argc, char *argv[])
 
         if (lp_state_bl.CC[i] != lp_state_t1.CC[i])
         {
-            printf("Error occured at %d: (%d, %d) \n", i, lp_state_bl.CC[i], lp_state_t1.CC[i] );
+            printf("// Error occured at %d: (%d, %d) \n", i, lp_state_bl.CC[i], lp_state_t1.CC[i] );
         }
         assert(lp_state_bl.CC[i] == lp_state_t1.CC[i]);
     }
-    printf("Asynchronous Self-stabilizing LP: Passed Random-output flip Test ........\n");
+    printf("// Asynchronous Self-stabilizing LP: Passed Random-output flip Test ........\n");
 
 
     /*testing the Synchronous version*/
@@ -121,7 +121,7 @@ int main (const int argc, char *argv[])
     init_lp_state(&graph, &lp_state_bl); // initialize state
     InitStat(&statFF);
     lp_state_bl = FFSVAlg_Sync( &graph, lp_state_bl, &statFF, max_iter);
-    printf("Fault free SyncAlg took %d iteration\n", statFF.numIteration);
+    printf("// Fault free SyncAlg took %d iteration\n", statFF.numIteration);
 
     rand_flip_output(fProb1, &graph, &lp_state_bl); // random flipping the output
     
@@ -132,23 +132,23 @@ int main (const int argc, char *argv[])
     SSstep_Sync(&graph, &lp_state_aux, &lp_state_bl);   // initializing self-stabilizing step
     // SSstep_Async(&graph, &lp_state_bl);
     lp_state_bl = FFSVAlg_Sync( &graph, lp_state_aux, &statFF, max_iter);
-    printf("SS output flipped Fault free SyncAlg took %d iteration\n", statFF.numIteration);
+    printf("// SS output flipped Fault free SyncAlg took %d iteration\n", statFF.numIteration);
 
     for (int i = 0; i < graph.numVertices; ++i)
     {
 
         if (lp_state_bl.CC[i] != lp_state_t1.CC[i])
         {
-            printf("Error occured at %d: (%d, %d) \n", i, lp_state_bl.CC[i], lp_state_t1.CC[i] );
+            printf("// Error occured at %d: (%d, %d) \n", i, lp_state_bl.CC[i], lp_state_t1.CC[i] );
         }
         assert(lp_state_bl.CC[i] == lp_state_t1.CC[i]);
     }
-    printf("Synchronous Self-stabilizing LP: Passed Random-output flip Test ........\n");
+    printf("// Synchronous Self-stabilizing LP: Passed Random-output flip Test ........\n");
 
 
 
     lp_state_t lp_state_ssa;
-    int ssf=100;
+    int ssf=4;
     alloc_lp_state(&graph, &lp_state_ssa); 
     init_lp_state(&graph, &lp_state_ssa); 
     InitStat(&statFF);
@@ -159,11 +159,12 @@ int main (const int argc, char *argv[])
 
         if (lp_state_ssa.CC[i] != lp_state_t1.CC[i])
         {
-            printf("Error occured at %d: (%d, %d) \n", i, lp_state_ssa.CC[i], lp_state_t1.CC[i] );
+            printf("// Error occured at %d: (%d, %d) \n", i, lp_state_ssa.CC[i], lp_state_t1.CC[i] );
         }
         assert(lp_state_ssa.CC[i] == lp_state_t1.CC[i]);
     }
-    printf("Synchronous Self-stabilizing LP: Passed Random-output flip Test ........\n");
+    printf("// Synchronous Self-stabilizing LP: Passed Random-output flip Test ........\n");
+    printGraph(argv[1], &graph, &lp_state_t1);
 
 
 

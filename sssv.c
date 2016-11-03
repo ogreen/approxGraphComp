@@ -44,9 +44,10 @@ int ssShortcut_Async(graph_t *graph, lp_state_t*lp_state)
         uint32_t Pv = lp_state->Ps[v] == -1 ? v : graph->ind[graph->off[v]  + lp_state->Ps[v]];
         lp_state->P[v] = Pv;
         lp_state->CC[v] = Pv; // init to parent
-        if (v == 3615)
+        if (v == 2)
         {
-            printf("Check0: %d  %d %d\n", v, CC[v], P[v] );
+            printf("// v=%d, Ps=%d, Pv=%d\n", v, lp_state->Ps[v], Pv);
+            // printf("Check0: %d  %d %d\n", v, CC[v], P[v] );
         }
 
     }
@@ -60,21 +61,21 @@ int ssShortcut_Async(graph_t *graph, lp_state_t*lp_state)
         {
             if (v == 3615)
             {
-                printf("Check1: %d  %d %d\n", v, CC[v], P[v] );
+                // printf("Check1: %d  %d %d\n", v, CC[v], P[v] );
             }
             uint32_t tmp = MIN(CC[v], CC[P[v]]);
             if (CC[v] != tmp)
             {
                 if (v == 3615)
                 {
-                    printf("Check2: %d  %d %d\n", v, CC[v], P[v] );
+                    // printf("Check2: %d  %d %d\n", v, CC[v], P[v] );
                 }
                 numChanges++;
 
-                // printf("%d %d %d \n",v, CC[v], tmp );
+
                 CC[v] = MIN(CC[v], CC[P[v]]);
 
-                // printf("%d %d %d %d\n",i,M1[i], M[i],M[A[i]]);
+
             }
 
         }
@@ -87,25 +88,42 @@ int ssShortcut_Async(graph_t *graph, lp_state_t*lp_state)
     }
 
     // loop detect and correct
-    int loop=0;
+    int loop = 0;
+    int uroots = 0;
+    uint32_t* off = graph->off;
+    uint32_t* ind = graph->ind;
     for (uint32_t v = 0; v < nv; v++)
     {
-        
+        CC[v] = MIN(v, CC[v]);
         if (v == CC[v])
         {
-            if(lp_state->Ps[v] != -1 )
+            if (lp_state->Ps[v] != -1 )
             {
-                printf("Loop found %d\n",v );
+                // printf("//Loop found %d\n", v );
                 loop++;
                 lp_state->Ps[v] = -1;
+                // const uint32_t *restrict vind = &ind[off[v]];
+                // const size_t vdeg = off[v + 1] - off[v];
+
+                // for (size_t edge = 0; edge < vdeg; edge++)
+                // {
+                //     const uint32_t u = vind[edge];
+                //     if (lp_state->CC[u] < lp_state->CC[v])
+                //     {
+                //         lp_state->Ps[v] = edge;
+                //         lp_state->CC[v] = lp_state->CC[u];
+                //         uroots++;
+                //     }
+                // }
             }
-            
-            
+
+
         }
-        CC[v] = MIN(v, CC[v]);
+
     }
 
-    printf("finish self-stabilizing Shortcutting %d\n", iteration);
+    // printf("finish self-stabilizing Shortcutting %d\n", iteration);
+    // return uroots;
     return loop;
 
 }
@@ -213,7 +231,7 @@ int ssShortcut_Sync(graph_t *graph, lp_state_t*lps_curr, lp_state_t*lps_prev)
 
     }
 
-    printf("finish self-stabilizing Shortcutting %d\n", iteration);
+    printf("//finish self-stabilizing Shortcutting %d\n", iteration);
 
 
 }
@@ -231,6 +249,7 @@ LP(lp_state) -> correct solution
 */
 {
 
+    printParentTree("Before_stabilization_step", graph, lp_state);
 
     size_t nv = graph->numVertices;
     uint32_t*CC = lp_state->CC;
@@ -242,7 +261,7 @@ LP(lp_state) -> correct solution
     uint32_t v = 3615;
     if (v == 3615)
     {
-        printf("Check0: %d  %d \n", v, CC[v] );
+        // printf("Check0: %d  %d \n", v, CC[v] );
     }
     int corrupted = 0;
     for (uint32_t v = 0; v < nv; v++)
@@ -258,7 +277,7 @@ LP(lp_state) -> correct solution
             // mark the vertex as corrupted
             if (v == 3615)
             {
-                printf("Check1: %d  %d \n", v, CC[v] );
+                // printf("Check1: %d  %d \n", v, CC[v] );
             }
 
             corrupted++;
@@ -270,7 +289,7 @@ LP(lp_state) -> correct solution
 
             if (v == 3615)
             {
-                printf("Check2: %d  %d \n", v, CC[v] );
+                // printf("Check2: %d  %d \n", v, CC[v] );
             }
             /* reset that node */
             lp_state->Ps[v] = -1;
@@ -285,7 +304,7 @@ LP(lp_state) -> correct solution
             {
                 if (v == 3615)
                 {
-                    printf("Check3: %d  %d \n", v, CC[v] );
+                    // printf("Check3: %d  %d \n", v, CC[v] );
                 }
                 /* code */
                 if (lp_state->CC[v] != v)
@@ -304,7 +323,7 @@ LP(lp_state) -> correct solution
                 {
                     if (v == 3615)
                     {
-                        printf("Check4: %d  %d \n", v, CC[v] );
+                        // printf("Check4: %d  %d \n", v, CC[v] );
                     }
                     /* reset that node */
                     lp_state->Ps[v] = -1;
@@ -320,21 +339,24 @@ LP(lp_state) -> correct solution
 
     }
 
+    printParentTree("After_first_checks", graph, lp_state);
 
     if (v == 3615)
     {
-        printf("Check5: %d  %d \n", v, CC[v] );
+        // printf("Check5: %d  %d \n", v, CC[v] );
     }
     /*Now do the Cycle Correction*/
 
-    printf("NUmber of corruptions is %d, NV %d\n", corrupted, nv );
+    // printf("NUmber of corruptions is %d, NV %d\n", corrupted, nv );
 
 
     corrupted += ssShortcut_Async(graph, lp_state);
     if (v == 3615)
     {
-        printf("Check0: %d  %d \n", v, CC[v] );
+        // printf("Check0: %d  %d \n", v, CC[v] );
     }
+
+    printParentTree("After_short_cut", graph, lp_state);
 
     return corrupted;
 }
@@ -419,7 +441,7 @@ LP(lp_state) -> correct solution
 
     /*Now do the Cycle Correction*/
 
-    printf("NUmber of corruptions is %d, NV %d\n", corrupted, nv );
+    printf("//NUmber of corruptions is %d, NV %d\n", corrupted, nv );
 
 
     ssShortcut_Sync(graph, lp_state_out, lp_state_in);
@@ -475,6 +497,10 @@ int  FISVSweep_Async(graph_t *graph, lp_state_t *lp_state,
                     u = FaultInjectWord(uT);
                     // printf("stuck 1\n");
                 }
+
+                /* code */
+                // printf("//v=6  u=%d  uT=%d\n", u, uT );
+
             }
             else
             {
@@ -493,12 +519,17 @@ int  FISVSweep_Async(graph_t *graph, lp_state_t *lp_state,
             {
                 if (FaultArrCC[off[v] + edge])
                 {
-                    do
-                    {
-                        var = FaultInjectWord(cc_prev_u);
-                        // printf("stuck 2 %u %u\n", var, u);
-                    }
-                    while (var > u);
+                    var = FaultInjectWord(cc_prev_u);
+                    // do
+                    // {
+                    //     var = FaultInjectWord(cc_prev_u);
+                    //     // printf("stuck 2 %u %u\n", var, u);
+                    // }
+                    // while (var > u);
+
+                    /* code */
+                    // printf("//v=%d  CC[u]=%d  CC[u]T=%d\n",v, cc_prev_u, var );
+
                 }
                 else
                 {
@@ -576,8 +607,12 @@ int SSSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
         corrupted = 0;
         changed = FISVSweep_Async(graph, lp_state, FaultArrEdge, FaultArrCC) ;
         iteration += 1;
+        char label[100];
+        sprintf(label, "Iteration_%d", iteration);
+        printParentTree(label, graph, lp_state);
         if (iteration % ssf == 0 || !changed)
         {
+            if(!changed) printf("convergence detected %d\n",iteration );
             corrupted = SSstep_Async(graph, lp_state);
         }
     }
@@ -587,7 +622,7 @@ int SSSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
     stat->numIteration = iteration;
     free (FaultArrEdge);
     free (FaultArrCC);
-    printf("Number of iteration is %d\n", iteration );
+    printf("// Number of iteration is %d\n", iteration );
 
     return 0;
 }

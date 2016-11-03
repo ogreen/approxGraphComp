@@ -42,6 +42,9 @@ int free_lp_state(lp_state_t *lp_state);
 /*initializes an lp_state*/
 int init_lp_state(graph_t *graph, lp_state_t *lp_state);
 
+int printParentTree(char *name, graph_t* graph, lp_state_t *lp_state);
+int printGraph(char *name, graph_t* graph, lp_state_t *lp_state);
+
 
 /*test-1: Random Init 
 Starts with random starting state; 

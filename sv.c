@@ -49,12 +49,66 @@ int free_lp_state(lp_state_t *lp_state)
 }
 
 
-/*test-1: Random Init 
-Starts with random starting state; 
-runs label propagation algorithm, checks the output with baseline; 
+int printParentTree(char *name, graph_t* graph, lp_state_t *lp_state)
+// prints a directed graph in dot format with title as s
+{
+    return 0;
+    size_t nv = graph->numVertices;
+    printf("digraph %s { \n", name);
+    printf("rankdir=BT\n");
+    uint32_t *CC = lp_state->CC;
+
+    for (uint32_t v = 0; v < nv; v++)
+    {
+        // printf(" %d %d %d %d\n", v, lp_state->Ps[v], graph->off[v] );
+        if (graph->off[v]  + lp_state->Ps[v] < graph->numEdges || lp_state->Ps[v] == -1)
+        {
+            uint32_t Pv = lp_state->Ps[v] == -1 ? v : graph->ind[graph->off[v]  + lp_state->Ps[v]];
+            printf("\"%d|%d\" -> \"%d|%d\";\n", v, CC[v], Pv, CC[Pv] );
+        }
+    }
+    printf("labelloc=\"t\"\n");
+    printf("label=\"%s\"\n", name);
+    printf("}\n");
+}
+
+int printGraph(char *name, graph_t* graph, lp_state_t *lp_state)
+{
+    return 0;
+    size_t nv = graph->numVertices;
+    uint32_t* off = graph->off;
+    uint32_t* ind = graph->ind;
+
+    printf("graph input { \n");
+    printf("rankdir=BT\n");
+
+    for (uint32_t v = 0; v < nv; v++)
+    {
+        uint32_t *vind = &ind[off[v]];
+        size_t vdeg = off[v + 1] - off[v];
+
+        for (size_t edge = 0; edge < vdeg; edge++)
+        {
+            const uint32_t u = vind[edge];
+
+            if (v > u)
+                printf("%d -- %d;\n", v, u );
+
+        }
+        
+
+    }
+    printf("labelloc=\"t\"\n");
+    printf("label=\"%s\"\n", name);
+    printf("}\n");
+}
+
+/*test-1: Random Init
+Starts with random starting state;
+runs label propagation algorithm, checks the output with baseline;
 */
 int rand_lp_state( graph_t *graph,
-                               lp_state_t *lp_state)
+                   lp_state_t *lp_state)
 {
     size_t numVertices  = graph->numVertices;
 
@@ -74,8 +128,8 @@ Run a correct LP algorithm and randomly flip some of the output at the end.
 
 
 int rand_flip_output( double fprob,             // probability of flipping an entry
-    graph_t *graph,
-                               lp_state_t *lp_state)
+                      graph_t *graph,
+                      lp_state_t *lp_state)
 {
     size_t numVertices  = graph->numVertices;
 
@@ -126,7 +180,7 @@ bool FFSVSweep_Async(graph_t *graph, lp_state_t *lp_state)
 
 
 int FFSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
-                           stat_t* stat)
+                   stat_t* stat)
 {
     size_t numVertices  = graph->numVertices;
     size_t numEdges  = graph->numEdges;
@@ -144,7 +198,7 @@ int FFSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
 
     /*updating stats*/
     stat->numIteration = iteration;
-    printf("Number of iteration is %d\n", iteration );
+    printf("// Number of iteration is %d\n", iteration );
 
     return 0;
 }
@@ -185,7 +239,7 @@ int FFWoSVSweep_Sync(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
 
 /*fault tolerant SV sweep */
 int FFSVSweep_Sync(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_curr,
-              uint32_t* off, uint32_t* ind)
+                   uint32_t* off, uint32_t* ind)
 {
     int changed = 0;
     for (size_t v = 0; v < nv; v++)
@@ -205,7 +259,7 @@ int FFSVSweep_Sync(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_
                 m_curr[v] = edge;
                 cc_curr[v] = cc_prev[u];
                 changed++;
-                
+
             }
         }
     }
@@ -221,8 +275,8 @@ int FFSVSweep_Sync(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr, uint32_t* m_
 
 // FaultFreeSVMain
 lp_state_t FFWoSVAlg_Sync( graph_t *graph,
-                            stat_t* stat       /*for counting stats of each iteration*/
-                          )
+                           stat_t* stat       /*for counting stats of each iteration*/
+                         )
 {
 
     size_t numVertices  = graph->numVertices;
@@ -278,10 +332,10 @@ lp_state_t FFWoSVAlg_Sync( graph_t *graph,
 
 
 lp_state_t FFSVAlg_Sync( graph_t *graph,
-                     lp_state_t lps_curr,
-                     stat_t* stat,       /*for counting stats of each iteration*/
-                     int max_iter        /*contgrolling maximum number of iteration*/
-                   )
+                         lp_state_t lps_curr,
+                         stat_t* stat,       /*for counting stats of each iteration*/
+                         int max_iter        /*contgrolling maximum number of iteration*/
+                       )
 {
 
     size_t numVertices  = graph->numVertices;
@@ -293,7 +347,7 @@ lp_state_t FFSVAlg_Sync( graph_t *graph,
     /*initialize */
     MemAccessCount = 0;
     lp_state_t lps_prev;
-    
+
     alloc_lp_state(graph, &lps_prev);
     init_lp_state(graph, &lps_prev);
 
