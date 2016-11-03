@@ -50,7 +50,7 @@ void readGraphDIMACS(char* filePath, graph_t *graph)
     bytesRead = 0;
 
 
-    for (u = 1; (temp = getline (&line, &bytesRead, fp)) != -1; u++)
+    for (u = 0; (temp = getline (&line, &bytesRead, fp)) != -1; u++)
     {
         uint32_t neigh = 0;
         uint32_t v = 0;
@@ -60,7 +60,7 @@ void readGraphDIMACS(char* filePath, graph_t *graph)
         lineRead = 0;
         while (lineRead < bytesRead && (read = sscanf (ptr, "%s", tempStr)) > 0)
         {
-            v = atoi(tempStr);
+            v = atoi(tempStr)-1;
             read = strlen(tempStr);
             ptr += read + 1;
             lineRead = read + 1;
@@ -76,7 +76,7 @@ void readGraphDIMACS(char* filePath, graph_t *graph)
     fclose (fp);
 
 
-    nv++;
+    nv;
     ne *= 2;
     // *prmnv = nv;
     // *prmne = ne;
@@ -84,6 +84,12 @@ void readGraphDIMACS(char* filePath, graph_t *graph)
     // *prmoff = off;
     graph->numVertices=nv;
     graph->numEdges=ne;
+    // for (int i = 0; i < ne; ++i)
+    // {
+    //     /* code */
+    //     graph->ind[i] -= 1;
+    // }
+
     graph->off=off;
     graph->ind=ind;
 
