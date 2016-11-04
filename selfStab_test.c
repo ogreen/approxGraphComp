@@ -148,7 +148,7 @@ int main (const int argc, char *argv[])
 
 
     lp_state_t lp_state_ssa;
-    int ssf=4;
+    int ssf=100;
     alloc_lp_state(&graph, &lp_state_ssa); 
     init_lp_state(&graph, &lp_state_ssa); 
     InitStat(&statFF);
