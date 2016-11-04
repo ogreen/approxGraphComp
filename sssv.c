@@ -347,10 +347,13 @@ LP(lp_state) -> correct solution
     }
     /*Now do the Cycle Correction*/
 
-    // printf("NUmber of corruptions is %d, NV %d\n", corrupted, nv );
 
 
-    corrupted += ssShortcut_Async(graph, lp_state);
+    int loops = 0;
+    loops = ssShortcut_Async(graph, lp_state);
+    printf("//Number of corruptions is %d, number of loop %d, NV %d\n", corrupted, loops, nv );
+    corrupted += loops;
+
     if (v == 3615)
     {
         // printf("Check0: %d  %d \n", v, CC[v] );
@@ -470,8 +473,51 @@ int  FISVSweep_Async(graph_t *graph, lp_state_t *lp_state,
     uint32_t* off = graph->off;
     uint32_t* ind = graph->ind;
     uint32_t* component_map = lp_state->CC;
+    uint32_t* CC = lp_state->CC;
 
     int  changed = 0;
+
+    for (size_t v = 0; v < nv; v++)
+    {
+        
+        uint32_t* vind = &ind[off[v]];
+        if (lp_state->Ps[v] == -1)
+        {
+            /* code */
+            CC[v] = v;
+        }
+        else
+        {
+            int Pv =vind[lp_state->Ps[v]];
+            if (CC[v] < CC[Pv])
+            {
+                /* code */
+                CC[v] = v;
+                lp_state->Ps[v] = -1;
+            }
+            else
+            {
+                int PPv;
+                if (lp_state->Ps[Pv] == -1)
+                {
+                    /* code */
+                    PPv = Pv;
+                }
+                else
+                {
+                    PPv =ind[off[Pv]+lp_state->Ps[Pv]];    
+                    if (v==PPv)
+                    {
+                        /* code */
+                        CC[v] = v;
+                        lp_state->Ps[v] == -1;
+                    }
+                }
+                
+
+            }
+        }
+    }
 
     for (size_t v = 0; v < nv; v++)
     {
@@ -507,7 +553,7 @@ int  FISVSweep_Async(graph_t *graph, lp_state_t *lp_state,
                 u = uT;
             }
 
-            uint32_t cc_prev_u = component_map[u];
+            uint32_t cc_prev_u = CC[u];
             uint32_t var;
             MemAccessCount++;
             if (u == 0)
@@ -520,12 +566,12 @@ int  FISVSweep_Async(graph_t *graph, lp_state_t *lp_state,
                 if (FaultArrCC[off[v] + edge])
                 {
                     var = FaultInjectWord(cc_prev_u);
-                    // do
-                    // {
-                    //     var = FaultInjectWord(cc_prev_u);
-                    //     // printf("stuck 2 %u %u\n", var, u);
-                    // }
-                    // while (var > u);
+                    do
+                    {
+                        var = FaultInjectWord(cc_prev_u);
+                        // printf("stuck 2 %u %u\n", var, u);
+                    }
+                    while (var > u);
 
                     /* code */
                     // printf("//v=%d  CC[u]=%d  CC[u]T=%d\n",v, cc_prev_u, var );
@@ -539,10 +585,10 @@ int  FISVSweep_Async(graph_t *graph, lp_state_t *lp_state,
                 cc_prev_u = var;
             }
 
-            if (cc_prev_u < component_map[v])
+            if (cc_prev_u < CC[v])
             {
                 lp_state->Ps[v] = edge;
-                component_map[v] = cc_prev_u;
+                CC[v] = cc_prev_u;
                 changed = 1;
             }
         }
@@ -612,9 +658,11 @@ int SSSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
         printParentTree(label, graph, lp_state);
         if (iteration % ssf == 0 || !changed)
         {
-            if(!changed) printf("convergence detected %d\n",iteration );
+            if (!changed) printf("//convergence detected %d\n", iteration );
             corrupted = SSstep_Async(graph, lp_state);
         }
+
+        printf("//Finished iteration  %d\n", iteration );
     }
     while (changed || corrupted);
 
