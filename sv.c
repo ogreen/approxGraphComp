@@ -52,7 +52,15 @@ int free_lp_state(lp_state_t *lp_state)
 int printParentTree(char *name, graph_t* graph, lp_state_t *lp_state)
 // prints a directed graph in dot format with title as s
 {
-    return 0;
+    if (getenv("PRINT_GRAPH") != NULL)
+    {
+        int  ind = (int) atoi(getenv("PRINT_GRAPH"));
+        if(ind==0) return 0;
+    }
+    else
+    {
+        return 0;
+    }
     size_t nv = graph->numVertices;
     printf("digraph %s { \n", name);
     printf("rankdir=BT\n");
@@ -74,7 +82,16 @@ int printParentTree(char *name, graph_t* graph, lp_state_t *lp_state)
 
 int printGraph(char *name, graph_t* graph, lp_state_t *lp_state)
 {
-    return 0;
+    // return 0;
+    if (getenv("PRINT_GRAPH") != NULL)
+    {
+        int  ind = (int) atoi(getenv("PRINT_GRAPH"));
+        if(ind==0) return 0;
+    }
+    else
+    {
+        return 0;
+    }
     size_t nv = graph->numVertices;
     uint32_t* off = graph->off;
     uint32_t* ind = graph->ind;
