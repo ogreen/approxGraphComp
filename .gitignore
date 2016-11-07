@@ -127,3 +127,9 @@ sympy-plots-for-*.tex/
 
 # VimEdit
 *.swp
+
+# C object files
+*.o
+
+# Data Files
+*.graph

@@ -25,7 +25,8 @@ MAT_SM :=  as-22july06.graph astro-ph.graph caidaRouterLevel.graph \
 		 citationCiteseer.graph
 
 .PHONY:	all clean test_small 
-all: sv FaultGenerator selfStab_test 
+#all: sv FaultGenerator selfStab_test 
+all: sv selfStab_test 
 
 COBJS: $(CSRCS) $(HEADERS)
 	@$(CC) $(CFLAGS)  -c $< -o $@ 
@@ -46,8 +47,8 @@ selfStab_test: selfStab_test.c $(OBJS) $(HEADERS) Makefile
 # 	$(CC)  $(CFLAGS) -o $@ sssv.c $(COBJS) $(LOAD_FLAGS)
 
 
-FaultGenerator: FaultGen.c 
-	$(CC)  $(CFLAGS) -fopenmp -o $@ FaultGen.c $(LOAD_FLAGS)
+#FaultGenerator: FaultGen.c 
+#	$(CC)  $(CFLAGS) -fopenmp -o $@ FaultGen.c $(LOAD_FLAGS)
 
 test_small: sv
 	$(foreach testcase,$(MAT_SM),./sv $(GRAPH_DIR)/$(testcase);)
