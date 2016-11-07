@@ -444,7 +444,7 @@ LP(lp_state) -> correct solution
 
     /*Now do the Cycle Correction*/
 
-    printf("//NUmber of corruptions is %d, NV %d\n", corrupted, nv );
+    // printf("//NUmber of corruptions is %d, NV %d\n", corrupted, nv );
 
 
     ssShortcut_Sync(graph, lp_state_out, lp_state_in);
@@ -835,6 +835,7 @@ int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
     double fProb1, fProb2;
 
     getFault_prob(&fProb1, &fProb2);
+    
 
     uint32_t* FaultArrEdge = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
     uint32_t* FaultArrCC = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
@@ -880,7 +881,7 @@ int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
         printParentTree(label, graph, lp_state_prev);
         if (iteration % ssf == 0 || !changed)
         {
-            if (!changed) printf("//convergence detected %d\n", iteration );
+            // if (!changed) printf("//convergence detected %d\n", iteration );
             corrupted = SSstep_Sync(graph, lp_state_cur, lp_state_prev);
         }
 
@@ -888,7 +889,7 @@ int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
         memcpy(lp_state_prev->CC, lp_state_cur->CC, numVertices * sizeof(uint32_t));
         memcpy(lp_state_prev->Ps, lp_state_cur->Ps, numVertices * sizeof(uint32_t));
 
-        printf("//Finished iteration  %d\n", iteration );
+        // printf("//Finished iteration  %d\n", iteration );
     }
     while (changed || corrupted);
 
@@ -896,7 +897,7 @@ int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
     stat->numIteration = iteration;
     free (FaultArrEdge);
     free (FaultArrCC);
-    printf("// Number of iteration is %d\n", iteration );
+    // printf("// Number of iteration is %d\n", iteration );
 
     return 0;
 }

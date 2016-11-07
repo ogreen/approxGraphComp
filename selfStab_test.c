@@ -169,7 +169,7 @@ int main (const int argc, char *argv[])
 
 
     lp_state_t lp_state_ssas;
-    ssf=100;
+    // ssf=100;
     alloc_lp_state(&graph, &lp_state_ssas); 
     init_lp_state(&graph, &lp_state_ssas); 
     InitStat(&statFF);
