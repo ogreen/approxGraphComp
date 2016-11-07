@@ -152,7 +152,7 @@ int main (const int argc, char *argv[])
     alloc_lp_state(&graph, &lp_state_ssa); 
     init_lp_state(&graph, &lp_state_ssa); 
     InitStat(&statFF);
-    SSSVAlg_Async( &lp_state_ssa,  &graph, &statFF, ssf );
+    SSSVAlg_Sync( &lp_state_ssa,  &graph, &statFF, ssf );
 
     for (int i = 0; i < graph.numVertices; ++i)
     {
@@ -167,6 +167,25 @@ int main (const int argc, char *argv[])
     printGraph(argv[1], &graph, &lp_state_t1);
 
 
+
+    lp_state_t lp_state_ssas;
+    ssf=100;
+    alloc_lp_state(&graph, &lp_state_ssas); 
+    init_lp_state(&graph, &lp_state_ssas); 
+    InitStat(&statFF);
+    SSSVAlg_Async( &lp_state_ssas,  &graph, &statFF, ssf );
+
+    for (int i = 0; i < graph.numVertices; ++i)
+    {
+
+        if (lp_state_ssa.CC[i] != lp_state_t1.CC[i])
+        {
+            printf("// Error occured at %d: (%d, %d) \n", i, lp_state_ssa.CC[i], lp_state_t1.CC[i] );
+        }
+        assert(lp_state_ssa.CC[i] == lp_state_t1.CC[i]);
+    }
+    printf("// Asynchronous Self-stabilizing LP: Passed Random-output flip Test ........\n");
+    printGraph(argv[1], &graph, &lp_state_t1);
 
     free_graph(&graph);
     return 0;
