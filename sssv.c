@@ -464,7 +464,8 @@ static inline uint32_t FaultInjectWord(uint32_t value)
 }
 
 static long long MemAccessCount;
-/*fault tolerant SV sweep */
+
+/*fault tolerant SV Async sweep */
 int  FISVSweep_Async(graph_t *graph, lp_state_t *lp_state,
                      uint32_t* FaultArrEdge,         /*probability of bit flip*/
                      uint32_t* FaultArrCC )        /*probability of bit flip for type-2 faults*/
@@ -477,6 +478,7 @@ int  FISVSweep_Async(graph_t *graph, lp_state_t *lp_state,
 
     int  changed = 0;
 
+    // 2-loop detection heuristic
     for (size_t v = 0; v < nv; v++)
     {
         
@@ -519,6 +521,7 @@ int  FISVSweep_Async(graph_t *graph, lp_state_t *lp_state,
         }
     }
 
+    // SV Sweep with faults
     for (size_t v = 0; v < nv; v++)
     {
         uint32_t* vind = &ind[off[v]];
@@ -599,6 +602,144 @@ int  FISVSweep_Async(graph_t *graph, lp_state_t *lp_state,
 
 }
 
+/*fault tolerant SV Sync sweep */
+int  FISVSweep_Sync2(graph_t *graph, 
+                     lp_state_t* lp_state_in,      // State which is read in the iteration
+                     lp_state_t* lp_state_out,     // State which is written to in the iteration     
+                     uint32_t* FaultArrEdge,       /*probability of bit flip*/
+                     uint32_t* FaultArrCC )        /*probability of bit flip for type-2 faults*/
+{
+    size_t nv = graph->numVertices;
+    uint32_t* off = graph->off;
+    uint32_t* ind = graph->ind;
+    uint32_t* CC = lp_state_in->CC;
+
+    int  changed = 0;
+
+    // 2-loop detection heuristic
+    for (size_t v = 0; v < nv; v++)
+    {
+        
+        uint32_t* vind = &ind[off[v]];
+        if (lp_state_in->Ps[v] == -1)
+        {
+            /* code */
+            CC[v] = v;
+        }
+        else
+        {
+            int Pv =vind[lp_state_in->Ps[v]];
+            if (CC[v] < CC[Pv])
+            {
+                /* code */
+                CC[v] = v;
+                lp_state_in->Ps[v] = -1;
+            }
+            else
+            {
+                int PPv;
+                if (lp_state_in->Ps[Pv] == -1)
+                {
+                    /* code */
+                    PPv = Pv;
+                }
+                else
+                {
+                    PPv =ind[off[Pv]+lp_state_in->Ps[Pv]];    
+                    if (v==PPv)
+                    {
+                        /* code */
+                        CC[v] = v;
+                        lp_state_in->Ps[v] == -1;
+                    }
+                }
+                
+
+            }
+        }
+    }
+
+    // SV Sweep with faults
+    for (size_t v = 0; v < nv; v++)
+    {
+        uint32_t* vind = &ind[off[v]];
+        const size_t vdeg = off[v + 1] - off[v];
+
+        for (size_t edge = 0; edge < vdeg; edge++)
+        {
+            uint32_t uT = vind[edge];
+            uint32_t u;
+            MemAccessCount++;
+
+            if (FaultArrEdge[off[v] + edge])
+            {
+                /* code */
+                u = FaultInjectWord(uT);
+
+                while (u >= nv)    /*a better check can be used*/
+                {
+                    uT = vind[edge];
+                    MemAccessCount++;
+
+                    u = FaultInjectWord(uT);
+                    // printf("stuck 1\n");
+                }
+
+                /* code */
+                //printf("//v=6  u=%d  uT=%d\n", u, uT );
+
+            }
+            else
+            {
+                u = uT;
+            }
+
+            uint32_t cc_prev_u = CC[u];
+            uint32_t var;
+            MemAccessCount++;
+            if (u == 0)
+            {
+                /* code */
+                cc_prev_u = 0;
+            }
+            else
+            {
+                if (FaultArrCC[off[v] + edge])
+                {
+                    var = FaultInjectWord(cc_prev_u);
+                    do
+                    {
+                        var = FaultInjectWord(cc_prev_u);
+                        // printf("stuck 2 %u %u\n", var, u);
+                    }
+                    while (var > u);
+
+                    /* code */
+                    //printf("//v=%d  CC[u]=%d  CC[u]T=%d\n",v, cc_prev_u, var );
+
+                }
+                else
+                {
+                    var = cc_prev_u;
+                }
+
+                cc_prev_u = var;
+            }
+
+            // Write to the auxiliary copy
+            if (cc_prev_u < CC[v])
+            {
+                lp_state_out->Ps[v] = edge;
+                lp_state_out->CC[v] = cc_prev_u;
+                changed = 1;
+            }
+        }
+    }
+
+    /*shortcutting goes here*/
+    return changed;
+
+}
 
 int SSSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
                    stat_t* stat, int ssf // frequency of self stabilization
@@ -661,6 +802,91 @@ int SSSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
             if (!changed) printf("//convergence detected %d\n", iteration );
             corrupted = SSstep_Async(graph, lp_state);
         }
+
+        printf("//Finished iteration  %d\n", iteration );
+    }
+    while (changed || corrupted);
+
+    /*updating stats*/
+    stat->numIteration = iteration;
+    free (FaultArrEdge);
+    free (FaultArrCC);
+    printf("// Number of iteration is %d\n", iteration );
+
+    return 0;
+}
+
+int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
+                  stat_t* stat, int ssf // frequency of self stabilization
+                 )
+{
+    size_t numVertices  = graph->numVertices;
+    size_t numEdges  = graph->numEdges;
+    uint32_t* off  = graph->off;
+    uint32_t* ind  = graph->ind;
+
+    // Allocate auxillary state
+    lp_state_t lp_state_aux;
+    alloc_lp_state(graph, &lp_state_aux);
+    init_lp_state(graph, &lp_state_aux);
+    lp_state_t* lp_state_cur = &lp_state_aux;
+
+    /*get fault probability*/
+    double fProb1, fProb2;
+
+    getFault_prob(&fProb1, &fProb2);
+
+    uint32_t* FaultArrEdge = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
+    uint32_t* FaultArrCC = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
+
+
+    int  changed;
+    size_t iteration = 0;
+    int corrupted;
+    do
+    {
+        /*intialize fault array*/
+        for (int i = 0; i < numEdges; ++i)
+        {
+            /* code */
+            FaultArrEdge[i] = 0;
+            FaultArrCC[i] = 0;
+        }
+
+        int numEdgeFault = 0;
+        int numCCFault = 0;
+
+        while (numEdgeFault <  0.5 * fProb1 * numEdges)
+        {
+            uint32_t ind = rand() % numEdges;
+            FaultArrEdge[ind] = 1;
+            numEdgeFault++;
+
+        }
+
+        while (numCCFault <  0.5 * fProb2 * numEdges)
+        {
+            uint32_t ind = rand() % numEdges;
+            FaultArrCC[ind] = 1;
+            numCCFault++;
+
+        }
+
+        corrupted = 0;
+        changed = FISVSweep_Sync2(graph, lp_state_prev, lp_state_cur, FaultArrEdge, FaultArrCC) ;
+        iteration += 1;
+        char label[100];
+        sprintf(label, "Iteration_%d", iteration);
+        printParentTree(label, graph, lp_state_prev);
+        if (iteration % ssf == 0 || !changed)
+        {
+            if (!changed) printf("//convergence detected %d\n", iteration );
+            corrupted = SSstep_Sync(graph, lp_state_cur, lp_state_prev);
+        }
+
+        // Copy over current state to previous
+        memcpy(lp_state_prev->CC, lp_state_cur->CC, numVertices * sizeof(uint32_t));
+        memcpy(lp_state_prev->Ps, lp_state_cur->Ps, numVertices * sizeof(uint32_t));
 
         printf("//Finished iteration  %d\n", iteration );
     }
