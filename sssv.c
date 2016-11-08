@@ -198,40 +198,29 @@ int ssShortcut_Sync(graph_t *graph, lp_state_t*lps_curr, lp_state_t*lps_prev)
 
     /*both will have the output*/
     // if (iteration % 2 == 0)
+
+
+    int loop = 0;
     for (uint32_t v = 0; v < nv; v++)
     {
-
-        lps_curr->CC[v] = MIN(v, CC_prev[v]);
-    }
-
-    // if(1)
-    // {
-
-    //     memcpy(P_curr, P_prev, nv * sizeof(uint32_t));
-    //     memcpy(CC_curr, CC_prev, nv * sizeof(uint32_t));
-    // }
-
-
-    // loop detect and correct
-    // and finally set the minimum
-    for (uint32_t v = 0; v < nv; v++)
-    {
-
-        // lps_curr->CC[v] = MIN(v,lps_curr->CC[v]);
-
+        CC[v] = MIN(v, CC_prev[v]);
         if (v == CC[v])
         {
-            /* code */
-            lps_curr->Ps[v] = -1;
-        }
-        else
-        {
-            lps_curr->Ps[v] = lps_prev->Ps[v];
+            if (lps_curr->Ps[v] != -1 )
+            {
+                
+                loop++;
+                lps_curr->Ps[v] = -1;
+                
+            }
+
+
         }
 
     }
 
-    // printf("//finish self-stabilizing Shortcutting %d\n", iteration);
+    return loop;
+    
 
 
 }
@@ -447,7 +436,7 @@ LP(lp_state) -> correct solution
     // printf("//NUmber of corruptions is %d, NV %d\n", corrupted, nv );
 
 
-    ssShortcut_Sync(graph, lp_state_out, lp_state_in);
+    corrupted +=ssShortcut_Sync(graph, lp_state_out, lp_state_in);
 
     return corrupted;
 }
@@ -619,6 +608,7 @@ int  FISVSweep_Sync2(graph_t *graph,
     // 2-loop detection heuristic
     for (size_t v = 0; v < nv; v++)
     {
+        break;
         
         uint32_t* vind = &ind[off[v]];
         if (lp_state_in->Ps[v] == -1)
@@ -835,7 +825,7 @@ int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
     double fProb1, fProb2;
 
     getFault_prob(&fProb1, &fProb2);
-    
+
 
     uint32_t* FaultArrEdge = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
     uint32_t* FaultArrCC = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
@@ -881,7 +871,7 @@ int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
         printParentTree(label, graph, lp_state_prev);
         if (iteration % ssf == 0 || !changed)
         {
-            // if (!changed) printf("//convergence detected %d\n", iteration );
+            if (!changed) printf("//convergence detected %d\n", iteration );
             corrupted = SSstep_Sync(graph, lp_state_cur, lp_state_prev);
         }
 
