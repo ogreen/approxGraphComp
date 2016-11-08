@@ -3,7 +3,7 @@
 #include <stdlib.h>     /* strtol */
 #include <stdbool.h>
 #include <stdint.h>
-
+#include <math.h>
 #include "faultInjection.h"
 
 

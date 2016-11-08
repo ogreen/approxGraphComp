@@ -231,7 +231,7 @@ int ssShortcut_Sync(graph_t *graph, lp_state_t*lps_curr, lp_state_t*lps_prev)
 
     }
 
-    printf("//finish self-stabilizing Shortcutting %d\n", iteration);
+    // printf("//finish self-stabilizing Shortcutting %d\n", iteration);
 
 
 }
