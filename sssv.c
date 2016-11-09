@@ -433,10 +433,13 @@ LP(lp_state) -> correct solution
 
     /*Now do the Cycle Correction*/
 
-    // printf("//NUmber of corruptions is %d, NV %d\n", corrupted, nv );
+    
 
+    int loop=0;
 
-    corrupted +=ssShortcut_Sync(graph, lp_state_out, lp_state_in);
+    loop = ssShortcut_Sync(graph, lp_state_out, lp_state_in);
+    // printf("//NUmber of corruptions is %d, loops %d, NV %d\n", corrupted,loop, nv );
+    corrupted += loop;
 
     return corrupted;
 }
@@ -640,7 +643,7 @@ int  FISVSweep_Sync2(graph_t *graph,
                     {
                         /* code */
                         CC[v] = v;
-                        lp_state_in->Ps[v] == -1;
+                        lp_state_in->Ps[v] = -1;
                     }
                 }
                 
@@ -661,7 +664,8 @@ int  FISVSweep_Sync2(graph_t *graph,
             uint32_t u;
             MemAccessCount++;
 
-            if (FaultArrEdge[off[v] + edge])
+            // if (FaultArrEdge[off[v] + edge])
+            if(0)
             {
                 /* code */
                 u = FaultInjectWord(uT);
@@ -694,7 +698,8 @@ int  FISVSweep_Sync2(graph_t *graph,
             }
             else
             {
-                if (FaultArrCC[off[v] + edge])
+                // if (FaultArrCC[off[v] + edge])
+                if(0)
                 {
                     var = FaultInjectWord(cc_prev_u);
                     if ( var<cc_prev_u)
@@ -874,7 +879,12 @@ int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
         char label[100];
         sprintf(label, "Iteration_%d", iteration);
         printParentTree(label, graph, lp_state_prev);
-        changed = FISVSweep_Sync2(graph, lp_state_prev, lp_state_cur, FaultArrEdge, FaultArrCC) ;
+        // changed = FISVSweep_Sync2(graph, lp_state_prev, lp_state_cur, FaultArrEdge, FaultArrCC) ;
+        changed =  FISVSweep_Sync(numVertices,
+                                             lp_state_prev->CC, lp_state_cur->CC, lp_state_cur->Ps,
+                                             off, ind,
+                                             FaultArrEdge, FaultArrCC);
+
         iteration += 1;
         sprintf(label, "Iteration_%d_after", iteration);
         printParentTree(label, graph, lp_state_prev);
@@ -883,8 +893,9 @@ int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
         // printParentTree(label, graph, lp_state_prev);
         if (iteration % ssf == 0 || !changed)
         {
-            if (!changed) printf("//convergence detected %d\n", iteration );
+            // if (!changed) printf("//convergence detected %d\n", iteration );
             corrupted = SSstep_Sync(graph, lp_state_cur, lp_state_prev);
+            // printf
         }
 
         // Copy over current state to previous

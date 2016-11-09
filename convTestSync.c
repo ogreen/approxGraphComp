@@ -78,9 +78,10 @@ int max_iter = 100;
     // int ssf=1000;
     alloc_lp_state(&graph, &lp_state_ssa); 
     init_lp_state(&graph, &lp_state_ssa); 
+    printGraph(argv[1], &graph, &lp_state_ssa);
     InitStat(&statSS);
 
-    SSSVAlg_Sync( &lp_state_ssa,  &graph, &statSS, max_iter, 10*max_iter );
+    SSSVAlg_Sync( &lp_state_ssa,  &graph, &statSS, 10*max_iter, 10*max_iter );
 
     for (int i = 0; i < graph.numVertices; ++i)
     {
