@@ -176,17 +176,26 @@ int FISVSweep_Sync(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             MemAccessCount++;
 
             if (FaultArrEdge[off[v] + edge])
+            // if(0)
             {
                 /* code */
                 u = FaultInjectWord(uT);
 
-                while (u >= nv)    /*a better check can be used*/
+                int num_trials=0;
+                while (u >= nv )    /*a better check can be used*/
                 {
                     uT = vind[edge];
                     MemAccessCount++;
 
                     u = FaultInjectWord(uT);
-                    // printf("stuck 1\n");
+                    num_trials++;
+                    if (num_trials==5)
+                    {
+                        /* code */
+                        u = uT;
+                        break;
+                    }
+                    // printf("stuck 1 %d %d %d, edge=%d, vind[edge]=%d\n",v,u, uT,edge,vind[edge]);
                 }
             }
             else
@@ -208,6 +217,7 @@ int FISVSweep_Sync(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
             else
             {
                 if (FaultArrCC[off[v] + edge])
+                // if(0)
                 {
                     do
                     {
@@ -215,6 +225,7 @@ int FISVSweep_Sync(size_t nv, uint32_t* cc_prev, uint32_t* cc_curr,
                         // printf("stuck 2 %u %u\n", var, u);
                     }
                     while (var > u);
+                    // while(0);
                 }
                 else
                 {
