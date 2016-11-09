@@ -608,7 +608,7 @@ int  FISVSweep_Sync2(graph_t *graph,
     // 2-loop detection heuristic
     for (size_t v = 0; v < nv; v++)
     {
-        break;
+        // break;
         
         uint32_t* vind = &ind[off[v]];
         if (lp_state_in->Ps[v] == -1)
@@ -697,12 +697,17 @@ int  FISVSweep_Sync2(graph_t *graph,
                 if (FaultArrCC[off[v] + edge])
                 {
                     var = FaultInjectWord(cc_prev_u);
-                    do
+                    if ( var<cc_prev_u)
+
                     {
-                        var = FaultInjectWord(cc_prev_u);
-                        // printf("stuck 2 %u %u\n", var, u);
+                        printf("// Error injected %d %d\n",CC[u], var );
                     }
-                    while (var > u);
+                    // do
+                    // {
+                    //     var = FaultInjectWord(cc_prev_u);
+                    //     // printf("stuck 2 %u %u\n", var, u);
+                    // }
+                    // while (var > u);
 
                     /* code */
                     //printf("//v=%d  CC[u]=%d  CC[u]T=%d\n",v, cc_prev_u, var );
@@ -733,6 +738,7 @@ int  FISVSweep_Sync2(graph_t *graph,
 
 int SSSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
                    stat_t* stat, int ssf // frequency of self stabilization
+
                  )
 {
     size_t numVertices  = graph->numVertices;
@@ -805,9 +811,10 @@ int SSSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
 
     return 0;
 }
-
+ 
 int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
                   stat_t* stat, int ssf // frequency of self stabilization
+                  , int max_iter
                  )
 {
     size_t numVertices  = graph->numVertices;
@@ -864,11 +871,16 @@ int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
         }
 
         corrupted = 0;
-        changed = FISVSweep_Sync2(graph, lp_state_prev, lp_state_cur, FaultArrEdge, FaultArrCC) ;
-        iteration += 1;
         char label[100];
         sprintf(label, "Iteration_%d", iteration);
         printParentTree(label, graph, lp_state_prev);
+        changed = FISVSweep_Sync2(graph, lp_state_prev, lp_state_cur, FaultArrEdge, FaultArrCC) ;
+        iteration += 1;
+        sprintf(label, "Iteration_%d_after", iteration);
+        printParentTree(label, graph, lp_state_prev);
+        
+        
+        // printParentTree(label, graph, lp_state_prev);
         if (iteration % ssf == 0 || !changed)
         {
             if (!changed) printf("//convergence detected %d\n", iteration );
@@ -881,7 +893,7 @@ int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
 
         // printf("//Finished iteration  %d\n", iteration );
     }
-    while (changed || corrupted);
+    while ((changed || corrupted) && iteration<max_iter);
 
     /*updating stats*/
     stat->numIteration = iteration;

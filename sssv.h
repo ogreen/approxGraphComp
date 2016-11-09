@@ -13,6 +13,7 @@ int SSSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
                  );
 int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
                   stat_t* stat, int ssf // frequency of self stabilization
+                  , int max_iter
                  );
 
 #ifdef __cplusplus

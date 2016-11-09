@@ -52,13 +52,13 @@ int main (const int argc, char *argv[])
     InitStat(&statSS);
     
 
-
+int max_iter = 100;
     // calling baseline algorithm for checking correctness
     lp_state_t lp_state_bl;
     alloc_lp_state(&graph, &lp_state_bl); // allocate space
     init_lp_state(&graph, &lp_state_bl); // initialize state
     // FFSVAlg_Async(&lp_state_bl,  &graph, &statBL);
-    int max_iter = 1000;
+    
     lp_state_bl = FFSVAlg_Sync( &graph, lp_state_bl, &statBL, max_iter);
 
     // Seed random number generator
@@ -79,7 +79,8 @@ int main (const int argc, char *argv[])
     alloc_lp_state(&graph, &lp_state_ssa); 
     init_lp_state(&graph, &lp_state_ssa); 
     InitStat(&statSS);
-    SSSVAlg_Sync( &lp_state_ssa,  &graph, &statSS, max_iter );
+
+    SSSVAlg_Sync( &lp_state_ssa,  &graph, &statSS, max_iter, 10*max_iter );
 
     for (int i = 0; i < graph.numVertices; ++i)
     {
@@ -96,6 +97,8 @@ int main (const int argc, char *argv[])
     getFault_prob(&fProb1, &fProb2);
 
     printf("%s %e %e %d %d\n",GraphName, fProb1,fProb2, statBL.numIteration,statSS.numIteration );
+    printGraph(argv[1], &graph, &lp_state_ssa);
+
     free_graph(&graph);
     free_lp_state(&lp_state_bl);
     free_lp_state(&lp_state_ssa);

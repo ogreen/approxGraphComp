@@ -152,7 +152,7 @@ int main (const int argc, char *argv[])
     alloc_lp_state(&graph, &lp_state_ssa); 
     init_lp_state(&graph, &lp_state_ssa); 
     InitStat(&statFF);
-    SSSVAlg_Sync( &lp_state_ssa,  &graph, &statFF, ssf );
+    SSSVAlg_Sync( &lp_state_ssa,  &graph, &statFF, ssf, ssf );
 
     for (int i = 0; i < graph.numVertices; ++i)
     {
