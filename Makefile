@@ -26,7 +26,7 @@ MAT_SM :=  as-22july06.graph astro-ph.graph caidaRouterLevel.graph \
 
 .PHONY:	all clean test_small 
 #all: sv FaultGenerator selfStab_test 
-all: sv selfStab_test convTestSync
+all: sv selfStab_test convTestSync failureTestSync
 
 COBJS: $(CSRCS) $(HEADERS)
 	@$(CC) $(CFLAGS)  -c $< -o $@ 
@@ -46,6 +46,9 @@ selfStab_test: selfStab_test.c $(OBJS) $(HEADERS) Makefile
 convTestSync: convTestSync.c $(OBJS) $(HEADERS) Makefile 
 	$(CC)  $(CFLAGS) -o $@ convTestSync.c $(OBJS) $(LOAD_FLAGS)
 
+failureTestSync: failureTestSync.c $(OBJS) $(HEADERS) Makefile 
+	$(CC)  $(CFLAGS) -o $@ failureTestSync.c $(OBJS) $(LOAD_FLAGS)
+
 # sssv: sssv.c  $(COBJS) $(HEADERS) Makefile 
 # 	$(CC)  $(CFLAGS) -o $@ sssv.c $(COBJS) $(LOAD_FLAGS)
 
@@ -57,5 +60,5 @@ test_small: sv
 	$(foreach testcase,$(MAT_SM),./sv $(GRAPH_DIR)/$(testcase);)
  
 clean:
-	-rm -f sv $(OBJS)  FaultGenerator
+	-rm -f sv $(OBJS)  FaultGenerator convTestSync failureTestSync
 	
