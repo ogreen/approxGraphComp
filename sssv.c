@@ -664,8 +664,7 @@ int  FISVSweep_Sync2(graph_t *graph,
             uint32_t u;
             MemAccessCount++;
 
-            // if (FaultArrEdge[off[v] + edge])
-            if(0)
+            if (FaultArrEdge[off[v] + edge])
             {
                 /* code */
                 u = FaultInjectWord(uT);
@@ -698,8 +697,7 @@ int  FISVSweep_Sync2(graph_t *graph,
             }
             else
             {
-                // if (FaultArrCC[off[v] + edge])
-                if(0)
+                if (FaultArrCC[off[v] + edge])
                 {
                     var = FaultInjectWord(cc_prev_u);
                     if ( var<cc_prev_u)
@@ -727,7 +725,7 @@ int  FISVSweep_Sync2(graph_t *graph,
             }
 
             // Write to the auxiliary copy
-            if (cc_prev_u < CC[v])
+            if (cc_prev_u < lp_state_out->CC[v])
             {
                 lp_state_out->Ps[v] = edge;
                 lp_state_out->CC[v] = cc_prev_u;
