@@ -65,12 +65,17 @@ int main (const int argc, char *argv[])
     InitStat(&statFT);
 
 
-    // calling baseline algorithm for checking
+    // calling baseline synchronous algorithm for checking
+    int max_iter = 1000;
 
     lp_state_t lp_state_bl;
     alloc_lp_state(&graph, &lp_state_bl); // allocate space
     init_lp_state(&graph, &lp_state_bl); // initialize state
-    FFSVAlg_Async(&lp_state_bl,  &graph, &statBL);
+    printf("\nRunning Sync Baseline\n");
+    FFSVAlg_Sync(&graph, lp_state_bl, &statBL, max_iter);
+    printf("\nRunning Async Baseline\n");
+    FFSVAlg_Sync(&graph, lp_state_bl, &statBL, max_iter);
+    printf("\n");
 
     // calling srand to setting initialize random number
     // srand(time(NULL));
@@ -96,7 +101,6 @@ int main (const int argc, char *argv[])
     }
     printf("// Asynchronous Self-stabilizing LP: Passed Random-Init Test ........\n");
 
-
     /*get fault probability*/
     double fProb1, fProb2;
     getFault_prob(&fProb1, &fProb2);
@@ -115,9 +119,7 @@ int main (const int argc, char *argv[])
     }
     printf("// Asynchronous Self-stabilizing LP: Passed Random-output flip Test ........\n");
 
-
     /*testing the Synchronous version*/
-    int max_iter = 1000;
     init_lp_state(&graph, &lp_state_bl); // initialize state
     InitStat(&statFF);
     lp_state_bl = FFSVAlg_Sync( &graph, lp_state_bl, &statFF, max_iter);
@@ -164,7 +166,7 @@ int main (const int argc, char *argv[])
         assert(lp_state_ssa.CC[i] == lp_state_t1.CC[i]);
     }
     printf("// Synchronous Self-stabilizing LP: Passed Random-output flip Test ........\n");
-    printGraph(argv[1], &graph, &lp_state_t1);
+    printGraph(argv[1], &graph, &lp_state_ssa);
 
 
 
@@ -178,21 +180,37 @@ int main (const int argc, char *argv[])
     for (int i = 0; i < graph.numVertices; ++i)
     {
 
-        if (lp_state_ssa.CC[i] != lp_state_t1.CC[i])
+        if (lp_state_ssas.CC[i] != lp_state_t1.CC[i])
         {
-            printf("// Error occured at %d: (%d, %d) \n", i, lp_state_ssa.CC[i], lp_state_t1.CC[i] );
+            printf("// Error occured at %d: (%d, %d) \n", i, lp_state_ssas.CC[i], lp_state_t1.CC[i] );
         }
-        assert(lp_state_ssa.CC[i] == lp_state_t1.CC[i]);
+        assert(lp_state_ssas.CC[i] == lp_state_t1.CC[i]);
     }
     printf("// Asynchronous Self-stabilizing LP: Passed Random-output flip Test ........\n");
-    printGraph(argv[1], &graph, &lp_state_t1);
+    printGraph(argv[1], &graph, &lp_state_ssas);
 
+    // Triple Modular Algorithm
+    lp_state_t lp_state_tm;
+    // ssf=100;
+    alloc_lp_state(&graph, &lp_state_tm); 
+    init_lp_state(&graph, &lp_state_tm); 
+    InitStat(&statFF);
+    FISVModAlg_Sync( &lp_state_tm,  &graph, &statFF, max_iter );
+
+    for (int i = 0; i < graph.numVertices; ++i)
+    {
+
+        if (lp_state_tm.CC[i] != lp_state_bl.CC[i])
+        {
+            printf("// Error occured at %d: (%d, %d) \n", i, lp_state_tm.CC[i], lp_state_bl.CC[i] );
+        }
+        assert(lp_state_tm.CC[i] == lp_state_bl.CC[i]);
+    }
+    printf("// Triple Modular LP: Passed Random-output flip Test ........\n");
+    printGraph(argv[1], &graph, &lp_state_tm);
+
+    printGraph(argv[1], &graph, &lp_state_bl);
     free_graph(&graph);
     return 0;
 }
-
-
-
-
-
 
