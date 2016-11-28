@@ -399,6 +399,7 @@ lp_state_t FFSVAlg_Sync( graph_t *graph,
     printf("NUmber of iteration for fault free=%d\n", iteration );
 #endif
 
+    printf("Number of iteration for fault free=%d\n", iteration );
     // free(cc_prev);
     // return cc_curr;
     free_lp_state(&lps_prev);
