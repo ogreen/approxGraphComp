@@ -596,7 +596,7 @@ int  FISVSweep_Async(graph_t *graph, lp_state_t *lp_state,
 }
 
 /*fault tolerant SV Sync sweep */
-int  FISVSweep_Sync2(graph_t *graph,
+int  FIHSVSweep_Sync(graph_t *graph,
                      lp_state_t* lp_state_in,      // State which is read in the iteration
                      lp_state_t* lp_state_out,     // State which is written to in the iteration
                      uint32_t* FaultArrEdge,       /*probability of bit flip*/
@@ -612,6 +612,7 @@ int  FISVSweep_Sync2(graph_t *graph,
     // 2-loop detection heuristic
     int tmp_2_loop = two_loop_count;
     for (size_t v = 0; v < nv; v++)
+        // if(0)
     {
         // break;
 
@@ -657,11 +658,11 @@ int  FISVSweep_Sync2(graph_t *graph,
         lp_state_out->Ps[v] = lp_state_in->Ps[v];
     }
 
-    if (two_loop_count > tmp_2_loop)
-    {
-        ss_count++;
-        SSstep_Sync(graph, lp_state_in, lp_state_out);
-    }
+    // if (two_loop_count > tmp_2_loop)
+    // {
+    //     ss_count++;
+    //     SSstep_Sync(graph, lp_state_in, lp_state_out);
+    // }
 
     printParentTree("loop_2_detect", graph, lp_state_in);
 
@@ -913,7 +914,116 @@ int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
         char label[100];
         sprintf(label, "Iteration_%d", iteration);
         printParentTree(label, graph, lp_state_prev);
-        changed = FISVSweep_Sync2(graph, lp_state_prev, lp_state_cur, FaultArrEdge, FaultArrCC) ;
+        // changed = FIHSVSweep_Sync(graph, lp_state_prev, lp_state_cur, FaultArrEdge, FaultArrCC) ;
+        changed =  FISVSweep_Sync(numVertices,
+                                  lp_state_prev->CC, lp_state_cur->CC, lp_state_cur->Ps,
+                                  off, ind,
+                                  FaultArrEdge, FaultArrCC);
+
+        iteration += 1;
+        sprintf(label, "Iteration_%d_after", iteration - 1);
+        printParentTree(label, graph, lp_state_cur);
+
+
+        // printParentTree(label, graph, lp_state_prev);
+        if (iteration % ssf == 0 || !changed)
+        {
+            // if (!changed) printf("//convergence detected %d\n", iteration );
+            corrupted = SSstep_Sync(graph, lp_state_cur, lp_state_prev);
+            // printf
+        }
+
+        // Copy over current state to previous
+        memcpy(lp_state_prev->CC, lp_state_cur->CC, numVertices * sizeof(uint32_t));
+        memcpy(lp_state_prev->Ps, lp_state_cur->Ps, numVertices * sizeof(uint32_t));
+
+        // printf("//Finished iteration  %d\n", iteration );
+    }
+    while ((changed || corrupted) && iteration < max_iter);
+
+    /*updating stats*/
+    stat->numIteration = iteration;
+    free (FaultArrEdge);
+    free (FaultArrCC);
+    printf("// Number of iteration is %d\n", iteration );
+
+    if (iteration == max_iter)
+    {
+        /* code */
+        return 1;
+    }
+    return 0;
+}
+
+
+/*with heuristic*/
+int SSHSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
+                  stat_t* stat, int ssf // frequency of self stabilization
+                  , int max_iter
+                )
+{
+    two_loop_count = 0;
+    ss_count = 0;
+    size_t numVertices  = graph->numVertices;
+    size_t numEdges  = graph->numEdges;
+    uint32_t* off  = graph->off;
+    uint32_t* ind  = graph->ind;
+
+    // Allocate auxillary state
+    lp_state_t lp_state_aux;
+    alloc_lp_state(graph, &lp_state_aux);
+    init_lp_state(graph, &lp_state_aux);
+    lp_state_t* lp_state_cur = &lp_state_aux;
+
+    /*get fault probability*/
+    double fProb1, fProb2;
+
+    getFault_prob(&fProb1, &fProb2);
+
+
+    uint32_t* FaultArrEdge = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
+    uint32_t* FaultArrCC = (uint32_t*)memalign(64, numEdges * sizeof(uint32_t));
+
+
+    int  changed;
+    size_t iteration = 0;
+    int corrupted;
+    do
+    {
+        printf("//Two loop count is %d\n", two_loop_count);
+        printf("//ss count is %d\n", ss_count);
+        /*intialize fault array*/
+        for (int i = 0; i < numEdges; ++i)
+        {
+            /* code */
+            FaultArrEdge[i] = 0;
+            FaultArrCC[i] = 0;
+        }
+
+        int numEdgeFault = 0;
+        int numCCFault = 0;
+
+        while (numEdgeFault <  0.5 * fProb1 * numEdges)
+        {
+            uint32_t ind = rand() % numEdges;
+            FaultArrEdge[ind] = 1;
+            numEdgeFault++;
+
+        }
+
+        while (numCCFault <  0.5 * fProb2 * numEdges)
+        {
+            uint32_t ind = rand() % numEdges;
+            FaultArrCC[ind] = 1;
+            numCCFault++;
+
+        }
+
+        corrupted = 0;
+        char label[100];
+        sprintf(label, "Iteration_%d", iteration);
+        printParentTree(label, graph, lp_state_prev);
+        changed = FIHSVSweep_Sync(graph, lp_state_prev, lp_state_cur, FaultArrEdge, FaultArrCC) ;
         // changed =  FISVSweep_Sync(numVertices,
         //                           lp_state_prev->CC, lp_state_cur->CC, lp_state_cur->Ps,
         //                           off, ind,
@@ -1020,7 +1130,7 @@ int FISVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
         char label[100];
         sprintf(label, "Iteration_%d", iteration);
         printParentTree(label, graph, lp_state_prev);
-        // changed = FISVSweep_Sync2(graph, lp_state_prev, lp_state_cur, FaultArrEdge, FaultArrCC) ;
+        // changed = FIHSVSweep_Sync(graph, lp_state_prev, lp_state_cur, FaultArrEdge, FaultArrCC) ;
         changed =  FISVSweep_Sync(numVertices,
                                   lp_state_prev->CC, lp_state_cur->CC, lp_state_cur->Ps,
                                   off, ind,
