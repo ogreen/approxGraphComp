@@ -620,7 +620,7 @@ int FISVModAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
         }
         iteration += 1;
         sprintf(label, "Iteration_%d_after", iteration);
-        printParentTree(label, graph, lp_state_prev);
+        printParentTree(label, graph, lp_state_cur);
 
         // Check convergence
         for(int ii=0; ii < numVertices; ii++)
