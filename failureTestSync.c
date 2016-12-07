@@ -53,8 +53,19 @@ int main (const int argc, char *argv[])
     InitStat(&statBL);
     InitStat(&statSS);
 
-
     int max_iter = 100;
+    int ssf = 50;
+    if (getenv("MAX_ITER") != NULL)
+    {
+        max_iter = (double) atoi(getenv("MAX_ITER"));
+
+    }
+    else
+    {
+        printf("Please set the environment variable MAX_ITER\n");
+        exit(0);
+    }
+
     // calling baseline algorithm for checking correctness
     lp_state_t lp_state_bl;
     alloc_lp_state(&graph, &lp_state_bl); // allocate space
@@ -77,13 +88,15 @@ int main (const int argc, char *argv[])
         exit(0);
     }
 
+
+
     lp_state_t lp_state_ssa;
     printGraph(argv[1], &graph, &lp_state_ssa);
 
     // int ssf=1000;
     alloc_lp_state(&graph, &lp_state_ssa);
 
-    int num_failures =0;
+    int num_failures = 0;
 
     for (int i = 0; i < num_trials; ++i)
     {
@@ -93,8 +106,8 @@ int main (const int argc, char *argv[])
 
         InitStat(&statSS);
 
-        FISVAlg_Sync( &lp_state_ssa,  &graph, &statSS, 10 * max_iter, 10 * max_iter );
-        // SSSVAlg_Sync( &lp_state_ssa,  &graph, &statSS, 10 * max_iter, 10 * max_iter );
+        FISVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
+        // SSSVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
         // printf("%s\n", );
 
         for (int i = 0; i < graph.numVertices; ++i)
@@ -106,7 +119,7 @@ int main (const int argc, char *argv[])
                 num_failures++;
                 break;
             }
-            
+
         }
 
     }
@@ -115,7 +128,99 @@ int main (const int argc, char *argv[])
 
     getFault_prob(&fProb1, &fProb2);
 
-    printf("%s %e %e %d %d\n", GraphName, fProb1, fProb2, num_trials, num_failures );
+    printf("%s %e %e %d %d ", GraphName, fProb1, fProb2, num_trials, num_failures );
+
+    num_failures = 0;
+
+    for (int i = 0; i < num_trials; ++i)
+    {
+        /* set random numbr seed for the trial */
+        srand(i);
+        init_lp_state(&graph, &lp_state_ssa);
+
+        InitStat(&statSS);
+
+        // FISVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
+        SSSVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
+        // printf("%s\n", );
+
+        for (int i = 0; i < graph.numVertices; ++i)
+        {
+
+            if (lp_state_ssa.CC[i] != lp_state_bl.CC[i])
+            {
+                // printf("// Error occured at %d: (%d, %d) \n", i, lp_state_ssa.CC[i], lp_state_bl.CC[i] );
+                num_failures++;
+                break;
+            }
+
+        }
+
+    }
+
+    printf(" %d ", num_failures );
+
+    num_failures = 0;
+
+    for (int i = 0; i < num_trials; ++i)
+    {
+        /* set random numbr seed for the trial */
+        srand(i);
+        init_lp_state(&graph, &lp_state_ssa);
+
+        InitStat(&statSS);
+
+        // FISVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
+        SSHSVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
+        // printf("%s\n", );
+
+        for (int i = 0; i < graph.numVertices; ++i)
+        {
+
+            if (lp_state_ssa.CC[i] != lp_state_bl.CC[i])
+            {
+                // printf("// Error occured at %d: (%d, %d) \n", i, lp_state_ssa.CC[i], lp_state_bl.CC[i] );
+                num_failures++;
+                break;
+            }
+
+        }
+
+    }
+
+    printf(" %d ", num_failures );
+
+    num_failures = 0;
+
+    for (int i = 0; i < num_trials; ++i)
+    {
+        /* set random numbr seed for the trial */
+        srand(i);
+        init_lp_state(&graph, &lp_state_ssa);
+
+        InitStat(&statSS);
+
+        // FISVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
+
+        FISVModAlg_Sync( &lp_state_ssa,  &graph, &statSS, max_iter );
+        // printf("%s\n", );
+
+        for (int i = 0; i < graph.numVertices; ++i)
+        {
+
+            if (lp_state_ssa.CC[i] != lp_state_bl.CC[i])
+            {
+                // printf("// Error occured at %d: (%d, %d) \n", i, lp_state_ssa.CC[i], lp_state_bl.CC[i] );
+                num_failures++;
+                break;
+            }
+
+        }
+
+    }
+
+    printf(" %d ", num_failures );
+
     printGraph(argv[1], &graph, &lp_state_ssa);
 
     free_graph(&graph);

@@ -341,7 +341,7 @@ LP(lp_state) -> correct solution
 
     int loops = 0;
     loops = ssShortcut_Async(graph, lp_state);
-    printf("//Number of corruptions is %d, number of loop %d, NV %d\n", corrupted, loops, nv );
+    // printf("//Number of corruptions is %d, number of loop %d, NV %d\n", corrupted, loops, nv );
     corrupted += loops;
 
     if (v == 3615)
@@ -690,7 +690,7 @@ int  FIHSVSweep_Sync(graph_t *graph,
 
                     u = FaultInjectWord(uT);
                     // printf("stuck 1\n");
-                    printf("// Error injected Edge %d-->%d\n", uT, u );
+                    // printf("// Error injected Edge %d-->%d\n", uT, u );
                 }
 
                 /* code */
@@ -718,7 +718,7 @@ int  FIHSVSweep_Sync(graph_t *graph,
                     if ( var < cc_prev_u)
 
                     {
-                        printf("// Error injected CC %d-->%d\n", CC[u], var );
+                        // printf("// Error injected CC %d-->%d\n", CC[u], var );
                     }
                     // do
                     // {
@@ -745,7 +745,7 @@ int  FIHSVSweep_Sync(graph_t *graph,
                 if (v == 129)
                 {
                     /* code */
-                    printf("// %d-->%d--->", lp_state_out->CC[v], cc_prev_u );
+                    // printf("// %d-->%d--->", lp_state_out->CC[v], cc_prev_u );
                 }
                 uint32_t* uind = &ind[off[u]];
                 uint32_t Pu = lp_state_in->Ps[u] == -1 ? u : uind[lp_state_in->Ps[u]];
@@ -758,8 +758,8 @@ int  FIHSVSweep_Sync(graph_t *graph,
                 }
             }
         }
-        if (v == 129)
-        {printf("\n");}
+        // if (v == 129)
+        // {printf("\n");}
     }
 
     /*shortcutting goes here*/
@@ -826,11 +826,11 @@ int SSSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
         printParentTree(label, graph, lp_state);
         if (iteration % ssf == 0 || !changed)
         {
-            if (!changed) printf("//convergence detected %d\n", iteration );
+            // if (!changed) printf("//convergence detected %d\n", iteration );
             corrupted = SSstep_Async(graph, lp_state);
         }
 
-        printf("//Finished iteration  %d\n", iteration );
+        // printf("//Finished iteration  %d\n", iteration );
     }
     while ((changed || corrupted) && iteration < max_iter);
 
@@ -838,7 +838,7 @@ int SSSVAlg_Async( lp_state_t *lp_state,  graph_t *graph,
     stat->numIteration = iteration;
     free (FaultArrEdge);
     free (FaultArrCC);
-    printf("// Number of iteration is %d\n", iteration );
+    // printf("// Number of iteration is %d\n", iteration );
     if (iteration == max_iter)
     {
         /* code */
@@ -881,8 +881,8 @@ int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
     int corrupted;
     do
     {
-        printf("//Two loop count is %d\n", two_loop_count);
-        printf("//ss count is %d\n", ss_count);
+        // printf("//Two loop count is %d\n", two_loop_count);
+        // printf("//ss count is %d\n", ss_count);
         /*intialize fault array*/
         for (int i = 0; i < numEdges; ++i)
         {
@@ -945,7 +945,7 @@ int SSSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
     stat->numIteration = iteration;
     free (FaultArrEdge);
     free (FaultArrCC);
-    printf("// Number of iteration is %d\n", iteration );
+    // printf("// Number of iteration is %d\n", iteration );
 
     if (iteration == max_iter)
     {
@@ -990,8 +990,8 @@ int SSHSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
     int corrupted;
     do
     {
-        printf("//Two loop count is %d\n", two_loop_count);
-        printf("//ss count is %d\n", ss_count);
+        // printf("//Two loop count is %d\n", two_loop_count);
+        // printf("//ss count is %d\n", ss_count);
         /*intialize fault array*/
         for (int i = 0; i < numEdges; ++i)
         {
@@ -1054,7 +1054,7 @@ int SSHSVAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
     stat->numIteration = iteration;
     free (FaultArrEdge);
     free (FaultArrCC);
-    printf("// Number of iteration is %d\n", iteration );
+    // printf("// Number of iteration is %d\n", iteration );
 
     if (iteration == max_iter)
     {

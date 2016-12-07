@@ -615,7 +615,7 @@ int FISVModAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
 
         if(vote_iter >= max_iter) 
         {
-            printf("\nVotes couldn't agree within maximum allowed iterations");
+            // printf("\nVotes couldn't agree within maximum allowed iterations");
             iteration = max_iter;
         }
         iteration += 1;
@@ -646,7 +646,7 @@ int FISVModAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
     free (BFaultArrCC);
     free (CFaultArrEdge);
     free (CFaultArrCC);
-    printf("// Number of iteration is %d\n", iteration );
+    // printf("// Number of iteration is %d\n", iteration );
 
     // Free LP aux
     free_lp_state(lp_state_A);
