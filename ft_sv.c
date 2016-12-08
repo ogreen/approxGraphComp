@@ -528,7 +528,7 @@ int FISVModAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
     {
         char label[100];
         int votes_failed;        
-        int vote_iter = 1;
+        int vote_iter = 0;
         changed = 0;
 
         do 
@@ -611,14 +611,14 @@ int FISVModAlg_Sync( lp_state_t* lp_state_prev, graph_t *graph,
             //printf("//Finished voting iteration %d\n", vote_iter);
             vote_iter++;
         }
-        while (votes_failed && vote_iter < max_iter);
+        while (votes_failed && vote_iter+iteration < max_iter);
 
         if(vote_iter >= max_iter) 
         {
             // printf("\nVotes couldn't agree within maximum allowed iterations");
             iteration = max_iter;
         }
-        iteration += 1;
+        iteration += vote_iter;
         sprintf(label, "Iteration_%d_after", iteration);
         printParentTree(label, graph, lp_state_cur);
 
