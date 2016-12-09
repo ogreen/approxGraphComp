@@ -19,6 +19,61 @@ numTrials = int (header_list[3])
 baselineIteration =int (header_list[4])
 
 
+# create a figure
+plt.figure(figsize=(8, 6), dpi=80);
+
+# colors for plotting
+#create historgram 
+color_list = plt.cm.gnuplot2(np.linspace(0, 1, 6))
+imp=[]
+
+for c in range(1,5):
+	numEntry =[]
+	datc = dat[c];
+	dat_list = datc.split(', ');
+	imp.append(dat_list[0]);
+	numSuccess = len(dat_list)-1;
+	for i in xrange(1,numSuccess-1):
+		numEntry.append(float(dat_list[i]))
+
+	#changing into numpy object
+	iterList  = np.array(numEntry);
+
+	# normalizing for number of trials
+	iterList = 100*iterList/numTrials;
+	#changing overheads into percentage
+	# print imp[c-1]+"Hello" 
+	if dat_list[0]=="TMSV ":
+		iterList = 300*(iterList+1)-100;
+	else:
+		iterList = 100*iterList;
+
+	# area of interest 1-3 10 bins
+	binsSep= np.linspace(0,1000,101, endpoint="True" )
+
+
+
+	[hist, edge] =  np.histogram(iterList, binsSep[0:101]);
+	# plt.hist(iterList1,bins=binsSep)
+	hist = np.cumsum(hist)
+	# plt.plot(edge[1:100],hist);
+
+	plt.plot(binsSep[0:100], hist, color=color_list[c-1], linewidth=2.5, linestyle="--")
+
+
+
+ax = plt.gca()
+for label in ax.get_xticklabels() + ax.get_yticklabels():
+    label.set_fontsize(14)
+    
+plt.xlim(0,250)
+plt.ylim(-10,150)
+plt.grid()
+plt.legend(imp)
+plt.title('Overhead w.r.t. fault free execution (%)', fontsize=14)
+plt.xlabel('Overhead', fontsize=14)
+plt.ylabel('Cumulative Distribution (%)', fontsize=14)
+
 
 #for each implementation get the name of implementation and overhead incurred
 # numEntry1 =[]
@@ -31,13 +86,6 @@ baselineIteration =int (header_list[4])
 
 
 
-numEntry2 =[]
-dat2 = dat[2];
-dat2_list = dat2.split(', ');
-imp2 = dat2_list[0];
-numSuccess2 = len(dat2_list)-1;
-for i in xrange(1,numSuccess2-1):
-	numEntry2.append(float(dat2_list[i]))
 
 # numEntry3 =[]
 # dat3 = dat[3];
@@ -57,23 +105,28 @@ for i in xrange(1,numSuccess2-1):
 
 
 
-iterList1  = np.array(numEntry2);
+# iterList1  = np.array(numEntry2);
 
-iterList1 = 100*iterList1;
+# iterList1 = 100*iterList1;
 
-# area of interest 1-3 10 bins
-binsSep= np.linspace(0,100,101, endpoint="True" )
+# # area of interest 1-3 10 bins
+# binsSep= np.linspace(0,1000,101, endpoint="True" )
 
-# create a figure
-plt.figure(figsize=(8, 6), dpi=80);
 
-#create historgram 
-[hist, edge] =  np.histogram(iterList1, binsSep[1:100]);
-# plt.hist(iterList1,bins=binsSep)
-hist = np.cumsum(hist)
-plt.plot(hist)
 
-outputFileName= "Conv_%s_%s_%e.pdf"%(graphName,algType,normFaultRate)
+# [hist, edge] =  np.histogram(iterList1, binsSep[0:101]);
+# # plt.hist(iterList1,bins=binsSep)
+# hist = np.cumsum(hist)
+# # plt.plot(edge[1:100],hist);
+# c = 1
+# plt.plot(binsSep[0:100], hist, color=color_list[c], linewidth=2.5, linestyle="--")
+
+
+
+# plt.xlabel('\% overhead');
+# plt.ylabel('Frequency');
+
+outputFileName= "Conv_%s_%s_2^{-%d}.pdf"%(graphName,algType,normFaultRate)
 
 plt.savefig(outputFileName)
 
