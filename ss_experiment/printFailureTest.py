@@ -58,7 +58,8 @@ rects4 = ax.bar([i + 3*width for i in ind], 100*output['TM']/num_trials, width, 
 
 ax.set_ylabel('Failures %')
 ax.set_ylim(0, 110)
-ax.set_title(gname + 'Failure Rate')
+ax.set_title(gname + ' Failure Rate')
+ax.set_xlabel('Fault Rate')
 ax.set_xticks(ind + 2*width)
 ax.set_xticklabels(['2^-'+str(fr) for fr in fault_rates])
 
