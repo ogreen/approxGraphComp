@@ -64,5 +64,5 @@ ax.set_xticklabels(['2^-'+str(fr) for fr in fault_rates])
 
 ax.legend((rects1[0], rects2[0], rects3[0], rects4[0]), ('FI', 'SS', 'SSH', 'TM'))
 
-plt.savefig(gname + '_failure_rate.png')
+plt.savefig('')
 
