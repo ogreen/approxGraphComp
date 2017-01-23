@@ -21,6 +21,7 @@ graph and fault rate: For Sync Algorithm */
 #include "stat.h"
 #include "graph.h"
 #include "sssv.h"
+#include "ft_sv.h"
 #include "faultInjection.h"
 
 #define COUNTOF(array) (sizeof(array) / sizeof(array[0]))
