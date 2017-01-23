@@ -63,5 +63,5 @@ test_small: sv
 	$(foreach testcase,$(MAT_SM),./sv $(GRAPH_DIR)/$(testcase);)
  
 clean:
-	-rm -f sv $(OBJS)  FaultGenerator convTestSync failureTestSync failureTestAsync
+	-rm -f sv $(OBJS)  FaultGenerator convTestSync failureTestSync failureTestAsync selfStab_test
 	
