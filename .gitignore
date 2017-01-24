@@ -133,3 +133,11 @@ sympy-plots-for-*.tex/
 
 # Data Files
 *.graph
+
+failureTestSync
+
+convTestSync
+
+selfStab_test
+
+sv
