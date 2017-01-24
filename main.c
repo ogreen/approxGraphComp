@@ -69,6 +69,9 @@ int main (const int argc, char *argv[])
     init_lp_state(&graph, &lps_ff);     // initialize state
     lps_ff = FFSVAlg_Sync( &graph, lps_ff, &statFF, max_iter);
 
+    // find number of components in the graphs
+    printf("NUmber of Components in %s = %d \n",GraphName, numComponent(&graph, &lps_ff));
+
     for (int i = 0; i < graph.numVertices; ++i)
     {
         
@@ -89,7 +92,7 @@ int main (const int argc, char *argv[])
 
     // statFT.numIteration = 50;
 
-    PrintCompStat2(GraphName, norm_prob, &statBL, &statFF, &statFT);
+    // PrintCompStat2(GraphName, norm_prob, &statBL, &statFF, &statFT);
 
     free_lp_state(&lps_bl);
     free_lp_state(&lps_ft);

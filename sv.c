@@ -15,6 +15,25 @@
 static long long MemAccessCount;
 
 
+int numComponent(graph_t *graph, lp_state_t *lp_state)
+{
+    size_t nv  = graph->numVertices;
+
+    uint32_t* CC = lp_state->CC;
+ 
+    int numComponents =0;
+
+    for (int i = 0; i < nv; ++i)
+    {
+        if (CC[i]>numComponents)
+        {
+            numComponents = CC[i];
+        }
+    }
+
+    return numComponents;
+}
+
 int alloc_lp_state(graph_t *graph, lp_state_t *lp_state)
 {
     size_t numVertices  = graph->numVertices;
@@ -25,6 +44,9 @@ int alloc_lp_state(graph_t *graph, lp_state_t *lp_state)
     lp_state->Cr = (int*)memalign(64, numVertices * sizeof(int));
     return 0;
 }
+
+
+
 
 int init_lp_state(graph_t *graph, lp_state_t *lp_state)
 {
