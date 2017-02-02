@@ -134,10 +134,18 @@ sympy-plots-for-*.tex/
 # Data Files
 *.graph
 
-failureTestSync
 
-convTestSync
 
 selfStab_test
 
 sv
+
+ss_experiment/failureTestSync/__pycache__/
+
+ss_experiment/failureTestSync/barPlot\.py
+
+ss_experiment/failureTestSync/test\.py
+
+convTestSync
+
+failureTestSync
