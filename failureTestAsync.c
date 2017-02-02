@@ -73,7 +73,7 @@ int main (const int argc, char *argv[])
     init_lp_state(&graph, &lp_state_bl); // initialize state
     // FFSVAlg_Async(&lp_state_bl,  &graph, &statBL);
 
-    lp_state_bl = FFSVAlg_Sync( &graph, lp_state_bl, &statBL, max_iter);
+    FFSVAlg_Async( &lp_state_bl, &graph, &statBL);
 
     // Seed random number generator
     int seed;
@@ -107,7 +107,7 @@ int main (const int argc, char *argv[])
 
         InitStat(&statSS);
 
-        FISVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
+        FISVAlg_Async( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
         // SSSVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
         // printf("%s\n", );
 
@@ -142,7 +142,7 @@ int main (const int argc, char *argv[])
         InitStat(&statSS);
 
         // FISVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
-        SSSVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
+        SSSVAlg_Async( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
         // printf("%s\n", );
 
         for (int i = 0; i < graph.numVertices; ++i)
@@ -172,7 +172,7 @@ int main (const int argc, char *argv[])
         InitStat(&statSS);
 
         // FISVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
-        SSHSVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
+        SSHSVAlg_Async( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
         // printf("%s\n", );
 
         for (int i = 0; i < graph.numVertices; ++i)
@@ -203,7 +203,7 @@ int main (const int argc, char *argv[])
 
         // FISVAlg_Sync( &lp_state_ssa,  &graph, &statSS, ssf, max_iter );
 
-        FISVModAlg_Sync( &lp_state_ssa,  &graph, &statSS, max_iter );
+        FISVModAlg_Async( &lp_state_ssa,  &graph, &statSS, max_iter );
         // printf("%s\n", );
 
         for (int i = 0; i < graph.numVertices; ++i)
