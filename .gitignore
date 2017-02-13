@@ -149,3 +149,7 @@ ss_experiment/failureTestSync/test\.py
 convTestSync
 
 failureTestSync
+
+convTestAsync
+
+timeAsync
