@@ -153,3 +153,5 @@ failureTestSync
 convTestAsync
 
 timeAsync
+
+ss_experiment/failureTest/__pycache__/
