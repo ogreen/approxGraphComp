@@ -1,0 +1,215 @@
+%% LyX 2.0.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+% \usepackage[usenames,dvipsnames]{xcolor}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{verbatim}
+\usepackage{float}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+\usepackage{libertine}
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup[subfigure]{labelformat=empty}
+
+%% for manually breaking cells in tables.
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+  %%%%
+\usepackage{booktabs}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+
+
+
+\newcommand{\tgemmcpu}{\ensuremath{t_{\mbox{\tiny\scshape Gemm}}}\xspace}
+\newcommand{\tscattercpu}{\ensuremath{t_{\mbox{\tiny\scshape Scatter}}}\xspace}
+\newcommand{\tgemmmic}{\ensuremath{t_{\mbox{\tiny\scshape Gemm}}^{\tiny (\phi)}}\xspace}
+\newcommand{\tscattermic}{\ensuremath{t_{\mbox{\tiny\scshape Scatter}}^{\tiny (\phi)}}\xspace}
+
+\newcommand{\bigNotation}[2]{\ensuremath{\operatorname{#1}\bigl({#2}\bigr)}}
+\newcommand{\bigO}[1]{\bigNotation{\mathcal{O}}{#1}}
+\newcommand{\littleO}[1]{\bigNotation{\mathcal{o}}{#1}}
+\newcommand{\bigOmega}[1]{\bigNotation{\Omega}{#1}}
+\newcommand{\bigTheta}[1]{\bigNotation{\Theta}{#1}}
+
+
+%% defenitions for different colrs 
+% Dark pastel green
+\definecolor{dpg}{rgb}{0.01, 0.75, 0.24}
+\definecolor{emerald}{rgb}{0.31, 0.78, 0.47}
+
+\usepackage{eso-pic}
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{footline}[frame number]
+
+\newcommand\AtPagemyUpperLeft[1]{\AtPageLowerLeft{%
+\put(\LenToUnit{0.6\paperwidth},\LenToUnit{0.97\paperheight}){#1}}}
+\AddToShipoutPictureFG{
+  \AtPagemyUpperLeft{http://hpcgarage.org/ftxs16/}
+}%
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% A simple dot to overcome graphicx limitations
+\newcommand{\lyxdot}{.}
+% \newcommand{\comment}[1]{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ \AtBeginDocument{
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+ \long\def\lyxframe#1{\@lyxframe#1\@lyxframestop}%
+ \def\@lyxframe{\@ifnextchar<{\@@lyxframe}{\@@lyxframe<*>}}%
+ \def\@@lyxframe<#1>{\@ifnextchar[{\@@@lyxframe<#1>}{\@@@lyxframe<#1>[]}}
+ \def\@@@lyxframe<#1>[{\@ifnextchar<{\@@@@@lyxframe<#1>[}{\@@@@lyxframe<#1>[<*>][}}
+ \def\@@@@@lyxframe<#1>[#2]{\@ifnextchar[{\@@@@lyxframe<#1>[#2]}{\@@@@lyxframe<#1>[#2][]}}
+ \long\def\@@@@lyxframe<#1>[#2][#3]#4\@lyxframestop#5\lyxframeend{%
+   \frame<#1>[#2][#3]{\frametitle{#4}#5}}
+ \def\lyxframeend{} % In case there is a superfluous frame end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+
+\usepackage{listings}
+%\usetheme{Warsaw}
+% or ...
+%\usetheme{Antibes}	% tree outline, neat
+%\usetheme{JuanLesPins}	% like Antibes, with shading
+%\usetheme{Bergen}	% outline on side
+%\usetheme{Luebeck}	% like Warsaw, square sides
+%\usetheme{Berkeley}	% interesting left bar outline
+\usetheme{CambridgeUS}  
+% \usetheme{Madrid}	% clean, nice.  7/12 page numbers
+%\usetheme{Berlin}	% dots show slide number
+%\usetheme{Malmoe}	% OK, plain, unshaded
+%\usetheme{Boadilla}	% nice, white bg, no top bar
+%\usetheme{Marburg}	% nice, outline on right
+%\usetheme{boxes}	% ???
+%\usetheme{Montpellier}	% tree outline on top, plainish white
+%\usetheme{Copenhagen}	% like Warsaw
+% \usetheme{PaloAlto}	% looks good
+%\usetheme{Darmstadt}	% like Warsaw with circle outline
+% \usetheme{Pittsburgh}
+% \usetheme{default}
+%\usetheme{Rochester}	% like boxy, unshaded warsaw
+%\usetheme{Dresden}	% circle outline on top
+%\usetheme{Singapore}	% purple gradient top
+%\usetheme{Frankfurt}	% like Warsaw with circle outline on top
+%\usetheme{Szeged}
+%\usetheme{Goettingen}	% light purple right bar outline
+% \usetheme{Warsaw}
+%\usetheme{Hannover}	% like Goett with bar on left
+%\usetheme{compatibility}
+%\usetheme{Ilmenau}
+
+\setbeamertemplate{footline}
+{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+    \usebeamerfont{author in head/foot}\insertshortauthor~~\beamer@ifempty{\insertshortinstitute}{}{\insertshortinstitute}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}\insertshorttitle
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+    \usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+    \insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+
+% \usecolortheme{seahorse}
+\usecolortheme{rose}
+% \usecolortheme{beaver}
+
+% seems to fix typewriter font in outline header:
+\usepackage{ae,aecompl}
+
+
+%%%
+\newenvironment<>{problock}[1]{%
+  \begin{actionenv}#2%
+      \def\insertblocktitle{#1}%
+      \par%
+      \mode<presentation>{%
+        \setbeamercolor{block title}{fg=white,bg=YellowGreen}
+       \setbeamercolor{block body}{fg=black,bg=olive!50}
+       \setbeamercolor{itemize item}{fg=orange!20!black}
+       \setbeamertemplate{itemize item}[triangle]
+     }%
+      \usebeamertemplate{block begin}}
+    {\par\usebeamertemplate{block end}\end{actionenv}}
+
+
+
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+\title[Fault tolerant graph computing]{A Self-correcting Graph Connected Component Algorithm}
+
+
+\author[Piyush Sao]{\underline{Piyush Sao}, Oded Green, Chirag Jain, Richard Vuduc}
+
+\date[FTXS16]{ The $6^{th}$ Workshop on Fault Tolerance for HPC at eXtreme Scale (FTXS) 2016\\ \url{http://hpcgarage.org/ftxs16/}}
+% \institute{CSE}
+
+\titlegraphic{
+\includegraphics[width=4cm]{logo/cse}\hspace*{.5cm}~
+\includegraphics[width=3.5cm]{logo/HPClogo_rgb}
+}
+
+\makebeamertitle
+
+% \lyxframe{Outline of talk}
+% \tableofcontents{}
+% \lyxframeend{}
+
+\fontsize{9pt}{11}\selectfont
+\section{Summary}
+\input{summary}
+
+\section{Self-correcting Algorithms}
+\input{self}
+
+\section{Self-correcting Label-propagation Algorithm}
+\input{ftconnected}
+\section{Experiments and Results}
+\input{results}
+\section{Conclusion}
+\input{conclusion}
+
+% \section{Introduction}
+% \input{intro}
+% \section{HALO Algorithm}
+% \input{halo}
+
+% \section{Overcoming Limited Memory of Co-processor}
+% \input{limited_mem}
+% \section{Experiments and Results}
+% \input{results}
+% \section{Conclusion}
+% \input{conclusion}
+
+% \section{Intranode Load Balance}
+% \input{intranode-loadbalance}
+
+
+\end{document}

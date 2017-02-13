@@ -1,0 +1,17 @@
+\lyxframe{Summary of Contributions }
+
+\begin{alertblock}{Self-correcting Algorithms}
+
+We introduce a new fault tolerant algorithm design principle that we call \emph{self-correction}. A self-correcting algorithm remains in a valid state, despite the faulty execution of an iteration, under the assumption that its previous state was a valid one. 
+\end{alertblock}
+\pause
+\begin{exampleblock}{Self-Correcting Connected Components Algorithm}
+\begin{itemize}
+\item We apply the ideas of self-correction to Label-propagation algorithm for graph connected component problem.
+\item Assumes availability of selective reliability mode.
+\item Requires $\bigO{V}$ additional storage and computations per iteration compared to $\bigO{|V|+|E|}$ cost for the baseline algorithm.
+\item 10-35\%  increases in execution time for one error for 64 memory operations.
+\end{itemize}
+\end{exampleblock}
+
+\lyxframeend{}
