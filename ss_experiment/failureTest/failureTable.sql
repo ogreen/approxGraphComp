@@ -1,4 +1,4 @@
-drop table if exists fTable;
+ndrop table if exists fTable;
 create table fTable (
   id integer primary key autoincrement,
   graphName text not null,
