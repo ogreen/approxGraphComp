@@ -218,7 +218,7 @@ filename "ss.lyx"
 \end_layout
 
 \begin_layout Section
-Self-correcting Label Propagation Algorithm
+Self-stabilizing Label Propagation Algorithm
 \end_layout
 
 \begin_layout Standard

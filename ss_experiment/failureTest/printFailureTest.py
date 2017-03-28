@@ -17,8 +17,9 @@ import numpy as np
 import pandas as pd
 import subprocess
 import matplotlib
-matplotlib.use('Agg')
-matplotlib.rcParams['backend'] = "Qt4Agg"
+# matplotlib.use('Agg')
+# matplotlib.rcParams['backend'] = "Qt4Agg"
+matplotlib.use('TkAgg') 
 import matplotlib.pyplot as plt
 import os
 import sqlite3
