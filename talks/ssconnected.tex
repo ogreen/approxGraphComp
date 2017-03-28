@@ -1,0 +1,169 @@
+\lyxframe{Self-stabilizing Connected-component Algorithm- Problem Statement}
+
+\begin{itemize}
+\item Given an arbitrary (valid or invalid) state $S={CC,P}$, determine if it is a valid state? 
+\item If invalid then construct a valid state $S^{*}$ close to $S={CC,P}$.
+\end{itemize}
+
+\lyxframeend{}
+
+
+
+
+\lyxframe{ Parent Tree}
+
+\begin{itemize}
+\item Parent Graph $\mathcal{H}$: Subgraph  of $G$ that consists of only edges $(v,P[v])$
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframe{Parent forest}
+
+\begin{itemize}
+\item In a fault free execution of label propagation algorithm,  $\mathcal{H}$ is a set of disjoint trees, or \emph{forest}.
+\end{itemize}
+
+\lyxframeend{}
+
+
+
+\lyxframe{Parent Tree}
+
+\begin{itemize}
+\item In a fault free execution, $CC[v]\geq CC[P[v]]$ 
+\item If $v$ is a root of a tree, then  $CC[v] = v$ 
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframe{Valid states}
+
+\begin{theorem}
+
+A label propagation state $S=(CC,P)$ is a valid state---i.e.,
+a fault-free execution of algorithm  starting from $S$ will converge to the correct solution---if, for all vertices $v$, 
+
+\begin{itemize}
+\item $P[v] \in \mathcal{N}(v)$
+\item The graph $H=(V, \{\{v,P(v)\}\forall v \in V\} $ does not contain any loops other than self-loops
+\item $CC[v] \geq CC[P(v)] $
+\end{itemize}
+
+\end{theorem}
+
+
+\lyxframeend{}
+
+
+
+\lyxframe{Verifying Valid states}
+
+\begin{itemize}
+\item $P[v] \in \mathcal{N}(v)$ can be done in $\mathcal{O}(V)$
+\item $CC[v] \geq CC[v] $  can be done in $\mathcal{O}(V)$
+\item The graph $H=(V, \{\{v,P(v)\}\forall v \in V\} $ can be done in $\mathcal{O}(V)$ operation
+by using Tarzen's strongly connnected component (SCC) algorithm.
+\item Tarzen's strongly connnected component (SCC) is not parallel enough to implement in vertex centric model. 
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframe{Parallel Loop Detection in $\mathcal{H}$ }
+
+\begin{itemize}
+\item Calculate $K(v) = \min \{P(v),P{^2}(v), P{^3}(v) \ldots \} $
+\end{itemize}
+
+\begin{theorem}
+\begin{itemize}
+\item If there is no loop, then $K(v) < v$ for all $v$ except for the root of a tree. 
+\item If $K(v)=v$, then there is a loop, and $v$ has minimum vertex id among all the element in the loop. 
+\end{itemize}
+\end{theorem}
+
+\lyxframeend{}
+
+
+\lyxframe{Calculating $K(v) = \min \{P(v),P{^2}(v), P{^3}(v) \ldots \}$ }
+
+\begin{itemize}
+\item Calculating  $K(v)$ is a \emph{prefix} sum operation.
+\item Initialize: $K(v) = P(v)$
+\item Update: $K(v) = \min \{ K(v), P(K(v)) \}$
+\item Terminate when no $K(v)$ changes. 
+\end{itemize}
+
+\begin{itemize}
+\item Cost $\mathcal{O}(V \log V)$
+\end{itemize}
+
+\lyxframeend{}
+
+\lyxframe{ Verifying Valid  of a State}
+
+\begin{itemize}
+\item $P[v] \in \mathcal{N}(v)$
+\item The graph $H=(V, \{\{v,P(v)\}\forall v \in V\} $ does not contain any loops other than self-loops
+\item $CC[v] \geq CC[P(v)] $ (Not needed)
+\end{itemize}
+
+
+\lyxframeend{}
+
+
+\lyxframe{ State Correction}
+Hyatt Place Albuquer Uptown
+\begin{itemize}
+\item $P[v] \notin \mathcal{N}(v)$, reset $v$, $CC[v]=v$, $P(v)=v$
+\item Calculate $K(v)$. If $K(v)=v$, break the loop at $v$, $P(v)=v$.
+\item Set $CC[v] = K(v)$.
+\end{itemize}
+
+
+\begin{itemize}
+\item Previosuly used periodic correction scheme to bring it to a valid state.
+\item Often Label propagation algorithm takes very few iteration to converge.
+\item We perform correction step only once at the end of label propagation.
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframe{ A Practical Fault Tolerant Label-propagation algorithm}
+
+\begin{itemize}
+\item Frequently 2-loops are formed. 
+\item Slows down the convergence.
+\end{itemize}
+
+
+\begin{itemize}
+\item In every iteration, we perform some checks to stop fault propagation.
+\begin{enumerate}
+	\item $P(v) \in \mathcal{N}(v)$
+	\item $CC[v] \geq CC[p(v)]$
+	\item Two loop detection: $v = P(P(v))$.
+\end{enumerate} 
+
+
+\item Cost $\mathcal{O}(V)$ 
+\item These checks can be unreliable.
+\end{itemize}
+
+\lyxframeend{}
+
+
+\lyxframe{ To summerize }
+
+\begin{itemize}
+\item Requires additional O(v) memory
+\item Costs log(v)
+\item May take additional iterations.
+\end{itemize}
+
+\lyxframeend{}
+

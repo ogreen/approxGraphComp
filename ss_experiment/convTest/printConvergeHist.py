@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-#   produces a bar graph chart for sync failure tests
+#   produces a histogram of 
 #   uses graphs described by variable GRAPH
 #   uses database described by variable DATABASE
 # 
@@ -9,8 +9,8 @@
 # normprob = normalized probability
 # #max iter = maximum allowed iteration for LP to converge (typically 1000)
 # num_trial = will try for num_trial time and estimate failure rate for each (typically 100)
-# example: python3  printFailureTest.py 10 1000 10
-# example : python3  printConverge.py graphname sync 10 1000 10
+# example : python3  printConvergeHist.py graphname sync 10 1000 10
+
 
 import sys
 import numpy as np
@@ -97,14 +97,14 @@ ax =  fig.add_axes([0.1, 0.15, .8, 0.7])
 color_list = ['#1b9e77','#d95f02','#7570b3','#e7298a']
 
 overheadLimit = 5;
-stepSz = 0.1;
-numBin = overheadLimit/stepSz +1;
+stepSz = 0.2;
+numBin = int(overheadLimit/stepSz +1)
 
 binsSep= np.linspace(0,overheadLimit,numBin, endpoint="True" )
 
 # N = len(graphName);
 # ind = 1+np.arange(N)  # the x locations for the groups
-width = stepSz* 0.166       # the width of the bars
+width = stepSz* 0.2       # the width of the bars
 
 algPrintName = [' FiSV', 'SsSV', 'SshSV', 'TmrSV']
 
@@ -114,25 +114,29 @@ for index, ftAlg in enumerate(ftAlgmTypes):
 	# area of interest 1-3 10 bins
 	[hist, edge] =  np.histogram(df, binsSep);
 
-	hist = np.cumsum(hist)
+	# hist = np.cumsum(hist)
 	# plt.plot(edge[1:100],hist);
 
+	print ( numBin)
 	ind = binsSep[1:numBin];
 
-	plt.plot(100*ind, hist, color=color_list[index], linewidth=2.5, linestyle="--", label=algPrintName[index])
+	print (binsSep[1:numBin])
+	# plt.plot(100*ind, hist, color=color_list[index], linewidth=2.5, linestyle="--", label=algPrintName[index])
 
 	
 
-	# rects1 = ax.bar((index-2)*width+ind, hist, width, label=ftAlg,\
-	# color=color_list[index],  edgecolor='white')
+	rects1 = ax.bar(100*((index-2)*width+ind), hist, 100*width, label=ftAlg,\
+	color=color_list[index],  edgecolor='white')
 
 
 
 # setting x and y axis
-ax.set_ylim(-5, 110)
+ax.set_ylim(-5, 60)
+ax.set_xlim(0, 250)
+
 
 # x label and ylabel
-plt.ylabel('Cumulative Success Rate', fontsize=14) 
+plt.ylabel('Success Rate (%)', fontsize=14) 
 plt.xlabel('Additional Number of Iteration to Converge (%)', fontsize=14) 
 
 #title
@@ -145,8 +149,8 @@ plt.legend(loc='upper left',ncol=4, fontsize=12)
 # ax.set_xticklabels(fontsize=12)
           
 
-outfile = graph+"_"+algmType+"_%d_line.pdf"%fault_rate;
-print("saving in"+outfile)
+outfile = graph+"_"+algmType+"_%d_hist.pdf"%fault_rate;
+print(outfile)
 
 plt.savefig(outfile)
 plt.show()  
