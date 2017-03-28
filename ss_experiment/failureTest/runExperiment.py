@@ -35,6 +35,7 @@ GRAPH_DIR = "~/graphs/"
 GRAPHS = ["kron_g500-simple-logn18.graph", "er-fact1.5-scale20.graph",  "rgg_n_2_18_s0.graph", "astro-ph.graph","cond-mat.graph","cond-mat-2005.graph" , "caidaRouterLevel.graph"]
 GRAPHS  = GRAPHS + ["kron_g500-logn18.graph", "polblogs.graph"]
 GRAPHS = GRAPHS + ["Wordnet3.graph", "patents_main.graph", "email-EuAll.graph", "soc-sign-epinions.graph", "web-Google.graph", "web-Stanford.graph", "cit-HepTh.graph", "webbase-1M.graph"]
+GRAPHS = GRAPHS + ["amazon0505.graph", "web-BerkStan.graph", "mouse_gene.graph", "human_gene1.graph", "bips07_2476.graph", "bauru5727.graph"]
 
 # GRAPHS = ["astro-ph.graph","cond-mat.graph","cond-mat-2005.graph" , "caidaRouterLevel.graph"]
 #"kron_g500-simple-logn20.graph" takes too long
