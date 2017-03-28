@@ -31,9 +31,15 @@ from matplotlib import cm
 # modify following list of graph to choose which ones do you want 
 GRAPHS = ["kron_g500-simple-logn18", "rgg_n_2_18_s0",\
      "astro-ph","cond-mat","cond-mat-2005" , "caidaRouterLevel"]
+GRAPHS  = GRAPHS + ["kron_g500-logn18", "polblogs"]
+GRAPHS = GRAPHS + ["Wordnet3", "patents_main", "email-EuAll", "soc-sign-epinions", "web-Google", "web-Stanford", "cit-HepTh", "webbase-1M"]
+
 
 GraphPrint = ["kron_g(500,18)", "rgg(2,18)",\
      "astro-ph","cond-mat","cond-mat-2005" , "caidaRouterLevel"]
+GraphPrint = GraphPrint + ["kron_(500,18)", "polblogs"]
+GraphPrint = GraphPrint + ["Wordnet3", "patents_main", "email-EuAll", "soc-sign-epinions", "web-Google", "web-Stanford", "cit-HepTh", "webbase-1M"]
+
 
 # get the experiment parameters
 algmType = sys.argv[1];
@@ -121,9 +127,9 @@ plt.xticks(1+2*width+np.array(list(range(N))))
 ax.set_xticklabels(GraphPrint, rotation=15, ha='right', fontsize=12)
           
 
+outfile = "failureTest_"+algmType+"_%d.pdf"%fault_rate
 
-
-plt.savefig('output.pdf')
+plt.savefig(outfile)
 plt.show()  
 
 

@@ -32,8 +32,14 @@ from matplotlib import cm
 GRAPHS = ["kron_g500-simple-logn18", "rgg_n_2_18_s0",\
      "astro-ph","cond-mat","cond-mat-2005" , "caidaRouterLevel"]
 
-GraphPrint = ["kron_g(500,18)", "rgg(2,18)",\
+GRAPHS  = GRAPHS + ["kron_g500-logn18", "polblogs"]
+GRAPHS = GRAPHS + ["Wordnet3", "patents_main", "email-EuAll", "soc-sign-epinions", "web-Google", "web-Stanford", "cit-HepTh", "webbase-1M"]
+
+GraphPrint = ["kron_simple(500,18)", "rgg(2,18)",\
      "astro-ph","cond-mat","cond-mat-2005" , "caidaRouterLevel"]
+
+GraphPrint = GraphPrint + ["kron_(500,18)", "polblogs"]
+GraphPrint = GraphPrint + ["Wordnet3", "patents_main", "email-EuAll", "soc-sign-epinions", "web-Google", "web-Stanford", "cit-HepTh", "webbase-1M"]
 
 # get the experiment parameters
 algmType = sys.argv[1];

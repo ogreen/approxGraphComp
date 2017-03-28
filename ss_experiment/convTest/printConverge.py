@@ -145,9 +145,10 @@ plt.legend(loc='upper left',ncol=4, fontsize=12)
 # ax.set_xticklabels(fontsize=12)
           
 
+outfile = graph+"_"+algmType+"_%d_line.pdf"%fault_rate;
+print("saving in"+outfile)
 
-
-plt.savefig('output.pdf')
+plt.savefig(outfile)
 plt.show()  
 	
 plt.show()  

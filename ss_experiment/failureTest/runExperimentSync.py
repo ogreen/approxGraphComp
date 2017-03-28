@@ -9,7 +9,7 @@
 # #max iter = maximum allowed iteration for LP to converge (typically 1000)
 # num_trial = will try for num_trial time and estimate failure rate for each (typically 100)
 # #outfile
-# example: python3  runExperiment.py ../../failureTestSync 10 1000 10
+# example: python3  runExperimentSync.py ../../failureTestSync 10 1000 10
 
 import sys
 import numpy as np
