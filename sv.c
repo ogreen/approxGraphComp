@@ -15,19 +15,30 @@
 static long long MemAccessCount;
 
 
+int cmpfunc (const void * a, const void * b)
+{
+   return ( *(uint32_t*)a - *(uint32_t*)b );
+}
+
+
+
 int numComponent(graph_t *graph, lp_state_t *lp_state)
 {
     size_t nv  = graph->numVertices;
 
     uint32_t* CC = lp_state->CC;
+
+    qsort(lp_state->CC, nv, sizeof(uint32_t), cmpfunc);
  
-    int numComponents =0;
+    int numComponents =1;
+    uint32_t tComp =0;
 
     for (int i = 0; i < nv; ++i)
     {
-        if (CC[i]>numComponents)
+        if (CC[i]>tComp)
         {
-            numComponents = CC[i];
+            numComponents++;
+            tComp = CC[i];
         }
     }
 
