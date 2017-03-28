@@ -84,8 +84,6 @@ PRINT_GRAPH=0 MAX_ITER=1000 NUM_TRIAL=10 NORM_PROB=14 ./sv ~/graphs/caidaRouterL
 # NUmber of Components in in-2004 = 1382907 
 # NUmber of Components in eu-2005 = 0 
 # NUmber of Components in caidaRouterLevel = 192190
-# The following file is a possiblity though it require conversion from rb to .graph format 
-#http://www.cise.ufl.edu/research/sparse/matrices/Gleich/usroads.html 
 
 
 wget http://www.cc.gatech.edu/dimacs10/archive/data/walshaw/144.graph.bz2
@@ -111,67 +109,3 @@ PRINT_GRAPH=0 MAX_ITER=1000 NUM_TRIAL=10 NORM_PROB=14 ./sv ~/graphs/bcsstk32.gra
 # NUmber of Components in brack2 = 0 
 # NUmber of Components in bcsstk32 = 0
 # NUmber of Components in auto = 0 
-
-
-## matrix set 
-# NUmber of Components in kron_g500-simple-logn18 = 262130
-# NUmber of Components in rgg_n_2_18_s0 = 130427
-# NUmber of Components in astro-ph = 16701 
-# NUmber of Components in cond-mat = 16721
-# NUmber of Components in cond-mat-2005 = 40382
-# NUmber of Components in in-2004 = 1382907 
-# NUmber of Components in caidaRouterLevel = 192190
-
-
-wget http://www.cc.gatech.edu/dimacs10/archive/data/dyn-frames/hugetrace-00000.graph.bz2
-bunzip2 hugetrace-00000.graph.bz2
-#too big 
-
-
-http://www.cc.gatech.edu/dimacs10/archive/data/clustering/power.graph.bz2
-http://www.cc.gatech.edu/dimacs10/archive/data/clustering/polblogs.graph.bz2
-http://www.cc.gatech.edu/dimacs10/archive/data/clustering/smallworld.graph.bz2
-http://www.cc.gatech.edu/dimacs10/archive/data/kronecker/kron_g500-logn18.graph.bz2
-http://www.cc.gatech.edu/dimacs10/archive/data/matrix/ecology2.graph.bz2
-http://www.cc.gatech.edu/dimacs10/archive/data/walshaw/brack2.graph.bz2
-http://www.cc.gatech.edu/dimacs10/archive/data/walshaw/wing.graph.bz2
-http://www.cc.gatech.edu/dimacs10/archive/data/walshaw/598a.graph.bz2
-http://www.cc.gatech.edu/dimacs10/archive/data/numerical/NACA0015.graph.bz2
-http://www.cc.gatech.edu/dimacs10/archive/data/numerical/venturiLevel3.graph.bz2
-
-
-wget http://www.cc.gatech.edu/dimacs10/archive/data/clustering/power.graph.bz2
-bunzip2 power.graph.bz2
-wget http://www.cc.gatech.edu/dimacs10/archive/data/clustering/polblogs.graph.bz2
-bunzip2 polblogs.graph.bz2
-wget http://www.cc.gatech.edu/dimacs10/archive/data/clustering/smallworld.graph.bz2
-bunzip2 smallworld.graph.bz2
-wget http://www.cc.gatech.edu/dimacs10/archive/data/kronecker/kron_g500-logn18.graph.bz2
-bunzip2 kron_g500-logn18.graph.bz2
-wget http://www.cc.gatech.edu/dimacs10/archive/data/matrix/ecology2.graph.bz2
-bunzip2 ecology2.graph.bz2
-wget http://www.cc.gatech.edu/dimacs10/archive/data/walshaw/brack2.graph.bz2
-bunzip2 brack2.graph.bz2
-wget http://www.cc.gatech.edu/dimacs10/archive/data/walshaw/wing.graph.bz2
-bunzip2 wing.graph.bz2
-wget http://www.cc.gatech.edu/dimacs10/archive/data/walshaw/598a.graph.bz2
-bunzip2 598a.graph.bz2
-wget http://www.cc.gatech.edu/dimacs10/archive/data/numerical/NACA0015.graph.bz2
-bunzip2 NACA0015.graph.bz2
-wget http://www.cc.gatech.edu/dimacs10/archive/data/numerical/venturiLevel3.graph.bz2
-bunzip2 venturiLevel3.graph.bz2
-
-# more graph
-kron_g500-logn18
-polblogs
-
-
-More possible graphs
-http://www.cise.ufl.edu/research/sparse/matrices/Pajek/Wordnet3.html
-http://www.cise.ufl.edu/research/sparse/matrices/Pajek/patents_main.html
-http://www.cise.ufl.edu/research/sparse/matrices/SNAP/email-EuAll.html
-http://www.cise.ufl.edu/research/sparse/matrices/SNAP/as-Skitter.html
-http://www.cise.ufl.edu/research/sparse/matrices/SNAP/soc-sign-epinions.html
-http://www.cise.ufl.edu/research/sparse/matrices/SNAP/web-Google.html
-http://www.cise.ufl.edu/research/sparse/matrices/SNAP/web-Stanford.html
-http://www.cise.ufl.edu/research/sparse/matrices/SNAP/cit-HepTh.html
