@@ -11,6 +11,7 @@
 # num_trial = will try for num_trial time and estimate failure rate for each (typically 100)
 # example: python3  printFailureTest.py 10 1000 10
 # example : python3  printFailureTest.py sync 10 1000 10
+# example : python3  printFailure.py async 0.5 100 100
 
 import sys
 import numpy as np
@@ -39,30 +40,32 @@ GRAPHS = GRAPHS + ["amazon0505", "web-BerkStan", "mouse_gene", "human_gene1", "b
 
 GraphPrint = ["kron_g(500,18)", "rgg(2,18)",\
      "astro-ph","cond-mat","cond-mat-2005" , "caidaRouterLevel"]
-GraphPrint = GraphPrint + ["kron_(500,18)", "polblogs"]
-GraphPrint = GraphPrint + ["Wordnet3", "patents_main", "email-EuAll", "soc-sign-epinions", "web-Google", "web-Stanford", "cit-HepTh", "webbase-1M"]
-GraphPrint = GraphPrint + ["amazon0505", "web-BerkStan", "mouse_gene", "human_gene1", "bips07_2476", "bauru5727"]
+# GraphPrint = GraphPrint + ["kron_(500,18)", "polblogs"]
+# GraphPrint = GraphPrint + ["Wordnet3", "patents_main", "email-EuAll", "soc-sign-epinions", "web-Google", "web-Stanford", "cit-HepTh", "webbase-1M"]
+# GraphPrint = GraphPrint + ["amazon0505", "web-BerkStan", "mouse_gene", "human_gene1", "bips07_2476", "bauru5727"]
 
 
 # get the experiment parameters
 algmType = sys.argv[1];
 
 print("Printing for experiments of type "+algmType);
-fault_rate = int(sys.argv[2])
+# fault_rate = int(sys.argv[2])
+targetFailRate = float(sys.argv[2])
 max_iter = int(sys.argv[3])
 num_trials = int(sys.argv[4])
+experimentName = "first"
 
 
 
 #opening the  data base 
-DATABASE = 'failureExp.db'
+DATABASE = 'nrmfTable.db'
 fdb = sqlite3.connect(DATABASE)
 
 # get the data from sqlite database 
-sqlCmd= "select * from fTable where graphName in ({seq}) \
-            and algmType=? and normFaultRate=? and numTrial=? and maxIter=? \
+sqlCmd= "select * from nrmfTable where graphName in ({seq}) \
+            and algmType=? and targetFailRate=? and numTrial=? and maxIter=? and expName=?\
             ".format(seq=','.join(['?']*len(GRAPHS)))
-sqlArg=  GRAPHS + [algmType, fault_rate, num_trials, max_iter]
+sqlArg=  GRAPHS + [algmType, targetFailRate, num_trials, max_iter, experimentName ]
 
 print(sqlCmd);
 print(sqlArg);
@@ -72,10 +75,10 @@ qResults = fdb.execute(sqlCmd, sqlArg);
 qResTuple = qResults.fetchall()
 
 graphName = [ row[1] for row in qResTuple ];
-FiSV =      [ int(row[6]) for row in qResTuple ];
-SsSV =      [ int(row[7]) for row in qResTuple ];
-SshSV =     [ int(row[8]) for row in qResTuple ];
-TmrSV =     [ int(row[9]) for row in qResTuple ];
+FiSV =      [ int(row[8]) for row in qResTuple ];
+SsSV =      [ int(row[9]) for row in qResTuple ];
+SshSV =     [ int(row[10]) for row in qResTuple ];
+TmrSV =     [ int(row[11]) for row in qResTuple ];
 
 print(FiSV);
 print(SsSV);
@@ -122,15 +125,15 @@ plt.ylabel('Success Rate', fontsize=14)
 plt.xlabel('Test Networks', fontsize=14) 
 
 #title
-title = "Success rate for fault rate= $2^{-%d}|E|$ bitflips per iteration "%fault_rate
+title = "Success rate for target failure rate= %.2f bitflips per iteration "%targetFailRate
 plt.title(title,fontsize=14);
 
 #setting X ticks 
 plt.xticks(1+2*width+np.array(list(range(N))))
-ax.set_xticklabels(GraphPrint, rotation=15, ha='right', fontsize=12)
+ax.set_xticklabels(graphName, rotation=15, ha='right', fontsize=12)
           
 
-outfile = "failureTest_"+algmType+"_%d.pdf"%fault_rate
+outfile = "failureTest_"+algmType+'_'+experimentName+"_%.2f.pdf"%targetFailRate
 
 plt.savefig(outfile)
 plt.show()  
