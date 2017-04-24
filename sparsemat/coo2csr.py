@@ -1,6 +1,6 @@
 
 
-#usage: converts binary .mat file to csr file 
+#usage: converts binary .edge file to csr file 
 
 import sys
 import numpy as np

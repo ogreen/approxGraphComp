@@ -16,6 +16,8 @@ let F(n) = failure rate of tmr for the input graph
 perform binary search to get an n such that
 0<F(n)<tmrFr \leq F(n+1)
 
+F(n) is calculated by performing a sample of 20 times for the n and the given fault rate
+
 
  and fault rate: For Async Algorithm */
 

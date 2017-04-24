@@ -31,15 +31,20 @@ from matplotlib import cm
 
 
 # modify following list of graph to choose which ones do you want 
-GRAPHS = ["kron_g500-simple-logn18", "rgg_n_2_18_s0",\
-     "astro-ph","cond-mat","cond-mat-2005" , "caidaRouterLevel"]
-GRAPHS  = GRAPHS + ["kron_g500-logn18", "polblogs"]
-GRAPHS = GRAPHS + ["Wordnet3", "patents_main", "email-EuAll", "soc-sign-epinions", "web-Google", "web-Stanford", "cit-HepTh", "webbase-1M"]
-GRAPHS = GRAPHS + ["amazon0505", "web-BerkStan", "mouse_gene", "human_gene1", "bips07_2476", "bauru5727"]
+# GRAPHS = ["kron_g500-simple-logn18", "rgg_n_2_18_s0",\
+#      "astro-ph","cond-mat","cond-mat-2005" , "caidaRouterLevel"]
+# GRAPHS  = GRAPHS + ["kron_g500-logn18", "polblogs"]
+# GRAPHS = GRAPHS + ["Wordnet3", "patents_main", "email-EuAll", "soc-sign-epinions", "web-Google", "web-Stanford", "cit-HepTh", "webbase-1M"]
+# GRAPHS = GRAPHS + ["amazon0505", "web-BerkStan", "mouse_gene", "human_gene1", "bips07_2476", "bauru5727"]
 
 
-GraphPrint = ["kron_g(500,18)", "rgg(2,18)",\
-     "astro-ph","cond-mat","cond-mat-2005" , "caidaRouterLevel"]
+# finally chosen graph
+GRAPHS = ["kron_g500-simple-logn18","astro-ph","cond-mat","rgg_n_2_18_s0",\
+			"caidaRouterLevel", "Wordnet3", "patents_main", "web-Google",\
+			"cit-HepTh","web-BerkStan", "mouse_gene"]
+
+# GraphPrint = ["kron_g(500,18)", "rgg(2,18)",\
+#      "astro-ph","cond-mat","cond-mat-2005" , "caidaRouterLevel"]
 # GraphPrint = GraphPrint + ["kron_(500,18)", "polblogs"]
 # GraphPrint = GraphPrint + ["Wordnet3", "patents_main", "email-EuAll", "soc-sign-epinions", "web-Google", "web-Stanford", "cit-HepTh", "webbase-1M"]
 # GraphPrint = GraphPrint + ["amazon0505", "web-BerkStan", "mouse_gene", "human_gene1", "bips07_2476", "bauru5727"]
