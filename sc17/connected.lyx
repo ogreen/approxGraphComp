@@ -1,9 +1,9 @@
-#LyX 2.2 created this file. For more info see http://www.lyx.org/
+#LyX file created by tex2lyx 2.2
 \lyxformat 508
 \begin_document
 \begin_header
 \save_transient_properties true
-\origin unavailable
+\origin /Users/piyush/Downloads/Self-stabilzing Graph Connected Component Algorithm/
 \textclass IEEEtran
 \options conference
 \use_default_options false
@@ -74,15 +74,9 @@
 
 \begin_layout Standard
 
-\series bold
 \emph on
-\begin_inset Note Greyedout
-status collapsed
-
-\begin_layout Plain Layout
 
 \series bold
-\emph on
 i
 \series default
 ntro to graph connected component
@@ -102,33 +96,11 @@ what is use of connected component
 what are algorithms algorithms for connected component 
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For a given input graph, a connected component is a maximal subset of vertices
- which are mutually reachable.
- Fidning all the connected component of a graph is often encountered in
- many graph computations such as community detection, centrality analytics,
- and streaming graph analytics, to name just a few.
- There are many algorithm that can be used for finding out connected components
- in a graph e.g.
- BFS, DFS, and label propagation algorithm.
-\end_layout
-
 \begin_layout Standard
 
-\series bold
 \emph on
-\begin_inset Note Greyedout
-status collapsed
-
-\begin_layout Plain Layout
 
 \series bold
-\emph on
 i
 \series default
 ntro to LP algo for connected component
@@ -152,43 +124,11 @@ implmentations of LP
 many varients suited for different cases 
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
 \begin_layout Standard
-Our work is focused on label propagation algorithm which is highly suited
- for massively parallel architecture.
- Due to its scalability, ease of expressing it in vertex cetric programming
- mdoel, there exist many high performance varient of label propagation aglrithm
- for different architectures.
- 
-\begin_inset ERT
-status open
 
-\begin_layout Plain Layout
-
-%related work
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Variations of LP can be found in LIGRA for general-purpose multicore CPU
- systems [17], Gunrock for GPUs [22], and a scalable distributed implementation
- [6].
- While this algorithm offers a parallel formulation for connected components,
- it can also be imp
-\end_layout
-
-\begin_layout Standard
+\emph on
 
 \series bold
-\emph on
 w
 \series default
 orking of LP algorithm
@@ -198,7 +138,6 @@ orking of LP algorithm
 status collapsed
 
 \begin_layout Plain Layout
-
 %pseudocode for algo
 \end_layout
 
