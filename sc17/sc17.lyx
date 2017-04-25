@@ -9,6 +9,8 @@
 % for subfigures/subtables
 \usepackage[caption=false,font=footnotesize]{subfig}
 
+% the algorithm package
+\usepackage{algorithm,algpseudocode}
 
 %========== Document Specific commands ==========
 

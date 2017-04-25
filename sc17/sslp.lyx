@@ -1,9 +1,9 @@
-#LyX file created by tex2lyx 2.2
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 508
 \begin_document
 \begin_header
 \save_transient_properties true
-\origin /Users/piyush/Downloads/Self-stabilzing Graph Connected Component Algorithm/
+\origin unavailable
 \textclass IEEEtran
 \options conference
 \use_default_options false
@@ -72,112 +72,10 @@
 
 \begin_body
 
-\begin_layout Standard
-
-\emph on
-
-\series bold
-I
-\series default
-ntro to terminology, states and effect of faults
-\emph default
- 
-\end_layout
-
 \begin_layout Itemize
-states of LP algorithm 
-\end_layout
+\begin_inset Note Comment
+status collapsed
 
-\begin_layout Itemize
-effect of fault on valid state 
-\end_layout
-
-\begin_layout Itemize
-valid state condition, 
-\end_layout
-
-\begin_layout Standard
-
-\emph on
-
-\series bold
-S
-\series default
-elfcorrecting label propagation algorithm
-\emph default
- 
-\end_layout
-
-\begin_layout Itemize
-introduce parent array 
-\end_layout
-
-\begin_layout Itemize
-what do you check and how do you check 
-\end_layout
-
-\begin_layout Itemize
-Limitations 
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-fault propagation 
-\end_layout
-
-\begin_layout Itemize
-is not applicable to asynchronous version 
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-
-\emph on
-
-\series bold
-S
-\series default
-elfStabilzing label propagation algorithm
-\emph default
- 
-\end_layout
-
-\begin_layout Itemize
-introduce forest of parent array 
-\end_layout
-
-\begin_layout Itemize
-properties of forest of parent array in fault free execution 
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Monotonicity 
-\end_layout
-
-\begin_layout Itemize
-root 
-\end_layout
-
-\begin_layout Itemize
-it being tree ( in contrast to, in presence of faults it will not be a tree and loops will be formed) 
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Suffiency of above conditions for valid state 
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-theorem 
-\end_layout
-
-\begin_layout Itemize
-proof 
-\end_layout
-
-\end_deeper
 \begin_layout Itemize
 difficulty in checking above condition for validity 
 \end_layout
@@ -206,6 +104,15 @@ need new algorithm
 
 \end_deeper
 \end_deeper
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Note Comment
+status collapsed
+
 \begin_layout Itemize
 Loop detection in graph G=(V, {V,P(V)}) 
 \end_layout
@@ -213,7 +120,7 @@ Loop detection in graph G=(V, {V,P(V)})
 \begin_deeper
 \begin_layout Itemize
 idea of the proof: if it is valid tree then 
-\begin_inset Formula $min(P(v), p^2(v)..)$
+\begin_inset Formula $min(P(v),p^{2}(v)..)$
 \end_inset
 
  should be less then 
@@ -236,6 +143,15 @@ algorithm
 \end_layout
 
 \end_deeper
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Note Comment
+status collapsed
+
 \begin_layout Itemize
 Complete correction step 
 \end_layout
@@ -272,8 +188,1052 @@ self-stabilzing algorithm
 \end_layout
 
 \end_deeper
+\end_inset
+
+
+\end_layout
+
 \begin_layout Itemize
+\begin_inset Note Comment
+status collapsed
+
+\begin_layout Plain Layout
 Cost of correction
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this section, we will describe the design of the self-stabilizing label
+ propagation algorithm.
+ We start with decribing the state of the algorithm and a condition for
+ a valid state.
+ However, the condition for valid state is not easy to verify computationally.
+ To overcome this issue, in we augmented the data structure with redundancy
+ to allow state verification.
+ We use the augmented state as previously, and present new conditions for
+ valid states.
+ And finally we give efficient algorithm to verify these algorithms in cost
+ effective manner.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status collapsed
+
+\begin_layout Plain Layout
+
+\series bold
+\emph on
+I
+\series default
+ntro to terminology, states and effect of faults
+\emph default
+ 
+\end_layout
+
+\begin_layout Itemize
+states of LP algorithm 
+\end_layout
+
+\begin_layout Itemize
+effect of fault on valid state 
+\end_layout
+
+\begin_layout Itemize
+valid state condition, 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+State of LP algorithm
+\end_layout
+
+\begin_layout Standard
+In algo[REF], the current connected component label array 
+\begin_inset Formula $CC$
+\end_inset
+
+ describes the state of LP algorithm.
+ We use 
+\begin_inset Formula $CC^{i}[v]$
+\end_inset
+
+ to denote the current label for vertex 
+\begin_inset Formula $v$
+\end_inset
+
+ in 
+\begin_inset Formula $i$
+\end_inset
+
+-th iteration.
+ We denote the final label of vertex 
+\begin_inset Formula $v$
+\end_inset
+
+ in fault-free execution as 
+\begin_inset Formula $CC^{\infty}[v]$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Effect of fault in LP state
+\end_layout
+
+\begin_layout Subsubsection*
+Valid states
+\end_layout
+
+\begin_layout Theorem
+A connected component array 
+\begin_inset Formula $CC$
+\end_inset
+
+ is a valid state---i.e., a fault-free execution of algorithm (CITE) starting
+ from 
+\begin_inset Formula $CC$
+\end_inset
+
+ will converge to the correct solution---if, for all vertices 
+\begin_inset Formula $v$
+\end_inset
+
+, 
+\begin_inset Formula $CC^{\infty}[v]\leq CC[v]\leq v$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+
+\series bold
+\emph on
+S
+\series default
+elf-correcting Label Propagation Algorithm
+\end_layout
+
+\begin_layout Standard
+We described self-correcting label propagation algorithm for synchronoous
+ label propagation algorithm.
+ Self-correcting algorithm corrects the current state using previous valid
+ state.
+ 
+\end_layout
+
+\begin_layout Standard
+To do so, we show that if 
+\begin_inset Formula $CC^{i-1}$
+\end_inset
+
+ is valid state then 
+\begin_inset Formula $CC^{i}$
+\end_inset
+
+ is valid if 
+\begin_inset Formula 
+\begin{equation}
+CC^{i}[v]=CC^{i-1}[u]\ where\ u\in\mathcal{N}(v)\ \forall v
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+However, verifying eq[x] still requires 
+\begin_inset Formula $O(V+E)$
+\end_inset
+
+ work, thus inefficient.
+ However, self-correcting algorithm uses an auxilliary data structure called
+ parent array.
+ Parent of vertex 
+\begin_inset Formula $v$
+\end_inset
+
+, denoted by 
+\begin_inset Formula $P[v]$
+\end_inset
+
+ , refers to vertex that 
+\end_layout
+
+\begin_layout Itemize
+introduce parent array 
+\end_layout
+
+\begin_layout Itemize
+what do you check and how do you check 
+\end_layout
+
+\begin_layout Itemize
+Limitations 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+fault propagation 
+\end_layout
+
+\begin_layout Itemize
+is not applicable to asynchronous version 
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+
+\series bold
+\emph on
+S
+\series default
+elf-stabilzing Label Propagation Algorithm
+\emph default
+ 
+\end_layout
+
+\begin_layout Standard
+The main difference between self-correcting label propagation algorithm
+ and self-stabilizing label propagation algorithm is that self-stabilizing
+ label propagation algorithm doesn't require a previous valid state 
+\begin_inset Formula $S^{i-1}$
+\end_inset
+
+ to bring the algorithm to a valid state.
+ We can formally pose this question as follows.
+\end_layout
+
+\begin_layout Paragraph*
+Problem Statement:
+\end_layout
+
+\begin_layout Standard
+Given a graph 
+\begin_inset Formula $G=\left(V,E\right)$
+\end_inset
+
+ and an arbitrary state for label propagation 
+\begin_inset Formula $S=\left(CC,P\right)$
+\end_inset
+
+, determine if 
+\begin_inset Formula $S$
+\end_inset
+
+ is a valid state.
+ If 
+\begin_inset Formula $S$
+\end_inset
+
+ is invalid, then construct a state 
+\begin_inset Formula $S^{*}$
+\end_inset
+
+such that 
+\begin_inset Formula $S^{*}\approx S$
+\end_inset
+
+, and 
+\begin_inset Formula $S^{*}$
+\end_inset
+
+ is a valid state.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Properties of LP state in fault free execution
+\end_layout
+
+\begin_layout Standard
+We describe two key properties of a state 
+\begin_inset Formula $S$
+\end_inset
+
+ in fault free execution and later we prove that for any state that satisfy
+ these properties is a valid state.
+ 
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $CC[v]\leq v$
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $P(v)\in\mathcal{N}(v)$
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $CC[P(v)]\leq CC[v]$
+\end_inset
+
+; and 
+\end_layout
+
+\begin_layout Enumerate
+Directed graph described by parent array 
+\begin_inset Formula $H=(V,E_{H})$
+\end_inset
+
+, where 
+\begin_inset Formula $E_{H}=\left\{ (v,P(v)),\forall v\in V\right\} $
+\end_inset
+
+ describes a forest.
+ 
+\end_layout
+
+\begin_layout Standard
+Self-correcting label propagation algorithm uses property 1 and 2, and additiona
+lly assumes that 
+\begin_inset Formula $CC^{i-1}$
+\end_inset
+
+ is a valid state.
+ 
+\end_layout
+
+\begin_layout Standard
+Property 3 describes the range of valid values of 
+\begin_inset Formula $CC[v]$
+\end_inset
+
+.
+ In a synchronous label propagation algorithm, we have 
+\begin_inset Formula $CC^{i}[v]=CC^{i-1}[P(v)]$
+\end_inset
+
+, and since label decreases over the iteration, thus latest 
+\begin_inset Formula $CC^{i}[P(v)]\leq CC^{i-1}[P(v)]$
+\end_inset
+
+.
+ Therefore, 
+\begin_inset Formula $CC^{i}[P(v)]\leq CC^{i}[v]$
+\end_inset
+
+.
+ While we do not show here in detail, this relation holds good in fault
+ free execution of asynchronous case also.
+ 
+\end_layout
+
+\begin_layout Standard
+Property 4 describes the structure of parent array.
+ Make a gifure and explain.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Sufficient condtions for a valid LP state 
+\end_layout
+
+\begin_layout Standard
+We show that the former four conditions are sufficient for a valid state.
+ 
+\end_layout
+
+\begin_layout Theorem
+A label propagation state 
+\begin_inset Formula $S=\left\{ CC,P\right\} $
+\end_inset
+
+ is a valid state if for all vertices 
+\begin_inset Formula $v$
+\end_inset
+
+, we have following conditions met:
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $CC[v]\leq v$
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $P(v)\in\mathcal{N}(v)$
+\end_inset
+
+;
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $CC[P(v)]\leq CC[v]$
+\end_inset
+
+; 
+\end_layout
+
+\begin_layout Enumerate
+If 
+\begin_inset Formula $P(v)=v$
+\end_inset
+
+, then 
+\begin_inset Formula $CC[v]=v$
+\end_inset
+
+; and 
+\end_layout
+
+\begin_layout Enumerate
+Directed graph described by parent array 
+\begin_inset Formula $H=(V,E_{H})$
+\end_inset
+
+, where 
+\begin_inset Formula $E_{H}=\left\{ (v,P(v)),\forall v\in V\right\} $
+\end_inset
+
+ describes a forest.
+\end_layout
+
+\begin_layout Proof
+If 
+\begin_inset Formula $H=\left(V,E_{H}\right)$
+\end_inset
+
+ is a forest then, for any vertex 
+\begin_inset Formula $v$
+\end_inset
+
+, the sequence 
+\begin_inset Formula $\left\{ P(v),P^{2}(v),\ldots\right\} $
+\end_inset
+
+ convereges to the root of the tree in the forest 
+\begin_inset Formula $H$
+\end_inset
+
+.
+ Let's denote the convergent of the sequence as 
+\begin_inset Formula $P^{\infty}(v)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Proof
+Let 
+\begin_inset Formula $u=P^{\infty}(v$
+\end_inset
+
+).
+ Since 
+\begin_inset Formula $P(u)=P(P^{\infty}(v))=P^{\infty}(v)=u$
+\end_inset
+
+, therefore from condition 4:
+\begin_inset Formula 
+\begin{equation}
+CC[u]=u
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+If condition-2 holds for all the vertices 
+\begin_inset Formula $\left\{ v,P(v),P^{2}(v),\ldots\right\} $
+\end_inset
+
+, then 
+\begin_inset Formula $v$
+\end_inset
+
+ and 
+\begin_inset Formula $P^{\infty}(v)=u$
+\end_inset
+
+ are in same connected component.
+ Therefore,
+\begin_inset Formula 
+\begin{equation}
+CC^{\infty}[v]=CC^{\infty}[u].
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+Since label of 
+\begin_inset Formula $u,$
+\end_inset
+
+will monotonically decrease in susequent iteration, therefore 
+\begin_inset Formula 
+\begin{equation}
+u\ge CC^{\infty}[u]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+From condition-3 
+\begin_inset Formula $CC[v]\geq CC[P(v)]\geq CC[P^{2}(v)]...$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+CC[v]\geq CC[P^{\infty}(v)]=CC[u]=u
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+Combining eq(x) and eq(y) and eq(z), we get 
+\begin_inset Formula $CC[v]\ge u\geq CC^{\infty}[u]=CC^{\infty}[v]$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+CC[v]\geq CC^{\infty}[v]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+Combining eq(x) with condition 1, we get 
+\begin_inset Formula 
+\[
+CC^{\infty}[v]\le CC[v]\le v
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+Eq(x) holds for all the vertices 
+\begin_inset Formula $v\in V$
+\end_inset
+
+, therefore by Thm(1), 
+\begin_inset Formula $S=\left\{ CC,P\right\} $
+\end_inset
+
+ is a valid state.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that Thm(2) describes a set of sufficient condition.
+ In general, there can be a state from which algorithm will converge to
+ correct solution yet not satisfy Thm(2), leading to false positives.
+ However, false-positives will only cause a small amount of additional computati
+on, which is not a big concern in this case.
+ 
+\end_layout
+
+\begin_layout Subsection
+Verifying state validity
+\end_layout
+
+\begin_layout Standard
+All the conditions of Thm(2) except the last one, can be verified locally
+ for any vertex in 
+\begin_inset Formula $\mathcal{O}(1)$
+\end_inset
+
+ operations.
+ To verify 
+\begin_inset Formula $H=(V,E_{H})$
+\end_inset
+
+ is a forest, is equivalent to verifying that 
+\begin_inset Formula $H$
+\end_inset
+
+ does not have any loops, which is not a local operation.
+\end_layout
+
+\begin_layout Subsubsection
+Loop detection in 
+\begin_inset Formula $H$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In sequential case, we can use Tarzen's strongly connected component algorithm
+ to find the loops in the graph 
+\begin_inset Formula $H$
+\end_inset
+
+.
+ Tarzen's strongly connected component algorithm requires 
+\begin_inset Formula $\mathcal{O}(V+E_{H})$
+\end_inset
+
+ operations.
+ But since, 
+\begin_inset Formula $|E_{H}|=|V|$
+\end_inset
+
+, therefore detecting loop in 
+\begin_inset Formula $H$
+\end_inset
+
+ requires 
+\begin_inset Formula $\mathcal{O}(V)$
+\end_inset
+
+ operations in total, which is same as cost of other operations in sequential
+ case.
+\end_layout
+
+\begin_layout Standard
+In parallel case, Tarzen's strongly connected component algorithm (or any
+ other algorithm based on BFS or DFS) are not suitable as: (a) they are
+ inhrently sequential and have a depth of 
+\begin_inset Formula $\mathcal{O}(V)$
+\end_inset
+
+; and (b) they can not be efficiently expressed in vertex centric programming
+ model as label propagation algorithm.
+ Therefore, we need a new loop detection algorithm which is parallel and
+ can be expressed in vertex centric programming model.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Parallel Loop detection in 
+\begin_inset Formula $H$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{loopDetectionAlgm}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Our parallel loop detection is based on the idea that if 
+\begin_inset Formula $v$
+\end_inset
+
+ is a part of the loop in 
+\begin_inset Formula $H$
+\end_inset
+
+, then 
+\begin_inset Formula $v$
+\end_inset
+
+ will re-appear in the sequence 
+\begin_inset Formula $\left\{ P(v),P^{2}(v),\ldots\right\} $
+\end_inset
+
+.
+ Let's call the minimum element in the sequence 
+\begin_inset Formula $\mathcal{A}(v)$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\mathcal{A}(v)=\min\left\{ P(v),P^{2}(v),\ldots\right\} 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If there is no loop in the, then 
+\begin_inset Formula $v$
+\end_inset
+
+ will not appear in the sequence 
+\begin_inset Formula $\left\{ P(v),P^{2}(v),\ldots\right\} $
+\end_inset
+
+, thus 
+\begin_inset Formula $v$
+\end_inset
+
+ can not be equal to 
+\begin_inset Formula $\mathcal{A}(v)$
+\end_inset
+
+.
+ Therefore, 
+\begin_inset Formula $v=\mathcal{A}(v)$
+\end_inset
+
+ is only possible if there is a loop in 
+\begin_inset Formula $H$
+\end_inset
+
+ which consist of vertices 
+\begin_inset Formula $\left\{ v,P(v),P^{2}(v),\ldots\right\} $
+\end_inset
+
+.
+ Thus to detect any loop in 
+\begin_inset Formula $H$
+\end_inset
+
+, we calculate 
+\begin_inset Formula $\mathcal{A}(v)$
+\end_inset
+
+ for all the vertices and compare it with 
+\begin_inset Formula $v$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+We calculate 
+\begin_inset Formula $\mathcal{A}(v)$
+\end_inset
+
+ in parallel using pointer jumping technique.
+ The Algm[x] describes the pseudocode for parallel loop detection in 
+\begin_inset Formula $H$
+\end_inset
+
+.
+ ADD more text here
+\end_layout
+
+\begin_layout Paragraph*
+Cost of loop detection
+\end_layout
+
+\begin_layout Standard
+If there is no loop in 
+\begin_inset Formula $H$
+\end_inset
+
+, then Algm[x] requires 
+\begin_inset Formula $\lceil log_{2}(h)\rceil+1$
+\end_inset
+
+ iterations to converge, where 
+\begin_inset Formula $h$
+\end_inset
+
+ is the maximum height among all the trees in the forest 
+\begin_inset Formula $H$
+\end_inset
+
+.
+ If there are cycles in 
+\begin_inset Formula $H$
+\end_inset
+
+, and if length of maximum cycle is 
+\begin_inset Formula $c$
+\end_inset
+
+then, Algn[x] takes 
+\begin_inset Formula $\lceil log_{2}(c)\rceil+2$
+\end_inset
+
+ iterations to detect it.
+ So it need a total of 
+\begin_inset Formula $\max\left(\lceil log_{2}(h)\rceil+1,\lceil log_{2}(c)\rceil+2\right)$
+\end_inset
+
+ iterations.
+ In each iteration, we perform 
+\begin_inset Formula $\mathcal{O}(V)$
+\end_inset
+
+ work.
+ Thus total cost of loop detection is 
+\begin_inset Formula $\mathcal{O}(Vlog(V))$
+\end_inset
+
+ as 
+\begin_inset Formula $c,\ h\leq|V|$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsection
+Correction step
+\end_layout
+
+\begin_layout Standard
+Correction step has two parts: detection of invalid component of states;
+ and bring them to a correct state.
+ Using Algm[x] and Thm[y], we design the correction step as follows.
+ First we ensure that graph 
+\begin_inset Formula $H$
+\end_inset
+
+ is a proper subgraph of the input graph 
+\begin_inset Formula $G$
+\end_inset
+
+, by verifying 
+\begin_inset Formula $P(v)\in\mathcal{N}(v)$
+\end_inset
+
+ for all vertex 
+\begin_inset Formula $v$
+\end_inset
+
+.
+ If for some vertex 
+\begin_inset Formula $P(v)\notin\mathcal{N}(v)$
+\end_inset
+
+, then we reset vertex 
+\begin_inset Formula $v$
+\end_inset
+
+ by setting 
+\begin_inset Formula $CC[v]=v$
+\end_inset
+
+ and 
+\begin_inset Formula $P(v)=v$
+\end_inset
+
+.
+ After this we check, if a vertex 
+\begin_inset Formula $v$
+\end_inset
+
+ is a root of any tree, then 
+\begin_inset Formula $CC[v]=v$
+\end_inset
+
+.
+ It should be noted that in both check, if we find that state of 
+\begin_inset Formula $v$
+\end_inset
+
+ is invalid, it also means that state of all the descendent of 
+\begin_inset Formula $v$
+\end_inset
+
+ is also invalid.
+ However, all the otehr vertices which have invalid state have not been
+ informed yet.
+ Once these checks and local correction are performed, we use a modified
+ algorithm to check for loops and correct labels.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{loopCorrectionAlgm}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The Algm[z] works by when a vertex 
+\begin_inset Formula $v$
+\end_inset
+
+ finds loop 
+\begin_inset Formula $v=\mathcal{A}(v)$
+\end_inset
+
+, then 
+\begin_inset Formula $v$
+\end_inset
+
+ has the minimum vertex id in the sequence 
+\begin_inset Formula $\left\{ v,P(v),P^{2}(v),\ldots\right\} $
+\end_inset
+
+.
+ Thus, 
+\begin_inset Formula $v$
+\end_inset
+
+ must be root of the tree.
+ Therefore, we reset the vertex 
+\begin_inset Formula $v$
+\end_inset
+
+, by setting its parent to itself 
+\begin_inset Formula $P(v)=v$
+\end_inset
+
+.
+ Also when the loop detection converges, 
+\begin_inset Formula $\mathcal{A}(v)$
+\end_inset
+
+ has the minimum vertex label among all its ancestors.
+ Thus, the correct value of 
+\begin_inset Formula $CC[v]$
+\end_inset
+
+ should be 
+\begin_inset Formula $\mathcal{A}(v)$
+\end_inset
+
+.
+ So at the end of loop detection step all vertex 
+\begin_inset Formula $v$
+\end_inset
+
+ will have aquired a valid value.
+ 
+\end_layout
+
+\begin_layout Subsection
+Fault-tolerant label propagation algorithm
+\end_layout
+
+\begin_layout Standard
+Since the self-stabilization step has cost 
+\begin_inset Formula $Vlog(V)$
+\end_inset
+
+, it is prohibitively expensive to be performed in every iteration.
+ 
+\end_layout
+
+\begin_layout Standard
+To ensure the self-stabilization property, previously[cite] we performed
+ the correction step at regular interval.
+ However, in case of label propagation algorithm, number of iteration is
+ 
+\begin_inset Formula $\mathcal{O}(log(d))$
+\end_inset
+
+, where 
+\begin_inset Formula $d$
+\end_inset
+
+ is the diameter of the graph.
+ Thus, for many graph label propagation algorithm conerges in 5 to 10 iterations.
+ 
+\end_layout
+
+\begin_layout Standard
+Due to these circumstanes, we only perform correction step when the label
+ propgation algorithm reports convergence.
+ If the correction step finds that the algorithm is in valid state, and
+ algorithm has converged than algorithm has converged.
+ If the correction step reports that algorithm is in an invalid state, then
+ it tries to bring the algorithm back to valid state and restarts the label
+ propagation iteration.
+ However, this state is usually very close to the final state and it only
+ takes a small fraction of iteration to converge[ref to result].
+ 
 \end_layout
 
 \end_body

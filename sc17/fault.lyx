@@ -1,9 +1,9 @@
-#LyX file created by tex2lyx 2.2
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 508
 \begin_document
 \begin_header
 \save_transient_properties true
-\origin /Users/piyush/Downloads/Self-stabilzing Graph Connected Component Algorithm/
+\origin unavailable
 \textclass IEEEtran
 \options conference
 \use_default_options false
@@ -74,92 +74,42 @@
 
 \begin_layout Standard
 
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-% introduciton to hardware faults
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\emph on
-
-\series bold
-I
-\series default
-ntro to hardware faults
-\emph default
- 
-\end_layout
-
-\begin_layout Itemize
-what is hardware fault 
-\end_layout
-
-\begin_layout Itemize
-what are the different types of hardware fault (bit flip, network failure) 
-\end_layout
-
-\begin_layout Itemize
-classification of faults 
 \end_layout
 
 \begin_layout Standard
-
-\emph on
-
-\series bold
-F
-\series default
-aults relevent to graph computing
-\emph default
- 
-\end_layout
-
-\begin_layout Itemize
-why soft faults are impportant 
-\end_layout
-
-\begin_layout Itemize
-algorithm designer should be aware of it 
-\end_layout
-
-\begin_layout Itemize
-a lot of work in numerical algo have considered these fautls, but graph algos are equally susceptible to these faults 
+We term fault as any instance of hardware deviating from its expected behiour.
+ Impact of such faults on the application can vary significantly depending
+ on location of the fault.
+ Based on impact of the faults, they can be classified into two braod categories
+: hard fault and soft faults.
+ A hard fault causes the application to abort for instance failing of nodes
+ and network fall into these categories.
+ On the other hand, soft faults may not cause application to abort.
+ Nevertheless, a soft fault can potentially lead to an incorrect result,
+ which we term as failure.
+ Bitflips in memory and latches are example of softfaults.
+ A more detailed explaination of types of faults can be found elsewhere
+ [Hommen,heroux].
 \end_layout
 
 \begin_layout Standard
-
-\emph on
-
-\series bold
-F
-\series default
-aults in LP algorithm
-\emph default
+In this paper, we only deal with soft faults.
+ A particularly insidious manifestation of soft-faults is silent data corruption.
+ Silent data corruption occurs when a soft fault leads to corruption of
+ entire intermidiate variables, without notifying the application.
+ In such cases, application may arrive at an incorrect solution and yet,
+ inform user as correct solution.
+ Thus, silent data corruption can lead serous reliablity issues in the computing.
  
 \end_layout
 
-\begin_layout Itemize
-menifestations: incorrect label read, incorrect edge read 
-\end_layout
-
-\begin_layout Itemize
-some faults will be corrected 
-\end_layout
-
-\begin_layout Itemize
-some faults will propagate 
-\end_layout
-
-\begin_layout Itemize
-motivating figure fault rate and failure rate
+\begin_layout Standard
+The importance of having algorithmic level fault tolerance has already been
+ explored for a number of numerical computations[citation].
+ Graph computations are equally susceptible to softfautls as numerical computati
+on.
+ Researchers have started looking at resilient discrete computation only
+ recently [cite]
 \end_layout
 
 \end_body

@@ -73,6 +73,35 @@
 \begin_body
 
 \begin_layout Standard
+We performed a series of experiments to test the robustness of the self-stabiliz
+ing algorithms in the sec[x].
+ We focus on evaluating overhead and convergence property in presence of
+ soft faults.
+ 
+\end_layout
+
+\begin_layout Standard
+While there is not much different in applying self-stabilization to Async
+ and Sync vriants, we focus only on Async case here.
+ Async case is considerably more difficult than Sync case, as in Async case
+ a single fault can propagate to multiple vertices in a single iteration.
+ Moreover, Async case keeps only a single copy of the state, so self-correction
+ approach taht works well on Sync case, will not work on Async case
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+We compared the self-correcting and the self-stabilizing algorithm for Sync
+ algorithm, and self-correcting label propagation performs definitively
+ better.
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Comment
 status collapsed
 
@@ -127,12 +156,45 @@ test matrices
 
 \end_layout
 
+\begin_layout Subsection
+Experimental set-up
+\end_layout
+
+\begin_layout Subsubsection
+Test-bed
+\end_layout
+
+\begin_layout Standard
+We prototyped our implementation in C and compiled with Intel C compiler
+ (insert compiler version) with 
+\begin_inset Formula $O3$
+\end_inset
+
+ optimization flages.
+ We ran our experiments in a dual socket Ivy-bridge with 
+\begin_inset Formula $2\times8$
+\end_inset
+
+cores running at 2.66GHz.
+ This testbed had 128GB DRAM and 12Mb of L3.
+\end_layout
+
+\begin_layout Subsubsection
+Test-networks
+\end_layout
+
+\begin_layout Standard
+We choose networks from real applications with diverse sparsity pattern,
+ density, degree distribution and component distribution.
+ In table[x], we list the networks along with some properties.
+\end_layout
+
 \begin_layout Standard
 \begin_inset Float table
 placement t
 wide true
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -816,6 +878,20 @@ webbae-1M
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection
+Fault injection methodology
+\end_layout
+
+\begin_layout Standard
+We inject bitflips in memory operation to simulate faults.Specifically, we
+ inject faults in two main memory operation: a) reading adjacency tree,
+ and b) reading labels of neighbours.
+ Bitflip in an array-index value may cause memory segmentation error and
+ abort.
+ Therefore, we gaurd susceptible array-index variable with a range check.
+ If the variable is out of range, we change it to random value within range.
 \end_layout
 
 \begin_layout Subsection

@@ -1,0 +1,22 @@
+\begin{algorithmic}[1]
+\Require{$\rho \geq 1$}
+\Ensure{$X_k$}
+\State{$NumChanges \leftarrow 1$}
+\State{ $R(v) \leftarrow P(v)$}
+\While{$ NumChanges >0$}
+	\For{all vertex $v\in V$, \emph{\textbf Do in Parallel} }
+		\State{$ r= \min (R(v), R(P(v))) $}
+		\If{$r \neq R(v) $}
+			\State{$R(v)= v$}
+			\State{$NumChanges =NumChanges+1$}
+		\EndIf
+		\If{$v = R(v) $}
+			\State{\emph{\textbf Break the loop at $v$} }
+			\State $P(v)=v$
+		\EndIf
+	\EndFor
+\EndWhile
+\State \emph{\textbf {Correction} }
+\State $CC[v] = R(v)$
+
+\end{algorithmic}

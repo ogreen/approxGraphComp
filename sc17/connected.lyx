@@ -211,6 +211,25 @@ status collapsed
 
 \end_layout
 
+\begin_layout Paragraph
+Label Propagation algorithm in Fault Free execution
+\end_layout
+
+\begin_layout Standard
+The aim of label propagation algorithm is to mark every vertex in a given
+ connected component with a pre-defined common label.
+ This common label is same within each connected component, and different
+ across different connected component.
+ There are many choice for the common label.
+ As a convention, we consider minimum vertex-id in the connected component
+ as the final common label.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
 \begin_layout Itemize
 define input and output, intermediate variables 
 \end_layout
@@ -223,7 +242,62 @@ define update step
 when does it converge 
 \end_layout
 
-\begin_deeper
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The label propgation algorithm keeps an array 
+\begin_inset Formula $CC$
+\end_inset
+
+ of current labels for all vertices.
+ For each vertex 
+\begin_inset Formula $v$
+\end_inset
+
+, its label 
+\begin_inset Formula $CC[v]$
+\end_inset
+
+ is initalized with its vertex-id 
+\begin_inset Formula $CC[v]=v$
+\end_inset
+
+.
+ In every iteration, each vertex updates its label by calculating minimum
+ label of all its neighbours and itself:
+\begin_inset Formula 
+\begin{equation}
+CC^{i+1}[v]=\min_{u\in\mathcal{N}(v)}CC^{i}[u],\label{eq:lp_update_eqn}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\mathcal{N}(v)=\left\{ v,adj(v)\right\} $
+\end_inset
+
+ is the defined as immidiate neighbourhood of 
+\begin_inset Formula $v$
+\end_inset
+
+.
+ Thus, through out the iteration minimum vertex id propagates to all the
+ vertces in the connect component.
+ The iteration converges when there are no more label changes in the graph.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Greyedout
+status collapsed
+
 \begin_layout Itemize
 Sync version 
 \end_layout
@@ -232,9 +306,93 @@ Sync version
 Async version 
 \end_layout
 
-\end_deeper
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Depending on the constrints, equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:lp_update_eqn"
+
+\end_inset
+
+ can be implmented in two ways.
+ In the first way, we use two different arrays to store 
+\begin_inset Formula $CC^{i+1}$
+\end_inset
+
+ and 
+\begin_inset Formula $CC^{i}$
+\end_inset
+
+.
+ We refer to this implementation is Sync LP algorithm.
+ In an another way, we overwrite 
+\begin_inset Formula $CC^{i+1}$
+\end_inset
+
+ on 
+\begin_inset Formula $CC^{i}$
+\end_inset
+
+.
+ We refer to this version as Async LP algorithm.
+ Depending on architecture and programming model, the two variants may have
+ different performance characteristics.
+ In subsequent discussion, we assume Async LP algorithm.
+ Yet, our results are equally applicable to both instance of the LP algorithm.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
 \begin_layout Itemize
 complexity 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Each iteration of LP, visits all the vertex and edges once and thus costs
+ 
+\begin_inset Formula $\mathcal{O}(V+E)$
+\end_inset
+
+.
+ The LP algorithm requires 
+\begin_inset Formula $\mathcal{O}(d)$
+\end_inset
+
+ iterations to converge, where 
+\begin_inset Formula $d$
+\end_inset
+
+ is the diameter of the graph.
+ We may use short-cutting to bound the number of iteration to 
+\begin_inset Formula $\mathcal{O}(log(d))$
+\end_inset
+
+ [insert citation].
+ However, in practice async LP algorithm only takes a few more iteration
+ than implementing full short cutting step, without the cost of short cutting.
+ 
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Again, result discussed subsequently are equally applicable to both 
+\end_layout
+
+\end_inset
+
+ 
 \end_layout
 
 \end_body
