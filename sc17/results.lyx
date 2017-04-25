@@ -886,12 +886,243 @@ Fault injection methodology
 
 \begin_layout Standard
 We inject bitflips in memory operation to simulate faults.Specifically, we
- inject faults in two main memory operation: a) reading adjacency tree,
+ inject bitflips in two main memory operation: a) reading adjacency tree,
  and b) reading labels of neighbours.
  Bitflip in an array-index value may cause memory segmentation error and
  abort.
  Therefore, we gaurd susceptible array-index variable with a range check.
  If the variable is out of range, we change it to random value within range.
+\end_layout
+
+\begin_layout Subsubsection
+Competing algorithms
+\end_layout
+
+\begin_layout Standard
+In our experiments, we compare the following representative fault tolerant
+ algorithms:
+\end_layout
+
+\begin_layout Enumerate
+Baseline: Algm(x) 
+\end_layout
+
+\begin_layout Enumerate
+TMR: Triple modular redundancy 
+\end_layout
+
+\begin_layout Enumerate
+SsLP: Self-stabilizing LP iteration without any checks.
+ 
+\end_layout
+
+\begin_layout Enumerate
+HSsLP: Self-stabilizing LP iteration with unreliable checks.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Failure Test
+\end_layout
+
+\begin_layout Standard
+The aim of failure test is to quantify the frequency of the event when an
+ algorithm fails to give the correct results, indepedent of any incurred
+ overhead.
+ This is done by executing each algorithm multiple times for a given network
+ in simulated random fault environment with different seeds for random number
+ generation.
+ We compare the four algorithms based on the success rate at a specific
+ fault rate.
+ The fault rate is chosen from 
+\begin_inset Formula $\{2^{-5},2^{-6},\ldots2^{-20}\}$
+\end_inset
+
+ bitflips per memory operation at which TMR fails for roughly 50% of the
+ trials.
+ 
+\end_layout
+
+\begin_layout Standard
+Note that SS SSH LP algorithm will almost always give correct results if
+ we do not limit number of iterations to converge.
+ However, this doesn't reflect the practical use of the algorithm.
+ Thus, in our experiments we limit the number of iteration to 100.
+ If an algorithm doesn't converge by 100 iteration, it aborts and reports
+ failure.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename plots/failureTest_async_first_0.50.pdf
+	width 90col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Success rate for different different test networks 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In fig(x), we show the success rate of different algorithm at TMR50.
+ For 7 out of 11 SSH gives a success of more than 90%
+\end_layout
+
+\begin_layout Subsection
+Convergence Test
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename plots/astro-ph_async_12_hist.pdf
+	width 40page%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset space \hfill{}
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename plots/astro-ph_async_12_line.pdf
+	width 40page%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Success rate for different different test networks 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Overhead of Correction step
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename plots/timetest.pdf
+	width 95col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Success rate for different different test networks 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
