@@ -1,0 +1,211 @@
+%% LyX 2.2.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[conference, english]{IEEEtran}
+\usepackage{fouriernc,amsmath}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{color}
+\definecolor{note_fontcolor}{rgb}{0.800781, 0.800781, 0.800781}
+\usepackage{verbatim}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% The greyedout annotation environment
+\newenvironment{lyxgreyedout}
+  {\textcolor{note_fontcolor}\bgroup\ignorespaces}
+  {\ignorespacesafterend\egroup}
+%% A simple dot to overcome graphicx limitations
+\newcommand{\lyxdot}{.}
+
+\floatstyle{ruled}
+\newfloat{algorithm}{tbp}{loa}
+\providecommand{\algorithmname}{Algorithm}
+\floatname{algorithm}{\protect\algorithmname}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\theoremstyle{plain}
+% \newtheorem{thm}{\protect\theoremname}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+% \documentclass[english]{sig-alternate-05-2015}
+\usepackage{calc}
+%\usepackage{amsthm}
+\usepackage{verbatim}
+
+
+%% without following commands, amsthm complains proof being already defined 
+\let\proof\relax
+\let\endproof\relax
+\usepackage{amsthm}
+\usepackage{graphicx}
+
+
+\usepackage{mdwlist}% compact lists
+
+\usepackage{relsize}% relative font sizes
+\usepackage{todonotes}% private notes
+\usepackage{breqn}
+
+
+\usepackage{soul}
+
+
+\usepackage{color}
+
+
+% \usepackage{hyperref}
+\PassOptionsToPackage{pdfpagelabels=false}{hyperref} 
+% \hypersetup{bookmarks=true,bookmarksnumbered=true,pdfstartview=FitB,colorlinks=true,pdfborder=0 0 0}
+
+
+
+% \usepackage{xspace}
+
+% \usepackage[sort&compress]{natbib}
+
+\usepackage{comment}
+
+
+
+
+% Test edit via git by Rich
+
+%% for manually breaking cells in tables.
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}l@{}}#2\end{tabular}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+
+%%%%
+\usepackage{booktabs}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\theoremstyle{plain}
+\newtheorem{thm}{\protect\theoremname}\theoremstyle{definition}
+\newtheorem{defn}{\protect\definitionname}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{algorithm}
+
+
+
+% \usepackage{algpseudocode}
+\usepackage[noend]{algpseudocode}%to remove endif, and endfors from pseudocode
+
+
+
+
+\usepackage{babel}
+\providecommand{\definitionname}{Definition}
+\providecommand{\theoremname}{Theorem}
+\usepackage{balance}
+
+%========== Custom typographic commands ==========
+\newcommand{\emailAddr}[1]{\texttt{\smaller {#1}}}
+\newcommand{\mailtoLink}[2]{\href{mailto:#2}{\emailAddr{#1}}}
+\newcommand{\refSection}[1]{Section~\ref{#1}}
+\newcommand{\refsec}[1]{\S~\ref{#1}}
+\newcommand{\refequ}[1]{eq.~\eqref{#1}}
+\newcommand{\refEquation}[1]{Equation~\eqref{#1}}
+\newcommand{\refFigure}[1]{Figure~\ref{#1}}
+\newcommand{\reffig}[1]{fig.~\ref{#1}}
+\newcommand{\refDefinition}[1]{Definition~\ref{#1}}
+\newcommand{\refdef}[1]{defn.~\ref{#1}}
+\newcommand{\refAlgorithm}[1]{Algorithm~\ref{#1}}
+\newcommand{\refalg}[1]{alg.~\ref{#1}}
+\newcommand{\refAlg}[1]{Alg.~\ref{#1}}
+\newcommand{\refTable}[1]{Table~\ref{#1}}
+\newcommand{\reftab}[1]{table~\ref{#1}}
+\newcommand{\refTheorem}[1]{Theorem~\ref{#1}}
+\newcommand{\refthm}[1]{thm.~\ref{#1}}
+\newcommand{\refprep}[1]{prepostion~\ref{#1}}
+\newcommand{\ramki}[1]{{\color{red}{\bf [Ramki: #1]}}}
+
+%========== Document Specific commands ==========
+
+\setlength{\textfloatsep}{0pt}% Remove \textfloatsep
+\newcommand{\etal}{\textit{et al}.}
+
+\newcommand{\sv}{LP}
+\newcommand{\ftsv}{\textsc{FT-LP}}
+\newcommand{\graphname}[1]{\emph{#1}}
+
+\newcommand{\CCVAL}{$CC$}
+\newcommand{\icomment}[1]{\textbf{ \textcolor{red} {#1}}}
+\newtheorem{prop}{Proposition}\clubpenalty=10000 
+\widowpenalty = 10000
+
+\@ifundefined{showcaptionsetup}{}{%
+ \PassOptionsToPackage{caption=false}{subfig}}
+\usepackage{subfig}
+\makeatother
+
+
+\begin{document}
+
+
+\author{
+\IEEEauthorblockN{Piyush Sao}%
+\IEEEauthorblockA{
+Georgia Institute of Technology\\
+email: piyush3@gatech.edu \\
+}  \and
+\IEEEauthorblockN{Richard Vuduc}%
+\IEEEauthorblockA{
+Georgia Institute of technology\\
+email: richie@gatech.edu \\
+}
+}
+
+\title{A Self-Stabilizing Connected Components Algorithm }
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+\input{intro.tex}
+
+\section{Connected components}
+\label{sec:connected}
+\input{connected.tex}
+
+\section{Impact of hardware faults on LP algo}
+\label{sec:fault}
+\input{fault.tex}
+
+\section{Self-stabilzing Algorithms}
+\label{sec:sc-algm} \input{ss.tex}
+
+\section{Self-correcting Label Propagation Algorithm}
+\label{sec:ft-connected} 
+\input{sslp.tex}
+
+\section{Empirical Results }
+\label{sec:results}
+\input{results.tex}
+
+\section{Related work}
+\label{sec:related}
+\input{related}
+
+\section{Conclusion and Future Work}
+\label{sec:conclusion} \input{conclusion.tex}
+
+% \subsection*{Acknowledgments}
+
+% \input{ack}
+
+\bibliographystyle{ieeetr}
+\bibliography{sao} 
+
+\end{document}

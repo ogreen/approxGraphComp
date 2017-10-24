@@ -1,0 +1,25 @@
+We term fault as any instance of hardware deviating from its expected
+behiour. Impact of such faults on the application can vary significantly
+depending on location of the fault. Based on impact of the faults,
+they can be classified into two braod categories: hard fault and soft
+faults. A hard fault causes the application to abort for instance
+failing of nodes and network fall into these categories. On the other
+hand, soft faults may not cause application to abort. Nevertheless,
+a soft fault can potentially lead to an incorrect result, which we
+term as failure. Bitflips in memory and latches are example of softfaults.
+A more detailed explaination of types of faults can be found elsewhere
+{[}Hommen,heroux{]}.
+
+In this paper, we only deal with soft faults. A particularly insidious
+manifestation of soft-faults is silent data corruption. Silent data
+corruption occurs when a soft fault leads to corruption of entire
+intermidiate variables, without notifying the application. In such
+cases, application may arrive at an incorrect solution and yet, inform
+user as correct solution. Thus, silent data corruption can lead serous
+reliablity issues in the computing. 
+
+The importance of having algorithmic level fault tolerance has already
+been explored for a number of numerical computations{[}citation{]}.
+Graph computations are equally susceptible to softfautls as numerical
+computation. Researchers have started looking at resilient discrete
+computation only recently {[}cite{]}

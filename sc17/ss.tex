@@ -1,0 +1,74 @@
+%describes general ss and SC algorithm
+
+\textbf{\emph{}}%
+% \begin{comment}
+% \textbf{\emph{I}}\emph{ntro to terminology} 
+% \begin{itemize}
+% \item states of the algorithm 
+% \item valid state and in valid state 
+% \item effect of fault on valid state 
+% \end{itemize}
+% \end{comment}
+
+Formally, a system is said to be self-stabilizing, if starting from
+any arbitrary \textquotedblleft state\textquotedblright , it comes
+to a valid state in a finite number of steps{[}dijkstra{]}. An algorithm
+can also be viewed as a system with states and transitions. Its state
+is a subset of the intermediate variable which enables continued execution.
+A state of the algorithm is said to be in a valid state if the algorithm
+will converge to a correct solution in fault-free execution starting
+from this state, otherwise invalid. In previous work{[}{]}, we have
+shown that such abstraction may help us to construct resilient algorithms. 
+
+% \begin{comment}
+% \textbf{\emph{Self-stabilization in Algorithmic resilience}}
+% \begin{itemize}
+% \item define 
+% \item give examples 
+% \end{itemize}
+% \end{comment}
+
+
+\paragraph{Impact of hardware fault on algorithms state}
+
+If an algorithm is well suited for a given problem then in a fault-free
+execution, its state remains valid during entire computation. However,
+soft-fault such as bit flip can corrupt the intermediate variables
+and, can potentially bring it to an invalid state. Subsequent fault-free
+execution will lead to an incorrect solution, thus failure, unless
+it is brought to a valid state by some mechanism. Our principle for
+designing fault-tolerant algorithm is based on the idea of augmenting
+the algorithm so that it can bring itself to a valid state, by design.
+We distinguish between following two principles for bringing the algorithm
+to a valid state.
+
+\paragraph{Self-correcting algorithm}
+
+A self-correcting algorithm can bring itself to a valid state by correcting
+its state with information of a previous valid state. In contrast
+to self-stabilization algorithm, a self-correcting must start from
+a valid state. In reality, it is not such a limitation as most algorithms
+by design starts from a valid state. On the other hand, the self-correcting
+algorithm can be more efficient than the self-stabilizing algorithm,
+as it can meaningfully exploit information of a previous valid state.
+In {[}cite{]}, we presented a self-correcting of SYNC version of label
+propagation algorithm. 
+
+% \begin{comment}
+% \textbf{\emph{s}}\emph{elf-stabilizing algorithm} 
+% \begin{itemize}
+% \item define 
+% \item give examples 
+% \end{itemize}
+% \textbf{\emph{s}}\emph{elf-correcting algorithm} 
+% \begin{itemize}
+% \item define 
+% \item give examples 
+% \end{itemize}
+% \textbf{\emph{A}}\emph{ comparison between SS and SC} 
+% \begin{itemize}
+% \item relation between SS and SC (SS is special case of SC) 
+% \item advantage of SS over SC 
+% \end{itemize}
+% \end{comment}
+

@@ -1,0 +1,140 @@
+
+We would like to reliably compute connect components in a graph in presence of
+soft faults. Connected components is an important graph kernel with
+applications in community detection, metagenomics and parallel processing of a
+graph.  The increased number of computing elements have also increased the
+rate of hardware malfunctioning, also known as faults.  Soft faults, which do
+not cause the application to crash,  give incorrect results to the
+computation, often masquerading as correct results. Soft-faults pose a great
+threat to the reliability of highly parallel computing systems. It is widely
+accepted that dealing with faults, is no longer just a hardware issue.
+Algorithm designer must redesign algorithm so that it may, at the very least,
+differentiate between incorrect and correct results. However, the challenge
+is, very often it is not possible to check the correctness of the results,
+without recomputing the solution.  Under these constraints, how can we design
+a connected component algorithm which gives a correct output in spite the
+presence of soft-faults?
+
+% We consider the problem of finding connected components of a graph
+% in presence of transient soft faults. Computing connected components,
+% in particular when using the technique of label propagation, is a
+% well-known and fundamental graph analysis primitive with many applications.
+% We begin this study with a highly parallel label propagation (\sv)
+% algorithm for connected components, similar to the classical formulation
+% of Shiloach and Vishkin. Label propagation
+% refers to the iterative process of assigning candidate connected component
+% labels to vertices until the labels of all the vertices in the same
+% connected component converge to the same value. The challenge is that
+% a transient soft fault occurring in some iteration can cause a mislabeling
+% error; such an error can quickly ``spread'' in subsequent iterations,
+% leading to additional incorrect labels or stalls of the convergence
+% process. Thus, we seek efficient methods to detect and correct such
+% errors.
+
+\textbf{\emph{}}%
+\begin{lyxgreyedout}
+\textbf{\emph{S}}\emph{elf-correction para} 
+\begin{itemize}
+\item Introduce self-correction LP (prior to this) 
+\item what is self-correction 
+\item define valid state and invalid state: 
+\item limitations of self-correction LP 
+\end{itemize}
+\end{lyxgreyedout}
+
+Prior to this, we presented a fault tolerant label propagation algorithm
+(sclp) based on ideas of self-correction in {[}cite{]}. Both self-correcting
+and self-stabilzing algorithm share the notion of state, and distinguish
+between valid and invalid states. Briefly, a state of an algorithm
+is a subset of intermediate variables that allows to resume the algorithm.
+A state is called valid if an algorithm starting the state will converge
+to correct solution in fault free execution, otherwise invalid. In
+a fault free execution, an algorithm starts from a valid, remains
+in a valid state throughout the execution, and finally converge to
+a valid solution state. By contrast, in presence of hardware faults
+may bring the algorithm to a invalid state and eventually algorithm
+will fail. A self-correcting algorithm works by bringing the algorithm
+to a valid state by assuming it started from a previously known valid
+state.
+
+\textbf{\emph{}}%
+\begin{lyxgreyedout}
+\textbf{\emph{S}}\emph{elf-stabilization para} 
+\begin{itemize}
+\item Introduce self-stabilization: 
+\item advantage of SS over SC 
+\item SSLP as alternative to SCLP 
+\end{itemize}
+\end{lyxgreyedout}
+
+Self-stabilization was introduced by Dikstra in 1973 in context of
+distributed control. Briefly, an algorithm is self-stabilizing if
+starting from any arbitrary state, valid or invalid, algorithm comes
+to a valid state in finite number of steps. We previously showed potential
+of self-stabiling algorithm for constructing fault tolerant numerical
+iterative algorithms {[}cite{]}. Self-stabilization is arguably more
+desirable property as it does not assume anything about history of
+execution. However, self-stabilized formulation of every algorithm
+may not exists.
+
+\textbf{\emph{}}%
+\begin{lyxgreyedout}
+\textbf{\emph{h}}\emph{ow self-stab LP works} 
+\begin{itemize}
+\item idea of correction step 
+\item difficulty in constructing a correcting step: vertex centric 
+\item correction step 
+\item advantage of correction step 
+\end{itemize}
+\end{lyxgreyedout}
+
+To construct a self-stabilizing label propagation algorithm, we first
+analyzed states of the label propagation algorithm and developed a
+set of sufficient conditions that ensures if the state is valid. We
+present an efficient correction step that verifies if the state is
+valid, and brings it to a valid state if the state is invalid.%
+% \begin{comment}
+% Tell how is it different from self-correction method, (in contrast
+% to to self-correcting)
+% \end{comment}
+{} Since label propagation converges in very few iterations, we only
+run the correction step when the algorithm reports convergence. If
+algorithm is not in a valid state when it reports convergence then
+the correction step constructs a valid state and restart the computation
+from this valid state. Running label propagation from this valid state
+takes significantly fewer iteration to converge, which is significantly
+efficient to restarting the algorithm.
+
+\textbf{\emph{}}%
+\begin{lyxgreyedout}
+\textbf{\emph{s}}\emph{ummary of results} 
+\begin{itemize}
+\item what is overhead of correction step 
+\item overhead 
+\item comparison parameter 
+\item result 
+\end{itemize}
+\end{lyxgreyedout}
+
+Our self-stabilizing label propagation algorithm requires $\mathcal{O}(V)$
+additional storage and correction step requires $\mathcal{O}(Vlog(V)$
+computation, which is asymptotically a smaller fraction of cost of
+label propagation algorithm $\mathcal{O}((V+E)log(V))$. We tested
+fault tolerance properties of self-stabilizing label propagation algorithm
+a number of representative test problems. Self-stabilizing label propagation
+algorithm is significantly more efficeint than existing fault tolerance
+techniques such as triple modular redundency (TMR). In particular,
+Self-stabilizing label propagation algorithm takes only 20\% additional
+iteration even in presence of $2^{-9}$ bit flips per memory iteration.
+
+% To derive a method, we introduce a principle that we call \emph{self-correction}. In this approach, one first considers the possible states of the algorithm and divides them into \emph{valid} and \emph{invalid} states. A valid state is one from which the algorithm will converge to a correct result assuming a fault-free execution. By contrast, from an invalid state the algorithm instead produces an incorrect result or diverges. Now suppose that at some point in its execution the algorithm is in a valid state, but after which point a fault occurs, bringing the algorithm into an invalid state. A \emph{self-correcting algorithm} detects that it is in an invalid state, and using the previously known valid state, brings itself back to \emph{some} valid state. Importantly, this new valid state need \emph{not} be identical to the previously valid state.
+
+% This notion of self-correcting behavior differs from other forms of resilient behavior. For instance, a checkpoint-restart scheme would, upon detecting an invalid state, restore the \emph{same} previously valid state; by contrast, a self-correcting algorithm moves only to \emph{some} valid state. This difference makes self-correction a more general principle. However, it is unclear \emph{a priori} whether a self-correcting algorithm will be faster or slower than checkpoint-restart.
+
+% Self-correction also differs from \emph{self-stabilization}, which is a design principle for resilient algorithms that we considered in our prior work for certain iterative numerical solvers~\cite{sao2013sscg}. A self-stabilizing algorithm can restore itself to a valid state starting in an \emph{arbitrary} state, whether valid or invalid; by contrast, self-correction requires a previously known valid state. Thus, self-stabilization is a stronger notion than self-correction. However, this difference, combined with the explicit use of a previously known state, also suggests that a self-correcting algorithm can be more efficient than a self-stabilizing algorithm for the same computational problem. That's because a self-correcting algorithm has more information in the form of the previously known valid state.
+
+% This paper applies self-correction to the label propagation-based connected components problem, thereby yielding a self-correcting algorithm that we call \emph{Fault-Tolerant \sv{}}, or \ftsv. This algorithm requires an augmented data structure and the ability to run detection and correction schemes in a selective reliability mode.
+
+% Despite these restrictions and overheads, the condition we identify to distinguish invalid states leads to an efficient implementation. Theoretically, the baseline (fault-\emph{in}tolerant) \sv{} algorithm has a complexity of $\mathcal{O}(|E|+|V|)$ per iteration, where $|E|$ is the number of edges and $|V|$ is the number of vertices in the graph $G=(V,E)$. \ftsv{}, the new fault-tolerant algorithm, adds a modest $\mathcal{O}(|V|)$ storage and has the same bounds as the original. We also evaluate \ftsv{} empirically on realistic input graphs. We observe 10-35\% increases in execution time over the fault-intolerant \sv{}. This increase includes cases of extremely high fault rates, such as a single error for every 64-1024 memory operations. At such rates, a system would be considered unusually unreliable. In any case, we observe that computational overheads increase gracefully as fault rates increase without a decrease in the convergence rate.
+
+%ODED - I just added a comment on the fact that the new algorithm converges as fast as the fault-intolerant algorithm. 
