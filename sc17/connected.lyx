@@ -1,9 +1,9 @@
-#LyX file created by tex2lyx 2.2
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
 \lyxformat 508
 \begin_document
 \begin_header
 \save_transient_properties true
-\origin /Users/piyush/Downloads/Self-stabilzing Graph Connected Component Algorithm/
+\origin unavailable
 \textclass IEEEtran
 \options conference
 \use_default_options false
@@ -72,73 +72,74 @@
 
 \begin_body
 
-\begin_layout Standard
-
-\emph on
-
-\series bold
-i
-\series default
-ntro to graph connected component
-\emph default
- 
-\end_layout
-
-\begin_layout Itemize
-what is connected component 
-\end_layout
-
-\begin_layout Itemize
-what is use of connected component 
-\end_layout
-
-\begin_layout Itemize
-what are algorithms algorithms for connected component 
+\begin_layout Paragraph
+Label Propagation algorithm in Fault Free execution
 \end_layout
 
 \begin_layout Standard
-
-\emph on
-
-\series bold
-i
-\series default
-ntro to LP algo for connected component
-\emph default
- 
-\end_layout
-
-\begin_layout Itemize
-what is label propagation 
-\end_layout
-
-\begin_layout Itemize
-why do we use LP over other algorithms 
-\end_layout
-
-\begin_layout Itemize
-implmentations of LP 
-\end_layout
-
-\begin_layout Itemize
-many varients suited for different cases 
-\end_layout
-
-\begin_layout Standard
-
-\emph on
-
-\series bold
-w
-\series default
-orking of LP algorithm
-\emph default
- 
-\begin_inset ERT
+\begin_inset Float figure
+wide true
+sideways false
 status collapsed
 
 \begin_layout Plain Layout
-%pseudocode for algo
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename figure/sv1.pdf
+	width 20page%
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figure/sv2.pdf
+	width 20page%
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figure/sv3.pdf
+	width 20page%
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figure/sv4.pdf
+	width 20page%
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figure/sv5.pdf
+	width 20page%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+These sub-figures conceptually show how the connected component id propagates
+ through the graph as time evolves.
+ Subfigures represent snapshots of the algorithm at different times.
+ For simplicity, this example assumes that all the shown vertices are connected.
+ Initially the number of connected components is equal to the number vertices.
+ (a) Depicts the initial state in which each vertex is in its own component.
+ (b)-(d) depict that some vertices belong to the same connected component
+ yet may require multiple label updates (in either the same iteration or
+ a separate iteration).
+ (e) is the final state in which there is a single connected component.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Plain Layout
@@ -150,8 +151,39 @@ status collapsed
 
 \end_layout
 
-\begin_layout Paragraph
-Label Propagation algorithm in Fault Free execution
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+input{symbolTab}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -163,27 +195,6 @@ The aim of label propagation algorithm is to mark every vertex in a given
  As a convention, we consider minimum vertex-id in the connected component
  as the final common label.
  
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Itemize
-define input and output, intermediate variables 
-\end_layout
-
-\begin_layout Itemize
-define update step 
-\end_layout
-
-\begin_layout Itemize
-when does it converge 
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -234,23 +245,6 @@ where
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
-status collapsed
-
-\begin_layout Itemize
-Sync version 
-\end_layout
-
-\begin_layout Itemize
-Async version 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Depending on the constrints, equation 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -286,19 +280,6 @@ reference "eq:lp_update_eqn"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Itemize
-complexity 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Each iteration of LP, visits all the vertex and edges once and thus costs
  
 \begin_inset Formula $\mathcal{O}(V+E)$
@@ -321,16 +302,6 @@ Each iteration of LP, visits all the vertex and edges once and thus costs
  [insert citation].
  However, in practice async LP algorithm only takes a few more iteration
  than implementing full short cutting step, without the cost of short cutting.
- 
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Again, result discussed subsequently are equally applicable to both 
-\end_layout
-
-\end_inset
-
  
 \end_layout
 
