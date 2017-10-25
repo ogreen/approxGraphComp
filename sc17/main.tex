@@ -73,7 +73,7 @@
 
 
 
-% Test edit via git by Rich
+
 
 %% for manually breaking cells in tables.
 \newcommand{\specialcell}[2][c]{%
@@ -111,6 +111,7 @@
 \providecommand{\theoremname}{Theorem}
 \usepackage{balance}
 
+\usepackage[noabbrev]{cleveref}
 %========== Custom typographic commands ==========
 \newcommand{\emailAddr}[1]{\texttt{\smaller {#1}}}
 \newcommand{\mailtoLink}[2]{\href{mailto:#2}{\emailAddr{#1}}}
@@ -132,12 +133,17 @@
 \newcommand{\refprep}[1]{prepostion~\ref{#1}}
 \newcommand{\ramki}[1]{{\color{red}{\bf [Ramki: #1]}}}
 
+
+\newcounter{todocounter}
+\newcommand{\TODO}[1]{{\color{red}\textbf{\refstepcounter{todocounter}  \arabic{todocounter}. #1}}}
 %========== Document Specific commands ==========
 
 \setlength{\textfloatsep}{0pt}% Remove \textfloatsep
 \newcommand{\etal}{\textit{et al}.}
 
 \newcommand{\sv}{LP}
+\newcommand{\asynclp}{asynchronous-\sv}
+\newcommand{\synclp}{synchronous-\sv}
 \newcommand{\ftsv}{\textsc{FT-LP}}
 \newcommand{\graphname}[1]{\emph{#1}}
 

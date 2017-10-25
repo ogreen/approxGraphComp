@@ -26,3 +26,7 @@ ss_experiment/failureTest/__pycache__/
 #main.lyx#
 thumbnail.png
 *.xml
+main.aux
+main.bbl
+main.blg
+main.log

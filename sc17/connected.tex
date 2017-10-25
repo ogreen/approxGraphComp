@@ -1,9 +1,26 @@
+\TODO{Add Algorithm}
+Given a undirected Graph $G=(V,\ E)$, a connected-component $C$ is a subset of
+vertex $V$ which satisfies the following.  A) there is a path between any two
+vertices of $C$ in the parent graph $G$;  and B) there are no paths between
+any vertex in $C$ and $V-C$. We would like to find all the connected
+components in a graph. This problem is known as graph connected component
+problem.
 
-\paragraph{Label Propagation algorithm in Fault Free execution}
+ We focus on the highly parallel label-propagation algorithm for the graph
+connected-component problem.  We describe the working of label propagation
+algorithm relevant to our discussion later. \paragraph{Label Propagation
+algorithm in Fault Free execution}
 
 \begin{figure*}
 
-\includegraphics[width=0.2\paperwidth]{figure/sv1}\includegraphics[width=0.2\paperwidth]{figure/sv2}\includegraphics[width=0.2\paperwidth]{figure/sv3}\includegraphics[width=0.2\paperwidth]{figure/sv4}\includegraphics[width=0.2\paperwidth]{figure/sv5}\caption{These sub-figures conceptually show how the connected component id
+\includegraphics[width=0.2\paperwidth]{figure/sv1}
+\includegraphics[width=0.2\paperwidth]{figure/sv2}
+\includegraphics[width=0.2\paperwidth]{figure/sv3}
+\includegraphics[width=0.2\paperwidth]{figure/sv4}
+\includegraphics[width=0.2\paperwidth]{figure/sv5}
+\caption{
+\label{fig:svalgm}
+These sub-figures conceptually show how the connected component id
 propagates through the graph as time evolves. Subfigures represent
 snapshots of the algorithm at different times. For simplicity, this
 example assumes that all the shown vertices are connected. Initially
@@ -22,41 +39,42 @@ a single connected component.}
 
 \end{table}
 
-The aim of label propagation algorithm is to mark every vertex in
-a given connected component with a pre-defined common label. This
-common label is same within each connected component, and different
-across different connected component. There are many choice for the
-common label. As a convention, we consider minimum vertex-id in the
-connected component as the final common label. 
+The label propagation algorithm marks each vertex with a label that identifies
+its component. The identifying label can be the minimum vertex-id in the
+component. The label-marking process is iterative. In every iteration, each
+vertex computes the minimum label amongst itself and its neighbors. So the
+minimum label propagates to all the vertex in the component. The algorithm
+stops when every vertex in the graph has acquired its final label.
 
-The label propgation algorithm keeps an array $CC$ of current labels
-for all vertices. For each vertex $v$, its label $CC[v]$ is initalized
-with its vertex-id $CC[v]=v$. In every iteration, each vertex updates
-its label by calculating minimum label of all its neighbours and itself:
+The label propagation algorithm keeps an array $CC$ of current labels of all
+vertices. For each vertex $v$, its label $CC[v]$ is initialized with its
+vertex-id $CC[v]=v$. In every iteration, each vertex updates its label by
+calculating minimum label of all its neighbors and itself: 
+%
 \begin{equation}
 CC^{i+1}[v]=\min_{u\in\mathcal{N}(v)}CC^{i}[u],\label{eq:lp_update_eqn}
 \end{equation}
 
-where $\mathcal{N}(v)=\left\{ v,adj(v)\right\} $ is the defined as
-immidiate neighbourhood of $v$. Thus, through out the iteration minimum
-vertex id propagates to all the vertces in the connect component.
-The iteration converges when there are no more label changes in the
-graph. 
+Where $\mathcal{N}(v)=\left\{ v,adj(v)\right\} $ is the defined as immediate
+neighbourhood of $v$. So the minimum vertex-id propagates to all the vertices
+in the connected component. The iteration converges when there are no more
+label changes in the graph.
 
-Depending on the constrints, equation \ref{eq:lp_update_eqn} can
-be implmented in two ways. In the first way, we use two different
-arrays to store $CC^{i+1}$ and $CC^{i}$. We refer to this implementation
-is Sync LP algorithm. In an another way, we overwrite $CC^{i+1}$
-on $CC^{i}$. We refer to this version as Async LP algorithm. Depending
-on architecture and programming model, the two variants may have different
-performance characteristics. In subsequent discussion, we assume Async
-LP algorithm. Yet, our results are equally applicable to both instance
-of the LP algorithm.
+\TODO{Redo para after adding algo.}
+We can implement \cref{eq:lp_update_eqn} can in two ways. In a first way, we
+use two different arrays to store $CC^{i+1}$ and $CC^{i}$. We refer to this
+implementation is \synclp~algorithm. In another way, we overwrite $CC^{i+1}$
+on $CC^{i}$. We refer to this version as \asynclp~algorithm. Depending on
+architecture and programming model, the two variants may have different
+performance characteristics. In the subsequent discussion, we assume
+\asynclp~algorithm. Yet, our results are equally applicable to both instances
+of the \sv algorithm.
 
-Each iteration of LP, visits all the vertex and edges once and thus
+\textbf{\emph{ Cost of Label-propagation Algorithm: }}
+Each iteration of \sv, we visit all the vertex and edges once and thus
 costs $\mathcal{O}(V+E)$. The LP algorithm requires $\mathcal{O}(d)$
 iterations to converge, where $d$ is the diameter of the graph. We
 may use short-cutting to bound the number of iteration to $\mathcal{O}(log(d))$
-{[}insert citation{]}. However, in practice async LP algorithm only
+{[}insert citation{]}. However, in practice \asynclp algorithm only
 takes a few more iteration than implementing full short cutting step,
 without the cost of short cutting. 
