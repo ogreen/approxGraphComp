@@ -1,7 +1,8 @@
 %% LyX 2.2.2 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
-\documentclass[conference, english]{IEEEtran}
-\usepackage{fouriernc,amsmath}
+% \documentclass[sigconf, english]{acmart}
+\documentclass[english]{sig-alternate}
+% \usepackage{fouriernc,amsmath}
 \usepackage[T1]{fontenc}
 \usepackage[latin9]{inputenc}
 \usepackage{color}
@@ -9,7 +10,7 @@
 \usepackage{verbatim}
 \usepackage{float}
 \usepackage{amsmath}
-\usepackage{amsthm}
+% \usepackage{amsthm}
 \usepackage{graphicx}
 
 \makeatletter
@@ -28,7 +29,7 @@
 \floatname{algorithm}{\protect\algorithmname}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
-\theoremstyle{plain}
+
 % \newtheorem{thm}{\protect\theoremname}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
@@ -42,6 +43,8 @@
 \let\proof\relax
 \let\endproof\relax
 \usepackage{amsthm}
+\theoremstyle{plain}
+
 \usepackage{graphicx}
 
 
@@ -111,7 +114,8 @@
 \providecommand{\theoremname}{Theorem}
 \usepackage{balance}
 
-\usepackage[noabbrev]{cleveref}
+% \usepackage[noabbrev]{cleveref}
+\usepackage[nameinlink,capitalize,noabbrev]{cleveref}
 %========== Custom typographic commands ==========
 \newcommand{\emailAddr}[1]{\texttt{\smaller {#1}}}
 \newcommand{\mailtoLink}[2]{\href{mailto:#2}{\emailAddr{#1}}}
@@ -159,20 +163,23 @@
 
 
 \begin{document}
-
+\numberofauthors{2}
 
 \author{
-\IEEEauthorblockN{Piyush Sao}%
-\IEEEauthorblockA{
-Georgia Institute of Technology\\
-email: piyush3@gatech.edu \\
-}  \and
-\IEEEauthorblockN{Richard Vuduc}%
-\IEEEauthorblockA{
-Georgia Institute of technology\\
-email: richie@gatech.edu \\
+\alignauthor
+Piyush Sao\\
+       \affaddr{Georgia Institute of Technology}\\
+       \affaddr{Atlanta, GA}\\
+       \email{piyush3@gatech.edu}
+% 2nd. author
+\alignauthor Richard Vuduc\\
+       \affaddr{Georgia Institute of Technology}\\
+       \affaddr{Atlanta, GA}\\
+       \email{richie@gatech.edu}
 }
-}
+
+
+
 
 \title{A Self-Stabilizing Connected Components Algorithm }
 \maketitle
@@ -189,7 +196,7 @@ email: richie@gatech.edu \\
 \label{sec:fault}
 \input{fault}
 
-\section{Self-stabilzing Algorithms}
+\section{Algorithms as State-machines}
 \label{sec:sc-algm} 
 \input{ss}
 
