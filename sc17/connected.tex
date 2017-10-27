@@ -1,4 +1,4 @@
-\TODO{Add Algorithm}
+\input{sv-algm}
 Given a undirected Graph $G=(V,\ E)$, a connected-component $C$ is a subset of
 vertex $V$ which satisfies the following.  A) there is a path between any two
 vertices of $C$ in the parent graph $G$;  and B) there are no paths between
@@ -13,11 +13,11 @@ algorithm in Fault Free execution}
 
 \begin{figure*}
 
-\includegraphics[width=0.2\paperwidth]{figure/sv1}
-\includegraphics[width=0.2\paperwidth]{figure/sv2}
-\includegraphics[width=0.2\paperwidth]{figure/sv3}
-\includegraphics[width=0.2\paperwidth]{figure/sv4}
-\includegraphics[width=0.2\paperwidth]{figure/sv5}
+\includegraphics[width=0.2\textwidth]{figure/sv1}
+\includegraphics[width=0.2\textwidth]{figure/sv2}
+\includegraphics[width=0.2\textwidth]{figure/sv3}
+\includegraphics[width=0.2\textwidth]{figure/sv4}
+\includegraphics[width=0.2\textwidth]{figure/sv5}
 \caption{
 \label{fig:svalgm}
 These sub-figures conceptually show how the connected component id
@@ -58,9 +58,10 @@ CC^{i+1}[v]=\min_{u\in\mathcal{N}(v)}CC^{i}[u],\label{eq:lp_update_eqn}
 Where $\mathcal{N}(v)=\left\{ v,adj(v)\right\} $ is the defined as immediate
 neighbourhood of $v$. So the minimum vertex-id propagates to all the vertices
 in the connected component. The iteration converges when there are no more
-label changes in the graph.
+label changes in the graph. We show the pseudo-code for label propagation algorithm in \cref{alg:SV_ALG}.
+In \cref{alg:SV_ALG}, we also update the \emph{parent} array $P[v]$, which
+tracks the vertex which causes the last change  in the label  of $v$. 
 
-\TODO{Redo para after adding algo.}
 We can implement \cref{eq:lp_update_eqn} can in two ways. In a first way, we
 use two different arrays to store $CC^{i+1}$ and $CC^{i}$. We refer to this
 implementation is \synclp~algorithm. In another way, we overwrite $CC^{i+1}$
