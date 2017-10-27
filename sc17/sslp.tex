@@ -1,71 +1,35 @@
-% \begin{itemize}
-% \item %
-% \begin{comment}
-% \begin{itemize}
-% \item difficulty in checking above condition for validity 
-% \begin{itemize}
-% \item monotonicity and root can be checked 
-% \item checking tree 
-% \begin{itemize}
-% \item is equivalent to loop detection 
-% \item O(V) algorithm exist, not vertices centrinc, not scalable 
-% \item need new algorithm 
-% \end{itemize}
-% \end{itemize}
-% \end{itemize}
-% \end{comment}
-% \item %
-% \begin{comment}
-% \begin{itemize}
-% \item Loop detection in graph G=(V, \{V,P(V)\}) 
-% \begin{itemize}
-% \item idea of the proof: if it is valid tree then $min(P(v),p^{2}(v)..)$
-% should be less then $v$ 
-% \item concrete theorem and proof 
-% \item How to implement it in vertex centric model 
-% \item algorithm 
-% \end{itemize}
-% \end{itemize}
-% \end{comment}
-% \item %
-% \begin{comment}
-% \begin{itemize}
-% \item Complete correction step 
-% \begin{itemize}
-% \item elements of correction step: 
-% \begin{itemize}
-% \item conditions to check 
-% \item order of checking 
-% \item correction step 
-% \end{itemize}
-% \item frequncy of correction step 
-% \item item correction step algorithm 
-% \item self-stabilzing algorithm 
-% \end{itemize}
-% \end{itemize}
-% \end{comment}
-% \item %
-% \begin{comment}
-% Cost of correction
-% \end{comment}
-% \end{itemize}
-In this section, we will describe the design of the self-stabilizing
-label propagation algorithm. We start with decribing the state of
-the algorithm and a condition for a valid state. However, the condition
-for valid state is not easy to verify computationally. To overcome
-this issue, in we augmented the data structure with redundancy to
-allow state verification. We use the augmented state as previously,
-and present new conditions for valid states. And finally we give efficient
-algorithm to verify these algorithms in cost effective manner.
+We answer the two related questions to construct a self-stabilizing label-
+propagation algorithm. First, how do we determine if a given arbitrary state
+$S={CC, P}$ of \cref{alg:SV_ALG} is valid? Secondly,  how do we construct a
+provable valid $S^{*}$, which in some measure, is close to the given state $S$?
 
-% \begin{comment}
-% \textbf{\emph{I}}\emph{ntro to terminology, states and effect of faults} 
-% \begin{itemize}
-% \item states of LP algorithm 
-% \item effect of fault on valid state 
-% \item valid state condition, 
-% \end{itemize}
-% \end{comment}
+First, we prove the following set conditions $S$ is sufficient to ensure its
+validity.  
+\begin{thm}
+\label{thm:ss_valid}
+Starting from state $S= \{CC,P \}$, the \cref{alg:SV_ALG} will converge to correct solution for graph $G=\{ V, E\}$, if $S$ satisfies the following conditions.
+\begin{enumerate}
+\item $CC[v]\leq v$  for all $v\in V$;
+\item $P(v)\in\mathcal{N}(v)$ for all $v\in V$;
+\item $CC[P(v)]\leq CC[v]$ for all $v\in V$; and 
+\item Directed graph described by parent array $H=(V,E_{H})$, where $E_{H}=\left\{ (v,P(v)),\forall v\in V\right\} $
+describes a forest. 
+\end{enumerate}
+\end{thm}
+Using \cref{thm:ss_valid}, we present a  correction step in \TODO{Crosref to correction step}, which brings the
+\cref{alg:SV_ALG} from an arbitrary state $S$ to a valid state $S^{*}$ in a
+computationally efficient way.
+
+
+% In this section, we will describe the design of the self-stabilizing
+% label propagation algorithm. We start with decribing the state of
+% the algorithm and a condition for a valid state. However, the condition
+% for valid state is not easy to verify computationally. To overcome
+% this issue, in we augmented the data structure with redundancy to
+% allow state verification. We use the augmented state as previously,
+% and present new conditions for valid states. And finally we give efficient
+% algorithm to verify these algorithms in cost effective manner.
+
 
 
 \subsubsection*{State of LP algorithm}
@@ -166,7 +130,7 @@ if for all vertices $v$, we have following conditions met:
 \item Directed graph described by parent array $H=(V,E_{H})$, where $E_{H}=\left\{ (v,P(v)),\forall v\in V\right\} $
 describes a forest.
 \end{enumerate}
-\begin{IEEEproof}
+\begin{proof}
 If $H=\left(V,E_{H}\right)$ is a forest then, for any vertex $v$,
 the sequence $\left\{ P(v),P^{2}(v),\ldots\right\} $ convereges to
 the root of the tree in the forest $H$. Let's denote the convergent
@@ -208,7 +172,7 @@ CC^{\infty}[v]\le CC[v]\le v
 
 Eq(x) holds for all the vertices $v\in V$, therefore by Thm(1), $S=\left\{ CC,P\right\} $
 is a valid state.
-\end{IEEEproof}
+\end{proof}
 %
 Note that Thm(2) describes a set of sufficient condition. In general,
 there can be a state from which algorithm will converge to correct

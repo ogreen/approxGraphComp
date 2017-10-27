@@ -1,32 +1,20 @@
-%describes general ss and SC algorithm
 
-\textbf{\emph{}}%
-% \begin{comment}
-% \textbf{\emph{I}}\emph{ntro to terminology} 
-% \begin{itemize}
-% \item states of the algorithm 
-% \item valid state and in valid state 
-% \item effect of fault on valid state 
-% \end{itemize}
-% \end{comment}
+In this section, we discuss how abstraction of an algorithm as a state machine
+may help us to make them more resilient.
 
-Formally, a system is said to be self-stabilizing, if starting from
-any arbitrary \textquotedblleft state\textquotedblright , it comes
-to a valid state in a finite number of steps{[}dijkstra{]}. An algorithm
-can also be viewed as a system with states and transitions. Its state
-is a subset of the intermediate variable which enables continued execution.
-A state of the algorithm is said to be in a valid state if the algorithm
-will converge to a correct solution in fault-free execution starting
-from this state, otherwise invalid. In previous work{[}{]}, we have
-shown that such abstraction may help us to construct resilient algorithms. 
+An iterative algorithm can also be viewed as a system with states and
+transition rules. Its \emph{state} is a subset of the intermediate variable
+which enables continued execution. For instance, the vector $CC$ in
+\cref{alg:SV_ALG} alone is sufficient to restart the algorithm from any
+checkpoint. In general, the state of the algorithm can have or can be
+augmented to have some form of  redundancy built in it.   %In
+\cref{alg:SV_ALG}, the variable $P$  acts as an useful redundancy.
+\paragraph{Valid and invalid states} A state of the algorithm is said to be in
+a valid state if the algorithm will converge to a correct solution in fault-
+free execution starting from this state, otherwise invalid. In previous work
+\TODO{cite}, we have shown that such abstraction may help us to construct
+resilient algorithms.
 
-% \begin{comment}
-% \textbf{\emph{Self-stabilization in Algorithmic resilience}}
-% \begin{itemize}
-% \item define 
-% \item give examples 
-% \end{itemize}
-% \end{comment}
 
 
 \paragraph{Impact of hardware fault on algorithms state}
@@ -42,6 +30,14 @@ the algorithm so that it can bring itself to a valid state, by design.
 We distinguish between following two principles for bringing the algorithm
 to a valid state.
 
+\paragraph{Self-stabilizing algorithm} Formally, a system is said to be self-
+stabilizing, if starting from any arbitrary \emph{state}, it comes to a valid
+state in a finite number of steps\cite{dijkstra1982self}. If a fault causes an
+algorithm to reach an invalid state, a self-stabilizing algorithm will come to
+a valid state in a finite number of iterations. Subsequently, the algorithm
+will converge to the correct solution if all the later computations do not
+encounter any fault.
+
 \paragraph{Self-correcting algorithm}
 
 A self-correcting algorithm can bring itself to a valid state by correcting
@@ -54,21 +50,4 @@ as it can meaningfully exploit information of a previous valid state.
 In {[}cite{]}, we presented a self-correcting of SYNC version of label
 propagation algorithm. 
 
-% \begin{comment}
-% \textbf{\emph{s}}\emph{elf-stabilizing algorithm} 
-% \begin{itemize}
-% \item define 
-% \item give examples 
-% \end{itemize}
-% \textbf{\emph{s}}\emph{elf-correcting algorithm} 
-% \begin{itemize}
-% \item define 
-% \item give examples 
-% \end{itemize}
-% \textbf{\emph{A}}\emph{ comparison between SS and SC} 
-% \begin{itemize}
-% \item relation between SS and SC (SS is special case of SC) 
-% \item advantage of SS over SC 
-% \end{itemize}
-% \end{comment}
 
