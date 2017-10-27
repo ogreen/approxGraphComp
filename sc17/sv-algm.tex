@@ -1,0 +1,33 @@
+\begin{algorithm}[!t]
+\small
+\caption{Label propagation algorithm}
+\label{alg:SV_ALG}
+\begin{algorithmic}[1]
+	\Require {$G = (V,E)$}
+
+	\State Initialization ;
+	\For {each $v\in V$}
+		\State	$CC^{0}[v]\gets v; P[v]\gets v$;
+	\EndFor
+
+	\State $NumChange\gets |V|,\ i\gets 0$
+	\While{$NumChange>0$};
+		\State $NumChange \gets 0$
+		\For {each $v\in V$}
+			\For {each $u\in E(v)$}
+
+				\If {$CC^{i}[u]<CC^{i+1}[v]$}
+				\State $CC^{i+1}[v]\gets CC^{i}[u]$
+				\State $P[v]\gets u$
+				\State $NumChanges \gets NumChanges+1$;
+				\EndIf
+
+			\EndFor
+		\EndFor
+		\State $i \gets i+1$
+	\EndWhile 
+
+
+\end{algorithmic}
+\end{algorithm}
+%
