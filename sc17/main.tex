@@ -92,12 +92,12 @@
 \usepackage{booktabs}
 \newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
 
-
+\usepackage[nameinlink,capitalize,noabbrev]{cleveref}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
 \theoremstyle{plain}
 \newtheorem{thm}{\protect\theoremname}\theoremstyle{definition}
 \newtheorem{defn}{\protect\definitionname}
-
+\crefname{thm}{Theorem}{Theorems}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 \usepackage{algorithm}
 
@@ -115,7 +115,7 @@
 \usepackage{balance}
 
 % \usepackage[noabbrev]{cleveref}
-\usepackage[nameinlink,capitalize,noabbrev]{cleveref}
+
 %========== Custom typographic commands ==========
 \newcommand{\emailAddr}[1]{\texttt{\smaller {#1}}}
 \newcommand{\mailtoLink}[2]{\href{mailto:#2}{\emailAddr{#1}}}

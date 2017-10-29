@@ -1,10 +1,39 @@
-We answer the two related questions to construct a self-stabilizing label-
-propagation algorithm. First, how do we determine if a given arbitrary state
-$S={CC, P}$ of \cref{alg:SV_ALG} is valid? Secondly,  how do we construct a
-provable valid $S^{*}$, which in some measure, is close to the given state $S$?
 
-First, we prove the following set conditions $S$ is sufficient to ensure its
-validity.  
+
+
+
+
+\subsection{Impact of faults in \sv~algorithm}
+
+\begin{thm}{ \textbf{Valid States:}}
+\label{thm:valid_cc}
+A connected component array $CC$ is a valid state---i.e., a fault-free
+execution of algorithm starting from $CC$ will converge to
+the correct solution---if, for all vertices $v$, $CC^{\infty}[v]\leq CC[v]\leq v$ (\cite{sao2016sccc}).
+\end{thm}
+
+
+
+\subsection{Self-correcting \sv~algorithm}
+\begin{thm}
+\label{thm:sc-sv}
+Given a valid state for the previous iteration, $CC^{i-1}$, the current connected component array $CC^{i}$ is a valid state if for all vertices $v$, $CC^{i}$ satisfies these conditions:
+\begin{enumerate}
+\item $CC^{i}[v] \leq v$; 
+\item $CC^{i}[v] = CC^{i-1}[P(v)]$; and
+\item $P(v) \in \mathcal{N}(v)$. %$u \in \left\{ v \right\} \cup adj(v)$.
+\end{enumerate}
+\end{thm}
+
+
+\subsection{ Self-stabilizing Validity Conditions}
+
+\paragraph{ Relation between $CC[v]$ and $CC[P(v)]$}
+
+\paragraph{ Structure of the Parent Graph}
+
+
+
 \begin{thm}
 \label{thm:ss_valid}
 Starting from state $S= \{CC,P \}$, the \cref{alg:SV_ALG} will converge to correct solution for graph $G=\{ V, E\}$, if $S$ satisfies the following conditions.
@@ -16,274 +45,3 @@ Starting from state $S= \{CC,P \}$, the \cref{alg:SV_ALG} will converge to corre
 describes a forest. 
 \end{enumerate}
 \end{thm}
-Using \cref{thm:ss_valid}, we present a  correction step in \TODO{Crosref to correction step}, which brings the
-\cref{alg:SV_ALG} from an arbitrary state $S$ to a valid state $S^{*}$ in a
-computationally efficient way.
-
-
-% In this section, we will describe the design of the self-stabilizing
-% label propagation algorithm. We start with decribing the state of
-% the algorithm and a condition for a valid state. However, the condition
-% for valid state is not easy to verify computationally. To overcome
-% this issue, in we augmented the data structure with redundancy to
-% allow state verification. We use the augmented state as previously,
-% and present new conditions for valid states. And finally we give efficient
-% algorithm to verify these algorithms in cost effective manner.
-
-
-
-\subsubsection*{State of LP algorithm}
-
-In algo{[}REF{]}, the current connected component label array $CC$
-describes the state of LP algorithm. We use $CC^{i}[v]$ to denote
-the current label for vertex $v$ in $i$-th iteration. We denote
-the final label of vertex $v$ in fault-free execution as $CC^{\infty}[v]$. 
-
-\subsubsection*{Effect of fault in LP state}
-
-\subsubsection*{Valid states}
-\begin{thm}
-A connected component array $CC$ is a valid state-{}-{}-i.e., a fault-free
-execution of algorithm (CITE) starting from $CC$ will converge to
-the correct solution-{}-{}-if, for all vertices $v$, $CC^{\infty}[v]\leq CC[v]\leq v$.
-\end{thm}
-
-\subsection{\emph{Self-correcting Label Propagation Algorithm}}
-
-We described self-correcting label propagation algorithm for synchronoous
-label propagation algorithm. Self-correcting algorithm corrects the
-current state using previous valid state. 
-
-To do so, we show that if $CC^{i-1}$ is valid state then $CC^{i}$
-is valid if 
-\begin{equation}
-CC^{i}[v]=CC^{i-1}[u]\ where\ u\in\mathcal{N}(v)\ \forall v
-\end{equation}
-
-However, verifying eq{[}x{]} still requires $O(V+E)$ work, thus inefficient.
-However, self-correcting algorithm uses an auxilliary data structure
-called parent array. Parent of vertex $v$, denoted by $P[v]$ , refers
-to vertex that 
-% \begin{itemize}
-% \item introduce parent array 
-% \item what do you check and how do you check 
-% \item Limitations 
-% \begin{itemize}
-% \item fault propagation 
-% \item is not applicable to asynchronous version 
-% \end{itemize}
-% \end{itemize}
-
-\subsection{\emph{Self-stabilzing Label Propagation Algorithm} }
-
-The main difference between self-correcting label propagation algorithm
-and self-stabilizing label propagation algorithm is that self-stabilizing
-label propagation algorithm doesn't require a previous valid state
-$S^{i-1}$ to bring the algorithm to a valid state. We can formally
-pose this question as follows.
-
-\paragraph*{Problem Statement:}
-
-Given a graph $G=\left(V,E\right)$ and an arbitrary state for label
-propagation $S=\left(CC,P\right)$, determine if $S$ is a valid state.
-If $S$ is invalid, then construct a state $S^{*}$such that $S^{*}\approx S$,
-and $S^{*}$ is a valid state. 
-
-\subsubsection{Properties of LP state in fault free execution}
-
-We describe two key properties of a state $S$ in fault free execution
-and later we prove that for any state that satisfy these properties
-is a valid state. 
-\begin{enumerate}
-\item $CC[v]\leq v$;
-\item $P(v)\in\mathcal{N}(v)$;
-\item $CC[P(v)]\leq CC[v]$; and 
-\item Directed graph described by parent array $H=(V,E_{H})$, where $E_{H}=\left\{ (v,P(v)),\forall v\in V\right\} $
-describes a forest. 
-\end{enumerate}
-Self-correcting label propagation algorithm uses property 1 and 2,
-and additionally assumes that $CC^{i-1}$ is a valid state. 
-
-Property 3 describes the range of valid values of $CC[v]$. In a synchronous
-label propagation algorithm, we have $CC^{i}[v]=CC^{i-1}[P(v)]$,
-and since label decreases over the iteration, thus latest $CC^{i}[P(v)]\leq CC^{i-1}[P(v)]$.
-Therefore, $CC^{i}[P(v)]\leq CC^{i}[v]$. While we do not show here
-in detail, this relation holds good in fault free execution of asynchronous
-case also. 
-
-Property 4 describes the structure of parent array. Make a gifure
-and explain. 
-
-\subsubsection{Sufficient condtions for a valid LP state }
-
-We show that the former four conditions are sufficient for a valid
-state. 
-\begin{thm}
-A label propagation state $S=\left\{ CC,P\right\} $ is a valid state
-if for all vertices $v$, we have following conditions met:
-\end{thm}
-\begin{enumerate}
-\item $CC[v]\leq v$;
-\item $P(v)\in\mathcal{N}(v)$;
-\item $CC[P(v)]\leq CC[v]$; 
-\item If $P(v)=v$, then $CC[v]=v$; and 
-\item Directed graph described by parent array $H=(V,E_{H})$, where $E_{H}=\left\{ (v,P(v)),\forall v\in V\right\} $
-describes a forest.
-\end{enumerate}
-\begin{proof}
-If $H=\left(V,E_{H}\right)$ is a forest then, for any vertex $v$,
-the sequence $\left\{ P(v),P^{2}(v),\ldots\right\} $ convereges to
-the root of the tree in the forest $H$. Let's denote the convergent
-of the sequence as $P^{\infty}(v)$. 
-
-Let $u=P^{\infty}(v$). Since $P(u)=P(P^{\infty}(v))=P^{\infty}(v)=u$,
-therefore from condition 4:
-\begin{equation}
-CC[u]=u
-\end{equation}
-
-If condition-2 holds for all the vertices $\left\{ v,P(v),P^{2}(v),\ldots\right\} $,
-then $v$ and $P^{\infty}(v)=u$ are in same connected component.
-Therefore,
-\begin{equation}
-CC^{\infty}[v]=CC^{\infty}[u].
-\end{equation}
-
-Since label of $u,$will monotonically decrease in susequent iteration,
-therefore 
-\begin{equation}
-u\ge CC^{\infty}[u]
-\end{equation}
-
-From condition-3 $CC[v]\geq CC[P(v)]\geq CC[P^{2}(v)]...$
-\begin{equation}
-CC[v]\geq CC[P^{\infty}(v)]=CC[u]=u
-\end{equation}
-
-Combining eq(x) and eq(y) and eq(z), we get $CC[v]\ge u\geq CC^{\infty}[u]=CC^{\infty}[v]$
-\begin{equation}
-CC[v]\geq CC^{\infty}[v]
-\end{equation}
-
-Combining eq(x) with condition 1, we get 
-\[
-CC^{\infty}[v]\le CC[v]\le v
-\]
-
-Eq(x) holds for all the vertices $v\in V$, therefore by Thm(1), $S=\left\{ CC,P\right\} $
-is a valid state.
-\end{proof}
-%
-Note that Thm(2) describes a set of sufficient condition. In general,
-there can be a state from which algorithm will converge to correct
-solution yet not satisfy Thm(2), leading to false positives. However,
-false-positives will only cause a small amount of additional computation,
-which is not a big concern in this case. 
-
-\subsection{Verifying state validity}
-
-All the conditions of Thm(2) except the last one, can be verified
-locally for any vertex in $\mathcal{O}(1)$ operations. To verify
-$H=(V,E_{H})$ is a forest, is equivalent to verifying that $H$ does
-not have any loops, which is not a local operation.
-
-\subsubsection{Loop detection in $H$}
-
-In sequential case, we can use Tarzen's strongly connected component
-algorithm to find the loops in the graph $H$. Tarzen's strongly connected
-component algorithm requires $\mathcal{O}(V+E_{H})$ operations. But
-since, $|E_{H}|=|V|$, therefore detecting loop in $H$ requires $\mathcal{O}(V)$
-operations in total, which is same as cost of other operations in
-sequential case.
-
-In parallel case, Tarzen's strongly connected component algorithm
-(or any other algorithm based on BFS or DFS) are not suitable as:
-(a) they are inhrently sequential and have a depth of $\mathcal{O}(V)$;
-and (b) they can not be efficiently expressed in vertex centric programming
-model as label propagation algorithm. Therefore, we need a new loop
-detection algorithm which is parallel and can be expressed in vertex
-centric programming model. 
-
-\subsubsection{Parallel Loop detection in $H$}
-
-\begin{algorithm}
-\input{loopDetectionAlgm}\caption{}
-\end{algorithm}
-
-Our parallel loop detection is based on the idea that if $v$ is a
-part of the loop in $H$, then $v$ will re-appear in the sequence
-$\left\{ P(v),P^{2}(v),\ldots\right\} $. Let's call the minimum element
-in the sequence $\mathcal{A}(v)$:
-\[
-\mathcal{A}(v)=\min\left\{ P(v),P^{2}(v),\ldots\right\} 
-\]
-
-If there is no loop in the, then $v$ will not appear in the sequence
-$\left\{ P(v),P^{2}(v),\ldots\right\} $, thus $v$ can not be equal
-to $\mathcal{A}(v)$. Therefore, $v=\mathcal{A}(v)$ is only possible
-if there is a loop in $H$ which consist of vertices $\left\{ v,P(v),P^{2}(v),\ldots\right\} $.
-Thus to detect any loop in $H$, we calculate $\mathcal{A}(v)$ for
-all the vertices and compare it with $v$. 
-
-We calculate $\mathcal{A}(v)$ in parallel using pointer jumping technique.
-The Algm{[}x{]} describes the pseudocode for parallel loop detection
-in $H$. ADD more text here
-
-\paragraph*{Cost of loop detection}
-
-If there is no loop in $H$, then Algm{[}x{]} requires $\lceil log_{2}(h)\rceil+1$
-iterations to converge, where $h$ is the maximum height among all
-the trees in the forest $H$. If there are cycles in $H$, and if
-length of maximum cycle is $c$then, Algn{[}x{]} takes $\lceil log_{2}(c)\rceil+2$
-iterations to detect it. So it need a total of $\max\left(\lceil log_{2}(h)\rceil+1,\lceil log_{2}(c)\rceil+2\right)$
-iterations. In each iteration, we perform $\mathcal{O}(V)$ work.
-Thus total cost of loop detection is $\mathcal{O}(Vlog(V))$ as $c,\ h\leq|V|$. 
-
-\subsection{Correction step}
-
-Correction step has two parts: detection of invalid component of states;
-and bring them to a correct state. Using Algm{[}x{]} and Thm{[}y{]},
-we design the correction step as follows. First we ensure that graph
-$H$ is a proper subgraph of the input graph $G$, by verifying $P(v)\in\mathcal{N}(v)$
-for all vertex $v$. If for some vertex $P(v)\notin\mathcal{N}(v)$,
-then we reset vertex $v$ by setting $CC[v]=v$ and $P(v)=v$. After
-this we check, if a vertex $v$ is a root of any tree, then $CC[v]=v$.
-It should be noted that in both check, if we find that state of $v$
-is invalid, it also means that state of all the descendent of $v$
-is also invalid. However, all the otehr vertices which have invalid
-state have not been informed yet. Once these checks and local correction
-are performed, we use a modified algorithm to check for loops and
-correct labels. 
-
-\begin{algorithm}
-\input{loopCorrectionAlgm}\caption{}
-\end{algorithm}
-
-The Algm{[}z{]} works by when a vertex $v$ finds loop $v=\mathcal{A}(v)$,
-then $v$ has the minimum vertex id in the sequence $\left\{ v,P(v),P^{2}(v),\ldots\right\} $.
-Thus, $v$ must be root of the tree. Therefore, we reset the vertex
-$v$, by setting its parent to itself $P(v)=v$. Also when the loop
-detection converges, $\mathcal{A}(v)$ has the minimum vertex label
-among all its ancestors. Thus, the correct value of $CC[v]$ should
-be $\mathcal{A}(v)$. So at the end of loop detection step all vertex
-$v$ will have aquired a valid value. 
-
-\subsection{Fault-tolerant label propagation algorithm}
-
-Since the self-stabilization step has cost $Vlog(V)$, it is prohibitively
-expensive to be performed in every iteration. 
-
-To ensure the self-stabilization property, previously{[}cite{]} we
-performed the correction step at regular interval. However, in case
-of label propagation algorithm, number of iteration is $\mathcal{O}(log(d))$,
-where $d$ is the diameter of the graph. Thus, for many graph label
-propagation algorithm conerges in 5 to 10 iterations. 
-
-Due to these circumstanes, we only perform correction step when the
-label propgation algorithm reports convergence. If the correction
-step finds that the algorithm is in valid state, and algorithm has
-converged than algorithm has converged. If the correction step reports
-that algorithm is in an invalid state, then it tries to bring the
-algorithm back to valid state and restarts the label propagation iteration.
-However, this state is usually very close to the final state and it
-only takes a small fraction of iteration to converge{[}ref to result{]}. 
