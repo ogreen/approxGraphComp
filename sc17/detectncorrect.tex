@@ -26,3 +26,31 @@ of these algorithms will be $\bigo{|V| }$. As other checks of
 detection is, in theory, acceptable.  Yet due to limited parallelism and
 inability to express in the vertex-centric model, we can not use these to
 verify the condition-5 of the \cref{thm:ss_valid}.
+
+
+\subsection{Parallel Loop Detection}
+
+We present a new algorithm for detecting loops in the directed graph where
+each vertex has degree one such as $H$. The key idea of our algorithm is that,
+if there are no loops in the graph $H$, then a non-root vertex $v$ cannot be
+an ancestor of itself.
+
+
+Consider the following sequence $\mathcal{P}(v)$ of ancestors of a non-root vertex $v$ 
+\begin{equation}
+\mathcal{P}(v)=\left\{ P(v),\ P^{2}(v),\ldots\right\}. 
+\end{equation}
+%
+If  there are no loops in $H$, then $\mathcal{P}(v)$ will converge to root of
+the tree which $v$ belongs. But if $v$ is a part of the loop, then
+$\mathcal{P}(v)$ will become periodic  and cycle through all the vertex in the
+loop indefinitely.  So the calculation of  $\mathcal{P}(v)$ may not be used
+for detecting loops in $H$.  I
+
+Instead of $\mathcal{P}(v)$,  we consider the minimum vertex-id among all the
+vertex that are ancestors of vertex $v$. We denote it as  $\mathcal{A}(v)$: 
+\begin{equation}
+\mathcal{A}(v) = \min\mathcal{P}(v)=\min\left\{ P(v),\ P^{2}(v),\ldots\right\}. 
+\end{equation}
+
+
