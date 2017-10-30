@@ -1,0 +1,28 @@
+%
+
+In this section, we describe how do we use the  \cref{thm:ss_valid} to verify
+whether a state is valid. Specifically, the challenge is in verifying the
+condition-5 of \cref{thm:ss_valid} in parallel. Further, we also need a
+mechanism to bring the algorithm to a valid state if we detect an invalid
+state.
+
+
+Except for the condition-5 of the \cref{thm:ss_valid}, we can verify all other
+conditions \emph{locally} and in parallel.  Here, the term local means by only
+using information that a vertex has access to. Condition 1-4 can be verified
+for any vertex by looking at it's  and it's neighbor's label and parent.
+Whereas we can not detect a loop just by looking at a vertex and it's
+neighbors.
+
+The traditional algorithms for finding a loop in a directed graph are not well
+suited for vertex-centric programming. The problem of finding the loop in a
+directed graph is also known as the problem of finding strongly connected
+components in a graph. In sequential case, one can use Tarzen's strongly
+connected component algorithm, or breadth search first(BFS), or depth search
+first (DFS) \[CITE\].  These algorithm run at $\bigo{|V| + |E|}$ cost.  In the
+graph $H$, the number of edges and vertices are equal: $|V|=|E|$. So the cost
+of these algorithms will be $\bigo{|V| }$. As other checks of
+\cref{thm:ss_valid} costs $\bigo{|V| }$ so $\bigo{|V| }$ cost of loop
+detection is, in theory, acceptable.  Yet due to limited parallelism and
+inability to express in the vertex-centric model, we can not use these to
+verify the condition-5 of the \cref{thm:ss_valid}.

@@ -15,6 +15,12 @@ the correct solution---if, for all vertices $v$, $CC^{\infty}[v]\leq CC[v]\leq v
 
 
 \subsection{Self-correcting \sv~algorithm}
+
+The problem with \cref{thm:valid_cc} is that it defines the validity of the
+based on the final and correct output. Thus, it can not be used to check the
+validity of the state.  In our previous work \cite{sao2016sccc}, we presented
+the following set of conditions that can be used to check the validity.
+
 \begin{thm}
 \label{thm:sc-sv}
 Given a valid state for the previous iteration, $CC^{i-1}$, the current connected component array $CC^{i}$ is a valid state if for all vertices $v$, $CC^{i}$ satisfies these conditions:
@@ -26,13 +32,81 @@ Given a valid state for the previous iteration, $CC^{i-1}$, the current connecte
 \end{thm}
 
 
+The conditions of  the \cref{thm:sc-sv} can be verified in $\bigo{1}$ time for
+any vertex $v$ \cite{sao2016sccc}. Thus,   we can check validity for all
+vertices in  $\bigo{V}$ time. We can cheaply recompute the labels for the
+vertices  which do not satisfy \cref{thm:sc-sv} using the valid previous state
+$CC^{i-1}[v]$.
+
+% The \cref{thm:sc-sv}  assumes and can only work correctly when the previous state $CC^{i-1}$  is valid.  
+
+The \cref{thm:sc-sv}  assumes and can only work correctly when the previous state $CC^{i-1}$  is valid. In the \emph{self-correcting} label propagation algorithm,  we verify conditions of \cref{thm:sc-sv} after every iteration to ensure that the algorithm is in a valid state; and \cref{thm:sc-sv} can be used to detect and correct next invalid states. 
+
+\subsubsection{Limitations of Self-correcting \sv~algorithm}
+The \emph{self-correcting} algorithm can only work when we have the copy of previous valid labels  $CC^{i-1}$. Thus, the \emph{self-correcting} \sv algorithm will not work with \async~formutation of the \sv algorithm. 
+
+In some cases, such as dynamic graphs, we would like to start the algorithm from a previously calculated state. For such states, we do not know whether they are valid for the changed graph.  The \emph{self-correcting} algorithm cannot work in such cases either.
+
+
 \subsection{ Self-stabilizing Validity Conditions}
 
-\paragraph{ Relation between $CC[v]$ and $CC[P(v)]$}
+Given an arbitrary state $S=\{CC, p\}$, can we determine whether it is valid
+or not?  To answer this, we present an extended version of \cref{thm:sc-sv}
+which does not assume anything about prior iterations.
 
-\paragraph{ Structure of the Parent Graph}
+The key idea here is, that information about past iterations are already
+present in $S=\{CC, p\}$.  Specifically, the $P$ contains the information
+about how a label has propagated to vertex $v$. To put it concretely,  we
+present following properties of $P$.
+
+\subsubsection{ Relation between $CC[v]$ and $CC[P(v)]$} 
+
+ In the fault-free execution of  \sv algorithm,  label of a vertex $CC[v]$ is
+always greater than orequal to its parent's label  $CC[P(v)]$. Any vertex $v$
+acquires its label from its $P(v)$ in some iteration $j\leq i$. So the current
+label of vertex $v$ is $CC^{i}[v]=CC^{j}[P(v)]$. In the \sv algorithm, labels
+of any vertex can only decrease as the iteration progresses. Thus, the current
+$P(v)$'s current label $  CC^{i}[P(v)] $ must be smaller than or equal to its
+ealier value $CC^{j}[P(v)]$.  Therefore,  $CC^{i}[v] =CC^{j}[P(v)] \geq
+CC[P(v)]$.
+
+\begin{equation}
+\label{eq:ccv-ccp}
+CC[v] \geq CC[P(v)].
+ \end{equation}
+
+Additionally, if any vertex is the parent of itself, i.e. $P(v)=v$ then
+$CC[v]=v$.  In \cref{alg:SV_ALG}, all the vertices have initialized with
+$P(v)=v$ and $CC[v]=v$. If a vertex never changes it's label during
+\sv~iterations, then it will retain its parent and label. Conversely, if a
+vertex has changed its value then $CC[v]<v$ and $P(v)\neq v$. Moreover, a
+changed $P(v)\neq v$ will never revert back to $P(v)=v$ as $P(v)$  only
+changes when $CC[v]$ is changed. So $P(v)=v$ implies $v$ obtained a label from
+itself, which is not possible. Therefore, in fault free execution of
+\cref{alg:SV_ALG} we must have following for all vertices $v$:
+
+\begin{equation}
+\label{eq:root-cc}
+CC[v] = v \ iff P(v)=v.
+\end{equation}
+ 
 
 
+\begin{defn}{ \textbf {Propagation Graph $H$:} }
+\label{def:prforH}
+For a given state $S=\{ CC, P\}$ for execution of \cref{alg:SV_ALG} with input 
+$G=\{V,\ E\}$,  \emph{Propagation Graph} $H$ is the directed graph defined by $H=\{V,\ E_{H}\}$ where the edge set $E_{H}$ consists of directed edges $v\rightarrow P(v)$ for all $v \in V$. 
+\end{defn}
+
+\subsubsection{ Structure of the Parent Graph $H$} In the fault-free execution of
+\cref{alg:SV_ALG}, the propagation graph $H$ does not contain any loops
+besides self-loop. Thus, $H$ consists of multiple trees.  The label of roots
+of each tree is a \emph{local- minima} of labels. When the iteration is
+converged, $H$ is one tree of each component in the graph. A path from any
+vertex to the root of its tree is also the path by which root's label propagated 
+to that vertex, albeit in reverse.
+
+Now we can formally state and prove the following set of conditions on any arbitrary state $S$, which is sufficient to assert its validity.
 
 \begin{thm}
 \label{thm:ss_valid}
@@ -40,7 +114,8 @@ Starting from state $S= \{CC,P \}$, the \cref{alg:SV_ALG} will converge to corre
 \begin{enumerate}
 \item $CC[v]\leq v$  for all $v\in V$;
 \item $P(v)\in\mathcal{N}(v)$ for all $v\in V$;
-\item $CC[P(v)]\leq CC[v]$ for all $v\in V$; and 
+\item $CC[P(v)]\leq CC[v]$ for all $v\in V$; 
+\item $CC[v] =v \iff P(v)=v$ for all $v\in V$; and 
 \item Directed graph described by parent array $H=(V,E_{H})$, where $E_{H}=\left\{ (v,P(v)),\forall v\in V\right\} $
 describes a forest. 
 \end{enumerate}

@@ -98,6 +98,7 @@
 \newtheorem{thm}{\protect\theoremname}\theoremstyle{definition}
 \newtheorem{defn}{\protect\definitionname}
 \crefname{thm}{Theorem}{Theorems}
+\crefname{defn}{Definition}{Definitions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 \usepackage{algorithm}
 
@@ -114,6 +115,8 @@
 \providecommand{\theoremname}{Theorem}
 \usepackage{balance}
 
+\newcommand{\bigo}[1]{\ensuremath{\mathcal{O} \left ( #1 \right )}}
+\newcommand{\async}{\textsc{Async}}
 % \usepackage[noabbrev]{cleveref}
 
 %========== Custom typographic commands ==========
@@ -200,9 +203,13 @@ Piyush Sao\\
 \label{sec:sc-algm} 
 \input{ss}
 
-\section{Self-correcting Label Propagation Algorithm}
+\section{Valid and Invalid states of \sv~algorithm}
 \label{sec:ft-connected} 
 \input{sslp}
+
+\section{Self-stabilizing Label Propagation Algorithm}
+\label{sec:sslp-alg} 
+\input{detectncorrect}
 
 \section{Empirical Results }
 \label{sec:results}
