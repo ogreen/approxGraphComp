@@ -111,12 +111,84 @@ Now we can formally state and prove the following set of conditions on any arbit
 \begin{thm}
 \label{thm:ss_valid}
 Starting from state $S= \{CC,P \}$, the \cref{alg:SV_ALG} will converge to correct solution for graph $G=\{ V, E\}$, if $S$ satisfies the following conditions.
-\begin{enumerate}
-\item $CC[v]\leq v$  for all $v\in V$;
-\item $P(v)\in\mathcal{N}(v)$ for all $v\in V$;
-\item $CC[P(v)]\leq CC[v]$ for all $v\in V$; 
-\item $CC[v] =v \iff P(v)=v$ for all $v\in V$; and 
-\item Directed graph described by parent array $H=(V,E_{H})$, where $E_{H}=\left\{ (v,P(v)),\forall v\in V\right\} $
+\begin{conditionList}
+\item \label{cond:ccv_leq_v} $CC[v]\leq v$  for all $v\in V$;
+\item \label{cond:p_in_nv} $P(v)\in\mathcal{N}(v)$ for all $v\in V$;
+\item \label{cond:cpv_leq_cv} $CC[P(v)]\leq CC[v]$ for all $v\in V$; 
+\item \label{cond:crv_eq_rv} $CC[v] =v \iff P(v)=v$ for all $v\in V$; and 
+\item \label{cond:h_is_fr} Directed graph described by parent array $H=(V,E_{H})$, where $E_{H}=\left\{ (v,P(v)),\forall v\in V\right\} $
 describes a forest. 
-\end{enumerate}
+\end{conditionList}
 \end{thm}
+
+\textbf{\emph{Proof:}}  We will show that if all conditions of
+\cref{thm:ss_valid} holds then the conditions of \cref{thm:valid_cc} also
+hold. From \cref{cond:ccv_leq_v} of \cref{thm:ss_valid}, we already have
+$CC[v]\leq v\ \forall v \in V$. To prove the second part,  we find a lower
+bound on the value of $CC[v]$.
+
+\begin{enumerate}
+
+\item From \cref{cond:h_is_fr}, if $H$ is a forest, then each tree in $H$ 
+will have a root node.  We denote the root of tree containing $v$ by $\mathcal
+{R}(v)$  for any vertex $v$. Further, the sequence 
+$\{ P(v),\  P^{2}(v), \ldots, \}  $  converges to $\mathcal{R}(v)$. So we can 
+also write $\mathcal{R}(v)$ as:
+\begin{equation}
+\label{eq:ss_vpiv}
+ \mathcal{R}(v) = P^{\infty}(v)
+\end{equation}
+
+\item The \cref{cond:p_in_nv} implies $v$ and $P(v)$ are in the same connected component in the graph $G$.  Similarily, $P(v)$ and $P^{2}(v)$ are in the same connected component in $G$.  Verily,  $\{ v,\  P(v),\  P^{2}(v), \ldots,  \mathcal{R}(v) \}  $
+are in the same component in $G$.  So at the end of \sv~iteration they all will aquire the same final label. Thus we have:
+\begin{equation}
+\label{eq:ss_ivriv}
+CC^\infty(v) = CC^{\infty}[{\mathcal{R}}(v)]
+\end{equation} 
+
+\item The \cref{cond:cpv_leq_cv} implies $ CC[v] \geq CC[P(v)] $  and it also 
+implies $CC[P(v)]\geq CC[P^{2}(v)]$ .  Thus, 
+$CC[v] \geq CC[P(v)]\geq CC[P^{2}(v)] \ldots CC[ \mathcal{R}(v)]$. Hence, 
+%
+\begin{equation}
+\label{eq:ss_vrv}
+CC[v] \geq CC[ \mathcal{R}(v)]
+\end{equation} 
+
+
+
+\item Since the root of the tree $\mathcal{R}(v)$ is the parent of itself: $ \mathcal{R}(v) = P(\mathcal{R}(v))$. The \cref{cond:crv_eq_rv} implies that the label of the root $CC[ \mathcal{R}(v)]$ is root itself:
+\begin{equation}
+CC[ \mathcal{R}(v)] = \mathcal{R}(v) 
+\end{equation} 
+
+\item Combining \cref{eq:ss_vpiv,eq:ss_vrv,eq:ss_ivriv}, we get 
+\begin{align}
+\label{eq:ss_vhs}
+CC[v] & \geq   CC[ \mathcal{R}(v)] \geq CC^{\infty}[ \mathcal{R}(v)]  = CC^{\infty}[ (v)]  \\
+CC[v] & \geq  CC^{\infty}[ (v)]
+\end{align}
+
+\item From \cref{cond:ccv_leq_v}, we already have $CC[v]\leq v$. Thus, if all conditions of \cref{thm:ss_valid} hold then
+we must have 
+\begin{equation}
+\label{eq:ss_prf}
+v \geq CC[v]  \geq  CC^{\infty}[ (v)] \quad \forall v \in V.
+\end{equation}
+\end{enumerate}
+
+Verily,  from \cref{thm:valid_cc} we conclude that if all conditions of \cref{thm:ss_valid} hold for a state $S=\{CC, P\}$,
+then $S$ is a valid state. 
+
+
+% \item $CC[v]\leq v$  for all $v\in V$;
+% \begin{equation}
+% E=mc^2
+% \end{equation}
+% \item $P(v)\in\mathcal{N}(v)$ for all $v\in V$;
+% \item $CC[P(v)]\leq CC[v]$ for all $v\in V$; 
+% \item $CC[v] =v \iff P(v)=v$ for all $v\in V$; and 
+% \item Directed graph described by parent array $H=(V,E_{H})$, where $E_{H}=\left\{ (v,P(v)),\forall v\in V\right\} $
+% describes a forest. 
+
+

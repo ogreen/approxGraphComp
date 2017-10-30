@@ -158,6 +158,11 @@
 \newcommand{\icomment}[1]{\textbf{ \textcolor{red} {#1}}}
 \newtheorem{prop}{Proposition}\clubpenalty=10000 
 \widowpenalty = 10000
+\usepackage{enumitem}
+\newlist{conditionList}{enumerate}{75}
+\setlist[conditionList]{label*=\arabic*}
+\Crefname{conditionListi}{Condition}{condition}
+\Crefname{conditionListii}{Condition}{condition}
 
 \@ifundefined{showcaptionsetup}{}{%
  \PassOptionsToPackage{caption=false}{subfig}}

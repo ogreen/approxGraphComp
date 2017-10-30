@@ -52,5 +52,21 @@ vertex that are ancestors of vertex $v$. We denote it as  $\mathcal{A}(v)$:
 \begin{equation}
 \mathcal{A}(v) = \min\mathcal{P}(v)=\min\left\{ P(v),\ P^{2}(v),\ldots\right\}. 
 \end{equation}
+%
+In the fault-free case, both $\mathcal{A}(v)$ and $\mathcal{P}(v)$ will
+converge to the root of the tree. But unlike $\mathcal{P}(v)$, the calculation
+of $\mathcal{A}(v)$ will converge even if there is a loop in $H$.
+
+\subsubsection{Loop Detection using $\mathcal{A}(v)$}
+
+If there are no loops in $H$, then a non-root vertex $v$ cannot be equal to
+$\mathcal{A}(v)$. That's because  if there are no loops then $v\notin
+\mathcal{P}(v)$.  Verily,  if we find a non-root vertex such that
+$v=\mathcal{A}(v)$ then following two condition holds:
+%
+\begin{enumerate}
+\item $v$ is a vertex in a loop in $H$; and 
+\item $v$ has the smallest vertex-id in the loop.
+\end{enumerate}
 
 
