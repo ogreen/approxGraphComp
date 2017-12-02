@@ -175,51 +175,51 @@ int main (const int argc, char *argv[])
 
 
 
-    // lp_state_t lp_state_ssas;
-    // // ssf=100;
-    // alloc_lp_state(&graph, &lp_state_ssas);
-    // init_lp_state(&graph, &lp_state_ssas);
-    // InitStat(&statFF);
-    // if (!SSSVAlg_Async( &lp_state_ssas,  &graph, &statFF, ssf, max_iter ))
-    // {
-    //     for (int i = 0; i < graph.numVertices; ++i)
-    //     {
+    lp_state_t lp_state_ssas;
+    // ssf=100;
+    alloc_lp_state(&graph, &lp_state_ssas);
+    init_lp_state(&graph, &lp_state_ssas);
+    InitStat(&statFF);
+    if (!SSSVAlg_Async( &lp_state_ssas,  &graph, &statFF, ssf, max_iter ))
+    {
+        for (int i = 0; i < graph.numVertices; ++i)
+        {
 
-    //         if (lp_state_ssas.CC[i] != lp_state_t1.CC[i])
-    //         {
-    //             printf("// Error occured at %d: (%d, %d) \n", i, lp_state_ssas.CC[i], lp_state_t1.CC[i] );
-    //         }
-    //         assert(lp_state_ssas.CC[i] == lp_state_t1.CC[i]);
-    //     }
-    //     printf("// Asynchronous Self-stabilizing LP: Passed Random-output flip Test ........\n");
-    // }
-    // else
-    // {
-    //     printf("// Asynchronous Self-stabilizing LP: Failed Random-output flip Test ........\n");
-    // }    
+            if (lp_state_ssas.CC[i] != lp_state_t1.CC[i])
+            {
+                printf("// Error occured at %d: (%d, %d) \n", i, lp_state_ssas.CC[i], lp_state_t1.CC[i] );
+            }
+            assert(lp_state_ssas.CC[i] == lp_state_t1.CC[i]);
+        }
+        printf("// Asynchronous Self-stabilizing LP: Passed Random-output flip Test ........\n");
+    }
+    else
+    {
+        printf("// Asynchronous Self-stabilizing LP: Failed Random-output flip Test ........\n");
+    }    
 
 
-    // printGraph(argv[1], &graph, &lp_state_ssas);
+    printGraph(argv[1], &graph, &lp_state_ssas);
 
     // // Triple Modular Algorithm
-    lp_state_t lp_state_tm;
-    // ssf=100;
-    alloc_lp_state(&graph, &lp_state_tm);
-    init_lp_state(&graph, &lp_state_tm);
-    InitStat(&statFF);
-    FISVModAlg_Sync( &lp_state_tm,  &graph, &statFF, max_iter );
+    // lp_state_t lp_state_tm;
+    // // ssf=100;
+    // alloc_lp_state(&graph, &lp_state_tm);
+    // init_lp_state(&graph, &lp_state_tm);
+    // InitStat(&statFF);
+    // FISVModAlg_Sync( &lp_state_tm,  &graph, &statFF, max_iter );
 
-    for (int i = 0; i < graph.numVertices; ++i)
-    {
+    // for (int i = 0; i < graph.numVertices; ++i)
+    // {
 
-        if (lp_state_tm.CC[i] != lp_state_bl.CC[i])
-        {
-            printf("// Error occured at %d: (%d, %d) \n", i, lp_state_tm.CC[i], lp_state_bl.CC[i] );
-        }
-        assert(lp_state_tm.CC[i] == lp_state_bl.CC[i]);
-    }
-    printf("// Triple Modular LP: Passed Random-output flip Test ........\n");
-    printGraph(argv[1], &graph, &lp_state_tm);
+    //     if (lp_state_tm.CC[i] != lp_state_bl.CC[i])
+    //     {
+    //         printf("// Error occured at %d: (%d, %d) \n", i, lp_state_tm.CC[i], lp_state_bl.CC[i] );
+    //     }
+    //     assert(lp_state_tm.CC[i] == lp_state_bl.CC[i]);
+    // }
+    // printf("// Triple Modular LP: Passed Random-output flip Test ........\n");
+    // printGraph(argv[1], &graph, &lp_state_tm);
 
     // printGraph(argv[1], &graph, &lp_state_bl);
     free_graph(&graph);

@@ -106,6 +106,8 @@ int hjShortcut_Async(graph_t *graph, lp_state_t*lp_state)
       }
       hjLevel++;
 
+      // printf("Number of vertex marked for deletion: %d \n", mark2Del );
+
    }
 
    int loop =0;
@@ -119,8 +121,9 @@ int hjShortcut_Async(graph_t *graph, lp_state_t*lp_state)
          if (Ps[v] != -1)
          {
             // P[P[v]] = v;   // reverse the direction
-            Ps[v] != -1;
+            Ps[v] = -1;
             loop++;
+            CC[v] = v;
          }
       }
    }
@@ -521,7 +524,9 @@ LP(lp_state) -> correct solution
 
 
     int loops = 0;
-    loops = ssShortcut_Async(graph, lp_state);
+    // loops = ssShortcut_Async(graph, lp_state);
+    
+    loops = hjShortcut_Async(graph, lp_state);
     // printf("//Number of corruptions is %d, number of loop %d, NV %d\n", corrupted, loops, nv );
     corrupted += loops;
 
