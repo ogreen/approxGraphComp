@@ -26,7 +26,188 @@ int two_loop_count;
 int ss_count;
 
 
+int hjShortcut_Async(graph_t *graph, lp_state_t*lp_state)
+// performs shortcutting and cycle detection togather
+{
 
+   size_t nv = graph->numVertices;
+   uint32_t*CC = lp_state->CC;
+   uint32_t*P = lp_state->P;
+   uint32_t*Ps = lp_state->Ps;
+   int numChanges = 1;
+   int iteration = 0;
+
+   uint32_t* off = graph->off;
+   uint32_t* ind = graph->ind;
+
+// now initialize the arrays
+
+   // memory allocation for hj algorithm
+
+   uint32_t *hjM  = malloc(nv * sizeof(uint32_t));
+   uint32_t *hjD  = malloc(nv * sizeof(uint32_t));
+   uint32_t *hjL  = malloc(nv * sizeof(uint32_t));
+
+
+
+
+
+   for (uint32_t v = 0; v < nv; v++)
+   {
+      hjM[v] = 0;
+      hjD[v] = 0;
+      hjL[v] = -1;
+      uint32_t Pv = (Ps[v] == -1) ? v : ind[off[v]  + Ps[v]];
+      P[v] = Pv;
+      CC[v] = Pv; // init to parent
+   }
+
+
+   // first shrinkage
+   int hjLevel = 0;
+   int mark2Del = 1;
+
+   while (mark2Del)
+   {
+      mark2Del = 0;
+
+      // first mark all the to be deleted nodes
+      for (uint32_t v = 0; v < nv; v++)
+      {
+         // if it is not deleted already
+         if (hjD[v] == 0)
+         {
+            /* code */
+            hjM[v] = (v > P[v]) && (P[v] <= P[P[v]] );
+            mark2Del +=  hjM[v];
+         }
+
+      }
+
+      // now delete all the marked nodes
+      for (uint32_t v = 0; v < nv; v++)
+      {
+         // if it is not deleted already
+         if (hjD[v] == 0)
+         {
+            if (hjM[v])
+            {
+               hjL[v] = hjLevel;  //delete level
+               hjD[v] = 1;    // marked as deleted
+            }
+
+            // and if my parent is marked to deleted then I jump
+            if (hjM[P[v]])
+            {
+               P[v] = P[P[v]];      // the jump operation
+            }
+
+         }
+      }
+      hjLevel++;
+
+   }
+
+   int loop =0;
+   // check if there is any loop
+    for (uint32_t v = 0; v < nv; v++)
+   {
+      // if it is not deleted already
+      if (hjD[v] == 0)
+      {
+         // if I am not my parent
+         if (Ps[v] != -1)
+         {
+            // P[P[v]] = v;   // reverse the direction
+            Ps[v] != -1;
+            loop++;
+         }
+      }
+   }
+
+
+
+#if 0
+    // it should ideally never come here
+   // now reverse the linked list
+   for (uint32_t v = 0; v < nv; v++)
+   {
+      // if it is not deleted already
+      if (hjD[v] == 0)
+      {
+         // if I am not my parent
+         if (P[v] != v)
+         {
+            P[P[v]] = v;   // reverse the direction
+         }
+      }
+   }
+
+
+   int loop = 0;
+   // now remove the two loop
+   for (uint32_t v = 0; v < nv; v++)
+   {
+      // if it is not deleted already
+      if (hjD[v] == 0)
+      {
+         // if I am not my parent
+         if (P[P[v]] == v && P[v] > v )
+         {
+            P[v] = v;   // reverse the direction
+
+         }
+      }
+   }
+
+   // now shortcut the loop
+
+   numChanges = 1;
+   while (numChanges)
+   {
+      numChanges = 0;
+      for (uint32_t v = 0; v < nv; v++)
+      {
+         // if it is not deleted already
+         if (hjD[v] == 0)
+         {
+            // if it is not converged
+            
+            if(P[P[v]] != P[v])
+            {
+               P[v] = P[P[v]]; 
+               numChanges++;
+            }
+
+         }
+      }
+   }
+
+#endif 
+   // now go through level by level to broadcast the root
+   for (int lvl = hjLevel-1; lvl >-1 ; --lvl)
+   {
+      /* code */
+      for (uint32_t v = 0; v < nv; v++)
+      {
+         // if it is not deleted already
+         if (hjL[v] == lvl)
+         {
+            
+            CC[v] = CC[P[v]];
+         }
+      }
+
+   }
+
+
+   free(hjL);
+   free(hjD);
+   free(hjM);
+
+   return loop;
+
+}
 
 
 
