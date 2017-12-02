@@ -85,20 +85,28 @@ int main (const int argc, char *argv[])
     alloc_lp_state(&graph, &lp_state_t1);       // allocate space
     rand_lp_state(&graph, &lp_state_t1);    // starting with random state
 
-    int NUM_TRIALS=10;
+    int NUM_TRIALS=100;
         double t_ss=0;
         double t_sv=0;
 
+    // SSstep_Async(&graph, &lp_state_t1);
+
     for (int i = 0; i < NUM_TRIALS; ++i)
     {
+
+        init_lp_state(&graph, &lp_state_t1);
+
+        tic();
+        FFSVAlg_Async(&lp_state_t1,  &graph, &statFF); // calling LP
+        t_sv += toc();
+
         /* code */
         tic();
         SSstep_Async(&graph, &lp_state_t1);   // initializing self-stabilizing step
         t_ss += toc();
 
-        tic();
-        FFSVAlg_Async(&lp_state_t1,  &graph, &statFF); // calling LP
-        t_sv += toc();
+
+        
 
     }
     

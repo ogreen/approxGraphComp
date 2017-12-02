@@ -44,9 +44,9 @@ int alloc_lp_state(graph_t *graph, lp_state_t *lp_state)
     lp_state->Cr = (int*)memalign(64, numVertices * sizeof(int));
 
 
-    lp_state->hjM = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    lp_state->hjD = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
-    lp_state->hjL = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    // lp_state->hjM = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    // lp_state->hjD = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    // lp_state->hjL = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
 
     return 0;
 }
@@ -74,9 +74,9 @@ int free_lp_state(lp_state_t *lp_state)
     free(lp_state->Ps);
     free(lp_state->P);
     free(lp_state->Cr);
-    free(lp_state->hjM);
-    free(lp_state->hjD);
-    free(lp_state->hjL);
+    // free(lp_state->hjM);
+    // free(lp_state->hjD);
+    // free(lp_state->hjL);
 }
 
 

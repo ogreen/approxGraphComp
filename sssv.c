@@ -78,6 +78,14 @@ int lpShortcut_Async(graph_t *graph, lp_state_t*lp_state)
 
     }
 
+    // for (uint32_t v = 0; v < nv; v++)
+    // {
+      
+    //     CC[v] = CC[CC[v]];
+      
+
+    // }
+
   }
 
   int loop =0;
