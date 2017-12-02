@@ -25,7 +25,81 @@
 int two_loop_count;
 int ss_count;
 
+int lpShortcut_Async(graph_t *graph, lp_state_t*lp_state)
+// performs shortcutting and cycle detection togather
+{
 
+  size_t nv = graph->numVertices;
+  uint32_t*CC = lp_state->CC;
+  uint32_t*P = lp_state->P;
+  uint32_t*Ps = lp_state->Ps;
+  int numChanges = 1;
+  int iteration = 0;
+
+  uint32_t* off = graph->off;
+  uint32_t* ind = graph->ind;
+
+// now initialize the arrays
+
+  // memory allocation for hj algorithm
+
+  // uint32_t *hjM  = malloc(nv * sizeof(uint32_t));
+  // uint32_t *hjD  = malloc(nv * sizeof(uint32_t));
+  // uint32_t *hjL  = malloc(nv * sizeof(uint32_t));
+
+  uint32_t *hjM  = lp_state->hjM;
+  uint32_t *hjD  = lp_state->hjD;
+  uint32_t *hjL  = lp_state->hjL;
+
+
+
+  for (uint32_t v = 0; v < nv; v++)
+  {
+    // hjM[v] = 0;
+    // hjD[v] = 0;
+    // hjL[v] = -1;
+    uint32_t Pv = (Ps[v] == -1) ? v : ind[off[v]  + Ps[v]];
+    P[v] = Pv;
+    CC[v] = v; // init to parent
+  }
+
+  while (numChanges)
+  {
+
+    numChanges = 0;
+    for (uint32_t v = 0; v < nv; v++)
+    {
+      if (CC[v] > CC[P[v]] )
+      {
+        /* code */
+        numChanges++;
+        CC[v] = CC[P[v]];
+      }
+
+    }
+
+  }
+
+  int loop =0;
+
+  for (uint32_t v = 0; v < nv; v++)
+  {
+    if (CC[v] == v && Ps[v] != -1 )
+    {
+      /* code */
+      loop++;
+      Ps[v] = -1;
+    }
+
+  }
+
+
+
+  return loop;
+
+}
+
+#if 0
 int hjShortcut_Async(graph_t *graph, lp_state_t*lp_state)
 // performs shortcutting and cycle detection togather
 {
@@ -80,7 +154,8 @@ int hjShortcut_Async(graph_t *graph, lp_state_t*lp_state)
       if (hjD[v] == 0)
       {
         /* code */
-        hjM[v] = (v > P[v]) && (P[v] <= P[P[v]] );
+        // hjM[v] = (v > P[v]) && (P[v] <= P[P[v]] );
+        hjM[v] = (v > P[v]) ;
         mark2Del +=  hjM[v];
       }
 
@@ -92,27 +167,30 @@ int hjShortcut_Async(graph_t *graph, lp_state_t*lp_state)
       // if it is not deleted already
       if (hjD[v] == 0)
       {
+
+        // and if my parent is marked to deleted then I jump
+        while (hjM[P[v]])
+        {
+          P[v] = P[P[v]];      // the jump operation
+        }
+
         if (hjM[v])
         {
           hjL[v] = hjLevel;  //delete level
           hjD[v] = 1;    // marked as deleted
         }
 
-        // and if my parent is marked to deleted then I jump
-        if (hjM[P[v]])
-        {
-          P[v] = P[P[v]];      // the jump operation
-        }
+        
 
       }
     }
     hjLevel++;
 
-    printf("Number of vertex marked for deletion: %d \n", mark2Del );
+    // printf("Number of vertex marked for deletion: %d \n", mark2Del );
 
   }
 
-  printf("Number of iteration %d\n",  hjLevel);
+  // printf("Number of iteration %d\n",  hjLevel);
   int loop = 0;
   // check if there is any loop
   for (uint32_t v = 0; v < nv; v++)
@@ -215,7 +293,7 @@ int hjShortcut_Async(graph_t *graph, lp_state_t*lp_state)
 
 }
 
-
+#endif 
 
 int ssShortcut_Async(graph_t *graph, lp_state_t*lp_state)
 // performs shortcutting and cycle detection togather
@@ -275,7 +353,7 @@ int ssShortcut_Async(graph_t *graph, lp_state_t*lp_state)
 
   }
 
-  printf("Number of iteration %d\n", iteration );
+  // printf("Number of iteration %d\n", iteration );
 
   // loop detect and correct
   int loop = 0;
@@ -529,9 +607,10 @@ LP(lp_state) -> correct solution
 
 
   int loops = 0;
-  // loops = ssShortcut_Async(graph, lp_state);
+  loops = ssShortcut_Async(graph, lp_state);
 
-  loops = hjShortcut_Async(graph, lp_state);
+  // loops = hjShortcut_Async(graph, lp_state);
+  // loops = lpShortcut_Async(graph, lp_state);
   // printf("//Number of corruptions is %d, number of loop %d, NV %d\n", corrupted, loops, nv );
   corrupted += loops;
 
