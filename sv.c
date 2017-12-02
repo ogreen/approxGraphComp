@@ -20,12 +20,12 @@ int numComponent(graph_t *graph, lp_state_t *lp_state)
     size_t nv  = graph->numVertices;
 
     uint32_t* CC = lp_state->CC;
- 
-    int numComponents =0;
+
+    int numComponents = 0;
 
     for (int i = 0; i < nv; ++i)
     {
-        if (CC[i]>numComponents)
+        if (CC[i] > numComponents)
         {
             numComponents = CC[i];
         }
@@ -42,6 +42,12 @@ int alloc_lp_state(graph_t *graph, lp_state_t *lp_state)
     lp_state->Ps = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
     lp_state->P = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
     lp_state->Cr = (int*)memalign(64, numVertices * sizeof(int));
+
+
+    lp_state->hjM = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    lp_state->hjD = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+    lp_state->hjL = (uint32_t*)memalign(64, numVertices * sizeof(uint32_t));
+
     return 0;
 }
 
@@ -68,6 +74,9 @@ int free_lp_state(lp_state_t *lp_state)
     free(lp_state->Ps);
     free(lp_state->P);
     free(lp_state->Cr);
+    free(lp_state->hjM);
+    free(lp_state->hjD);
+    free(lp_state->hjL);
 }
 
 
@@ -77,7 +86,7 @@ int printParentTree(char *name, graph_t* graph, lp_state_t *lp_state)
     if (getenv("PRINT_GRAPH") != NULL)
     {
         int  ind = (int) atoi(getenv("PRINT_GRAPH"));
-        if(ind==0) return 0;
+        if (ind == 0) return 0;
     }
     else
     {
@@ -110,7 +119,7 @@ int printGraph(char *name, graph_t* graph, lp_state_t *lp_state)
     if (getenv("PRINT_GRAPH") != NULL)
     {
         int  ind = (int) atoi(getenv("PRINT_GRAPH"));
-        if(ind==0) return 0;
+        if (ind == 0) return 0;
     }
     else
     {
@@ -136,7 +145,7 @@ int printGraph(char *name, graph_t* graph, lp_state_t *lp_state)
                 printf("%d -- %d;\n", v, u );
 
         }
-        
+
 
     }
     printf("labelloc=\"t\"\n");

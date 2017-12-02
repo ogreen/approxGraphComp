@@ -15,6 +15,11 @@ typedef struct
 	uint32_t* P; // parent array in absolute format
 	int* Cr;
 
+     uint32_t *hjM ;
+   uint32_t *hjD ;
+   uint32_t *hjL ;
+
+
 } lp_state_t;	// label propagation state
 
 
